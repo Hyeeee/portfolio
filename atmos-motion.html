@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atmos motion</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--ground:#EDEDEB;--dots:rgba(17,17,17,.035);--ink:#111112;--ink-2:#55565B;--ink-3:#8C8D92;--line:rgba(17,17,18,.09);--line-2:rgba(17,17,18,.18);--glass:rgba(255,255,255,.58);--glass-2:rgba(247,247,246,.8);--glass-hi:rgba(255,255,255,.85);--glass-solid:rgba(250,250,249,.8);--glass-brd:rgba(255,255,255,.75);--fill:rgba(17,17,18,.05);--shadow:0 18px 50px -30px rgba(0,0,0,.28);--on-ink:#FAFAF9;--mk:#EAEAEA;--panel:rgba(248,248,247,.8);
+ --font:'Geist','Noto Sans KR',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;--serif:'Instrument Serif',Georgia,'Times New Roman',serif}
+:root[data-theme="dark"]{--ground:#0D0D0E;--dots:rgba(255,255,255,.028);--ink:#EDEDED;--ink-2:#A2A3A8;--ink-3:#6B6C71;--line:rgba(255,255,255,.08);--line-2:rgba(255,255,255,.16);--glass:rgba(24,24,26,.55);--glass-2:rgba(22,22,24,.8);--glass-hi:rgba(255,255,255,.09);--glass-solid:rgba(26,26,28,.8);--glass-brd:rgba(255,255,255,.09);--fill:rgba(255,255,255,.06);--shadow:0 18px 50px -24px rgba(0,0,0,.8);--on-ink:#0D0D0E;--mk:#2A2A2A;--panel:rgba(22,22,24,.8)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--ground);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+#bg{position:fixed;inset:0}
+#bgm{position:fixed;inset:0;background:var(--mk);opacity:0}
+#lap{position:absolute;left:0;top:0;opacity:0;pointer-events:none;user-select:none}
+#stage{position:absolute;left:0;top:0;width:1440px;height:900px;transform-origin:0 0;overflow:hidden}
+.dots{background-color:var(--ground);background-image:radial-gradient(var(--dots) var(--dr,1px),transparent calc(var(--dr,1px) + .2px));background-size:14px 14px}
+#stage .sbg{position:absolute;inset:0;opacity:0}
+#fade{position:fixed;inset:0;background:var(--ground);z-index:50;pointer-events:none}
+button{font:inherit;color:inherit;cursor:default}
+.mono{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.num{font-variant-numeric:tabular-nums}
+.glass{background:var(--panel);border:1px solid var(--glass-brd);box-shadow:inset 0 1px 0 var(--glass-hi),var(--shadow)}
+.top{position:absolute;left:0;top:0;right:0;z-index:2;display:flex;align-items:center;gap:14px;padding:14px 16px;height:64px}
+.top>*{flex-shrink:0}.top .sp{flex:1 1 0}
+.brand{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:400;letter-spacing:-.02em;white-space:nowrap}
+.brand svg{width:24px;height:24px}
+.stats{display:flex;align-items:center;height:36px;border-radius:12px;padding:0 4px;white-space:nowrap}
+.stats .st{display:flex;align-items:baseline;gap:7px;padding:0 12px}
+.stats .st+.st{border-left:1px solid var(--line-2)}
+.stats b{font-weight:400;font-size:14px;letter-spacing:-.01em}
+.theme-btn{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;padding:0}
+.theme-btn svg{width:16px;height:16px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;background:var(--fill);font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2);white-space:nowrap}
+.seg{display:inline-flex;padding:3px;border-radius:12px;gap:2px}
+.seg button{border:0;background:transparent;padding:6px 10px;border-radius:9px;font-size:12px;color:var(--ink-2);white-space:nowrap}
+.seg button.on{background:var(--ink);color:var(--on-ink)}
+.panel{position:absolute;top:70px;height:806px;border-radius:24px;overflow:hidden}
+.stage{left:16px;width:1022px;display:grid;grid-template-columns:330px minmax(0,1fr)}
+.journal-side{left:1054px;width:370px;display:flex;flex-direction:column;z-index:5}
+.sec{position:relative;padding:22px;border-top:1px solid var(--line)}
+.sec:first-child{border-top:0}
+.sec-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.sec-h h2{margin:0;font-size:15px;font-weight:500;letter-spacing:-.01em}
+.stage-l{display:flex;flex-direction:column;min-width:0;overflow:hidden;border-right:1px solid var(--line)}
+.stage-r{position:relative}
+.city-row{display:flex;align-items:center;gap:10px}
+.city{font-size:17px;letter-spacing:-.01em;display:inline-flex;align-items:center;gap:8px}
+.city svg{width:12px;height:12px}
+.loc{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;border:1px solid var(--line-2);background:var(--glass-2);color:var(--ink-2)}
+.loc svg{width:14px;height:14px}
+.hero-temp{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+.big{font-family:"Pretendard Variable",Pretendard,Geist,system-ui,sans-serif;font-weight:300;font-size:128px;line-height:.86;letter-spacing:-.068em;margin-left:-.05em;font-variant-numeric:tabular-nums}
+.big .dec{font-size:.5em;letter-spacing:-.02em;font-weight:500}
+.big sup{font-size:.34em;font-weight:500;vertical-align:top;position:relative;top:.12em;margin-left:.08em;letter-spacing:0}
+.cond{display:flex;align-items:center;gap:8px;font-size:15px;line-height:1.2}
+.cond svg{width:26px;height:26px}
+.hl-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hl{margin-top:16px;display:flex;gap:16px;color:var(--ink-2);font-size:13px}
+.hl b{font-weight:400;color:var(--ink)}
+.unit-seg{margin-top:16px;background:var(--fill)}
+.phrase{margin:14px 0 0;font-family:var(--serif);font-size:21px;line-height:1.25;font-style:italic;white-space:nowrap}
+.dd-btn{display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:11px;background:var(--fill);color:var(--ink-2);padding:0}
+.dd-btn svg{width:13px;height:13px}
+.wrow{display:grid;grid-template-columns:44px 24px 34px minmax(0,1fr) 34px;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.wrow:first-child{border-top:0}
+.wrow .d{font-size:13px}
+.wrow svg{width:20px;height:20px;color:var(--ink-2)}
+.wrow .lo{color:var(--ink-3);text-align:right}
+.range{position:relative;height:3px;border-radius:3px;background:var(--fill)}
+.range i{position:absolute;top:0;bottom:0;border-radius:3px;background:linear-gradient(90deg,var(--ink-3),var(--ink))}
+.credit{margin:auto 22px 18px;padding-top:12px;text-transform:none;letter-spacing:.02em}
+.f-top{position:absolute;top:12px;left:12px;right:12px;display:flex;gap:8px;z-index:3}
+.scrub{flex:1 1 0;display:flex;align-items:center;gap:8px;padding:6px;border-radius:16px;min-width:0;background:var(--glass-solid)}
+.scrub .play,.scrub .now{border:0;background:var(--fill);height:34px;border-radius:11px;display:grid;place-items:center;padding:0 12px;font-size:12px;flex:0 0 auto}
+.scrub .play{width:34px;padding:0}.scrub .play svg{width:12px;height:12px}
+.track{position:relative;flex:1 1 0;height:34px;min-width:0}
+.track .tk{position:absolute;top:8px;width:1px;height:5px;transform:translateX(-50%);background:var(--line-2)}
+.track .tk.maj{top:6px;height:9px;background:var(--ink-3)}
+.track .lb{position:absolute;bottom:1px;transform:translateX(-50%);font-family:var(--mono);font-size:9.5px;line-height:1;color:var(--ink-3)}
+.track .marker{position:absolute;top:5px;height:12px;width:3px;border-radius:2px;transform:translateX(-50%);background:var(--ink);box-shadow:0 0 0 2px var(--glass-solid);z-index:1}
+.f-bot{position:absolute;left:12px;right:12px;bottom:12px;display:flex;justify-content:space-between;align-items:flex-end;gap:8px;z-index:3}
+.fbox{padding:8px 10px;border-radius:14px;display:flex;flex-direction:column;gap:6px;background:var(--glass-solid)}
+.cap{max-width:300px}
+.cap p{margin:0;font-size:12px;line-height:1.45;color:var(--ink-2)}
+#globe{position:absolute;left:346px;top:70px;width:692px;height:806px;z-index:3;pointer-events:none}
+#orbs{position:absolute;left:346px;top:70px;width:692px;height:806px;z-index:3;pointer-events:none}
+.fcl{position:absolute;left:0;top:0;display:flex;align-items:center;gap:6px;height:30px;padding:0 10px 0 4px;border-radius:999px;border:1px solid var(--line-2);background:var(--glass-solid);color:var(--ink);box-shadow:rgba(0,0,0,.35) 0 4px 14px -8px;transform-origin:15px 15px;opacity:0}
+.fcl .fg{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--on-ink)}
+.fcl .fg svg{width:70%;height:70%}
+.fcl b{font-weight:500;font-size:13px;letter-spacing:-.01em}
+.gl{display:grid;place-items:center;border-radius:50%;border:1px solid var(--line-2);color:var(--ink);background:var(--glass-2)}
+.gl svg{width:72%;height:72%}
+.compose-q{margin:0 0 14px;font-family:var(--serif);font-size:28px;line-height:1.1;letter-spacing:-.01em}
+.compose-q em{font-style:italic}
+.moods{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin-bottom:14px}
+.mood{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0 6px;border:1px solid transparent;border-radius:14px;background:transparent}
+.mood .gl{width:38px;height:38px;transition:transform .25s cubic-bezier(.3,1.6,.5,1),background .2s,color .2s}
+.mood span{font-size:11px;color:var(--ink-2)}
+.mood.on .gl{background:var(--ink);color:var(--on-ink);border-color:var(--ink);transform:scale(1.1)}
+.mood.on span{color:var(--ink)}
+.nick{border-bottom:1px dashed var(--line-2);padding:5px 0;font-size:14px;margin-bottom:10px;min-height:32px;transition:border-color .2s}
+.nick.f{border-bottom:1px solid var(--ink)}
+.ph{color:var(--ink-3)}
+.journal{width:100%;min-height:92px;border:1px solid var(--line-2);border-radius:16px;background:var(--glass-2);padding:12px 14px;font-family:var(--serif);font-size:18px;line-height:1.4;transition:border-color .2s}
+.journal.f{border-color:var(--ink-3)}
+.journal .ph{font-style:italic}
+.caret{display:inline-block;width:1px;height:1.05em;margin-left:1px;vertical-align:-.15em;background:var(--ink);animation:bl 1s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+.where{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;color:var(--ink-2)}
+.where svg{width:13px;height:13px}
+.compose-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
+.vis{display:inline-flex;gap:2px;padding:3px;border-radius:11px;background:var(--fill)}
+.vis button{border:0;background:transparent;padding:5px 10px;border-radius:8px;font-size:12px;color:var(--ink-2)}
+.vis button.on{background:var(--glass-hi);color:var(--ink);box-shadow:rgba(0,0,0,.08) 0 1px 3px}
+.btn{border:0;background:var(--ink);color:var(--on-ink);padding:10px 20px;border-radius:13px;font-size:13px;font-weight:500}
+.feed-sec{flex:1 1 0;min-height:0;display:flex;flex-direction:column;padding-bottom:0}
+#feed{flex:1 1 0;min-height:0;overflow:hidden}
+.post{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;padding:16px 0;border-top:1px solid var(--line)}
+.post.first{border-top:0;padding-top:4px}
+.post .gl{width:34px;height:34px;margin-top:2px}
+.pmeta{display:flex;align-items:center;gap:8px;min-width:0}
+.pmeta b{font-weight:500;font-size:13px}
+.pmeta .mono{text-transform:none;letter-spacing:.02em;white-space:nowrap;color:var(--ink-2)}
+.ptext{margin:6px 0 8px;font-family:var(--serif);font-size:18px;line-height:1.35}
+.pact{display:flex;align-items:center;gap:8px}
+.metoo{border:1px solid var(--line-2);background:transparent;border-radius:999px;padding:4px 10px;font-size:12px;display:inline-flex;gap:6px;align-items:center;color:var(--ink-2)}
+.trtog{border:0;background:transparent;padding:4px 2px;font-size:12px;color:var(--ink-3);text-decoration:underline;text-underline-offset:3px}
+#cmp{position:fixed;left:0;top:0;width:370px;transform-origin:0 0;z-index:6;opacity:0}
+#cmp .compose-q{font-size:30px;position:relative}
+.ghost{visibility:hidden}
+#scr{position:absolute;opacity:0}
+#lapc{position:fixed;left:0;top:0;width:0;height:0;transform-origin:0 0}
+.forb{position:absolute;left:0;top:0;width:26px;height:26px;transform-origin:13px 13px;opacity:0;z-index:1}
+.forb .g{width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:var(--glass-solid);border:1px solid var(--line-2);color:var(--ink);transition:background .2s,color .2s}
+.forb .g svg{width:70%;height:70%}
+.forb.on .g{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.tip{position:absolute;left:0;top:0;width:250px;padding:12px 16px 14px;border-radius:18px;background:var(--glass-solid);border:1px solid var(--line-2);box-shadow:0 14px 40px -22px rgba(0,0,0,.45);transform-origin:0 0;opacity:0;z-index:2}
+.tip .mono{display:block;font-size:10px;letter-spacing:.08em;line-height:1.5;color:var(--ink-3)}
+.tip p{margin:5px 0 0;font-family:var(--serif);font-size:19px;line-height:1.28}
+#cur{position:fixed;left:0;top:0;width:24px;height:24px;border-radius:50%;background:rgba(108,108,116,.34);border:1px solid rgba(255,255,255,.6);box-shadow:0 2px 12px rgba(0,0,0,.12);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:9;opacity:0;pointer-events:none;transition:background .15s}
+#cur.dn{background:rgba(70,70,78,.5)}
+:root[data-theme="dark"] #cur{background:rgba(215,215,225,.3);border-color:rgba(255,255,255,.32)}
+:root[data-theme="dark"] #cur.dn{background:rgba(235,235,240,.48)}
+#mc{position:fixed;z-index:7;transform-origin:0 0;--p:0;gap:calc(6px*var(--p));padding:0 calc(10px*var(--p)) 0 4px;background:color-mix(in srgb,var(--glass-solid) calc(var(--p)*100%),transparent);border-color:color-mix(in srgb,var(--line-2) calc(var(--p)*100%),transparent);box-shadow:0 4px 14px -8px rgba(0,0,0,calc(.35*var(--p)))}
+#mc b{display:inline-block;overflow:hidden;white-space:nowrap}
+#spk{position:absolute;left:0;top:0;overflow:visible;opacity:0}
+#spk line,#spk .rg{stroke:var(--line-2);stroke-width:1;fill:none}
+#spk .dot{fill:var(--ink)}
+.ccl{position:absolute;left:0;top:0;transform-origin:0 0;white-space:nowrap;font-size:11px;letter-spacing:.1em;color:var(--ink-2);opacity:0}
+.forb::before{content:"";position:absolute;inset:-7px;border-radius:50%;border:1px solid var(--ink);opacity:0;animation:ring 4.5s ease-out infinite;animation-delay:var(--dl,0s)}
+@keyframes ring{0%{transform:scale(.7);opacity:.3}100%{transform:scale(1.9);opacity:0}}
+.fcl{transition:border-color .2s}.fcl.on{border-color:var(--ink)}
+#tap{position:fixed;left:0;top:0;width:33px;height:33px;margin:-16px 0 0 -16px;border-radius:50%;border:1.5px solid var(--ink-3);z-index:8;opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="bg" class="dots"></div><div id="bgm"></div><div id="lapc"><img id="lap" alt=""><div id="scr" class="dots"></div></div>
+<div id="stage">
+ <div class="sbg dots" id="sbg"></div>
+ <header class="top" id="hdr"><div class="brand" id="brand"></div><span class="mono">Monday, Oct 12<span style="margin-left:10px;color:var(--ink-2)">12:25</span></span><span class="sp"></span>
+  <div class="stats glass"><div class="st"><span class="mono">Today</span><b class="num">2</b></div><div class="st"><span class="mono">This week</span><b class="num">2</b></div><div class="st"><span class="mono">All time</span><b class="num">155</b></div></div>
+  <span class="theme-btn glass"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="8" cy="8" r="6.2"/><path d="M1.8 8h12.4M8 1.8c1.8 1.9 2.7 4 2.7 6.2S9.8 12.3 8 14.2M8 1.8C6.2 3.7 5.3 5.8 5.3 8s.9 4.3 2.7 6.2"/></svg></span>
+  <span class="theme-btn glass"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6L13 13M3 13l1.4-1.4M11.6 4.4L13 3"/></svg></span></header>
+ <section class="panel glass stage" id="stp">
+  <div class="stage-l">
+   <div class="sec">
+    <div class="city-row"><span class="city">New York City<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 4.5l3 3 3-3"/></svg></span><span class="loc"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="4.5"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><path d="M8 1v2.5M8 12.5V15M1 8h2.5M12.5 8H15"/></svg></span><span class="mono">NY · US</span></div>
+    <div class="hero-temp"><div class="big">63<span class="dec">.1</span><sup>°</sup></div><div class="cond" id="cond"></div></div>
+    <div class="hl-row"><div class="hl"><span>Feels <b class="num">63°</b></span><span>High <b class="num">68°</b></span><span>Low <b class="num">54°</b></span></div><div class="seg unit-seg"><button>°C</button><button class="on">°F</button></div></div>
+    <p class="phrase">Sun slipping through clouds.</p>
+   </div>
+   <div class="sec"><div class="sec-h"><h2>7-day forecast</h2><span class="dd-btn"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M3 4.5l3 3 3-3"/></svg></span></div><div id="week"></div></div>
+   <p class="mono credit"><span>Weather data</span> · <u>Open-Meteo.com</u></p>
+  </div>
+  <div class="stage-r">
+   <div class="f-top"><div class="scrub"><span class="play"><svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 1.5v9l7.5-4.5z"/></svg></span><div class="track" id="track"></div><span class="now">Now</span></div></div>
+   <div class="f-bot"><div class="fbox"><span class="mono">Mode</span><div class="seg"><button class="on">Mood</button><button>Wind</button><button>Rain</button><button>Temp</button><button>Air</button></div></div>
+    <div class="fbox cap"><span class="mono">Mood globe</span><p>Each glyph is someone’s entry, placed where it was written. Numbers mean several entries in one place: tap to zoom in. Drag to turn the globe. The dimmer side is where it’s night right now.</p></div></div>
+  </div>
+ </section>
+ <canvas id="globe"></canvas><div id="orbs"></div>
+ <section class="panel glass journal-side" id="jp">
+  <div class="sec">
+   <p class="compose-q">What’s the weather <em>inside</em> you today?</p>
+   <div class="moods" id="moods"></div>
+   <div class="nick"><span class="ph">Enter your nickname</span></div>
+   <div class="journal"><span class="ph">A line or two about your mood under today’s sky…</span></div>
+   <div class="where"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 14.5s4.5-4.2 4.5-8a4.5 4.5 0 0 0-9 0c0 3.8 4.5 8 4.5 8z"/><circle cx="8" cy="6.5" r="1.6"/></svg><span>Posting from New York City</span></div>
+   <div class="compose-foot"><div class="vis"><button class="on">Public</button><button>Only me</button></div><span class="mono num">0 / 240</span><button class="btn">Post</button></div>
+  </div>
+  <div class="sec feed-sec"><div class="sec-h"><h2>Under the same sky</h2><div class="seg" style="background:var(--fill)"><button class="on">All</button><button>This city</button><button>Mine</button></div></div><div id="feed"></div></div>
+ </section>
+</div>
+<div id="cmp">
+ <p class="compose-q" id="q"></p>
+ <div class="moods" id="moods2"></div>
+ <div class="fx"><div class="nick" id="nick"></div><div class="journal" id="jt"></div></div>
+</div>
+<div class="fcl" id="mc"><span class="fg"></span><b>13</b></div>
+<span id="tap"></span>
+<span id="cur"></span>
+<div id="fade"></div>
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s), TAU=Math.PI*2;
+/* ---------- glyphs (same shapes as Atmos) ---------- */
+const SV=(b,w=1.2)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${b}</svg>`;
+const ray=(n,r0,r1,r2)=>{let s="";for(let k=0;k<n;k++){const a=k*TAU/n,r=k%2?r2:r1;s+=`<line x1="${(12+r0*Math.cos(a)).toFixed(2)}" y1="${(12+r0*Math.sin(a)).toFixed(2)}" x2="${(12+r*Math.cos(a)).toFixed(2)}" y2="${(12+r*Math.sin(a)).toFixed(2)}"/>`}return s};
+const G={
+ radiant:SV(`<circle cx="12" cy="12" r="2.4" fill="currentColor"/>`+ray(16,4.2,10,7)),
+ calm:SV(`<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/>`),
+ cozy:SV(`<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="3"/>`),
+ foggy:SV(`<line x1="4" y1="8" x2="20" y2="8" stroke-dasharray="2 2"/><line x1="3" y1="12" x2="21" y2="12" stroke-dasharray="3 2"/><line x1="5" y1="16" x2="19" y2="16" stroke-dasharray="2 2"/>`),
+ blue:SV(`<line x1="6" y1="5" x2="5" y2="15"/><line x1="9" y1="8" x2="8" y2="18"/><line x1="12" y1="5" x2="11" y2="15"/><line x1="15" y1="8" x2="14" y2="18"/><line x1="18" y1="5" x2="17" y2="15"/>`),
+ stormy:SV(`<path d="M12 12 L22 12 M12 12 L16 14.9 M12 12 L15.1 21.5 M12 12 L10.5 16.8 M12 12 L3.9 17.9 M12 12 L7 12 M12 12 L3.9 6.1 M12 12 L10.5 7.2 M12 12 L15.1 2.5 M12 12 L16 9.1"/><path d="M13 6.5l-3 5.5h4l-3 5.5" stroke-width="1.4"/>`)};
+const CLOUD='M7.2 18.5h9.6a3.9 3.9 0 0 0 .4-7.8 5.3 5.3 0 0 0-10.2 1.1 3.4 3.4 0 0 0 .2 6.7z';
+const W={rain:SV(`<path d="${CLOUD}" transform="translate(0 -4)"/><line x1="9" y1="17" x2="8" y2="20.5"/><line x1="12.5" y1="17" x2="11.5" y2="20.5"/><line x1="16" y1="17" x2="15" y2="20.5"/>`,1.1),
+ fog:SV(`<path d="${CLOUD}" transform="translate(0 -5)"/><line x1="5" y1="17" x2="19" y2="17"/><line x1="7" y1="20" x2="17" y2="20"/>`,1.1),
+ sun:SV(`<circle cx="12" cy="12" r="4"/>`+ray(8,6.6,9,9),1.1),
+ part:SV(`<mask id="ic1" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/><path d="${CLOUD}" transform="translate(-2 3)" fill="#000" stroke="#000" stroke-width="3.4"/></mask><g mask="url(#ic1)"><circle cx="15.4" cy="8" r="3.1"/><line x1="20.3" y1="8" x2="22" y2="8"/><line x1="18.8" y1="11.4" x2="20" y2="12.6"/><line x1="15.4" y1="12.9" x2="15.4" y2="14.6"/><line x1="11.9" y1="11.4" x2="10.7" y2="12.6"/><line x1="10.5" y1="8" x2="8.8" y2="8"/><line x1="11.9" y1="4.5" x2="10.7" y2="3.3"/><line x1="15.3" y1="3" x2="15.3" y2="1.4"/><line x1="18.8" y1="4.5" x2="20" y2="3.3"/></g><path d="${CLOUD}" transform="translate(-2 3)"/>`,1.1)};
+$("#brand").innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="2.2"/>${ray(12,3.6,10,7).replace(/<line/g,'<line')}</svg>Atmos`;
+$("#cond").innerHTML=W.part+"<span>Partly cloudy</span>";
+$("#week").innerHTML=[["Today","rain",54,68,30.4,34.7],["Tue","fog",54,70,30.4,30.4],["Wed","rain",64,82,56.5,0],["Thu","rain",61,70,47.8,30.4],["Fri","rain",59,70,43.4,30.4],["Sat","rain",41,59,0,56.5],["Sun","sun",41,57,0,60.8]]
+ .map(([d,w,lo,hi,l,r])=>`<div class="wrow"><span class="d">${d}</span>${W[w]}<span class="lo num">${lo}°</span><div class="range"><i style="left:${l}%;right:${r}%"></i></div><span class="hi num">${hi}°</span></div>`).join("");
+$("#track").innerHTML=Array.from({length:24},(_,h)=>{const x=2+h*(95.9/23);return `<i class="tk${h%3?"":" maj"}" style="left:${x}%"></i>`+(h%3?"":`<span class="lb" style="left:${x}%">${String(h).padStart(2,"0")}</span>`)}).join("")+`<i class="marker" style="left:52%"></i>`;
+const MOODS=["radiant","calm","cozy","foggy","blue","stormy"];
+const MH=MOODS.map(m=>`<button class="mood" data-id="${m}"><i class="gl">${G[m]}</i><span>${m[0].toUpperCase()+m.slice(1)}</span></button>`).join("");$("#moods").innerHTML=MH;$("#moods2").innerHTML=MH;
+const POSTS=[["radiant","Marin","New York · 70°F · now","Feeling good!",0,0],["calm","Kee","Berlin · 54°F · 17d","I was running in Berlin in the morning and it was raining a little... and now it's gone, but the wind is still blowing.",1,0],["radiant","Heho","Busan · 75°F · 17d","Weather before the storm",1,0],["cozy","Buster Floyd","Marysville · 62°F · 17d","It is Fantastically cool inside and out, yet not raining.",0,0],["stormy","HanSolo","Los Angeles · 76°F · 17d","Working at a school the week of a full moon , is like the calm before the storm.",0,1],["cozy","Jeongeun","Chicago · 62°F · 17d","It's hot in here today, but my heart is very warm.",1,0]];
+$("#feed").innerHTML=POSTS.map(([m,n,meta,tx,tr,mt],i)=>`<article class="post${i<1?" first":""}" data-i="${i}"><i class="gl">${G[m]}</i><div><div class="pmeta"><b>${n}</b><span class="mono">${meta}</span></div><p class="ptext">${tx}</p><div class="pact"><span class="chip">${m}</span>${tr?'<button class="trtog">Show original</button>':""}<button class="metoo">Me too<span class="num">${mt}</span></button></div></div></article>`).join("");
+const posts=[...document.querySelectorAll(".post")];
+/* ---------- globe (Atmos’ own land mask, 2° equal-area samples) ---------- */
+const LAND=(()=>{const b=atob('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAYAAAAA4AAAAAAAAAAAACAAAAAAAAAcAAAAAAAAAAAAAAABAAAAAPgAAAAAAAAAAAAAABAAAAAAAH4AAAAAAAAAAADAAwAAAAAAAPwAAAAAAAAAAICAHwAAAAAAAMA/AAAA8AAAAADg4Q8AAAAAAADAfwAAAOADAAAAwP8/AAAAAAAAAP4HAAAAPwAAAAD4/wcAAAAAAAAA/wEAAMA/AAAAAPz/BwAAAAAAAAD+BwAAgP8wAAAA8P8/AAAAAAAAAOD/AQAA8B8GAAAA/v8HAAAAAAAAAPj/AQAA/A8HAAAA/P8DAAAAAAAAAPD/AwAA+D8MAAAAwP8DAAAAAAAAAMD/HwAAwP/nAAAAAPw7AAAAAAAAAAD+/wMAAPj/EQAAAAA8BgAAAAAAAADA//8BAAD8fwgAAAAAOAEAAAAAAAAA4P//AQAA/H8AAAAAAAACAAAAAAAAAMD//w8AAPj/AQAAAAAAKBAAAAAAAAAA//8/AADA/wcAAABwAPAhAAAAAAAAAPz//wAAAP8/AAAAQICABwAAAAAAAADA//8DAAD4/wMAAADmQh0AAAAAAAAAAPz/BwAAwP9/AAAAMB4YAAAAAAAAAADA/x8AAAD4/w8AAIDzBQAAAAAAAAAAAPj/AQAAgP//AQAAKBwAAAAAAAAAAACA/wcAABb//z8AAKCBAQAAAAAAAAAAAPwHAAD4////AQABBEAAAAAAAAAAAAD4HwAA8P///w8ABgAAAAAAAAAAAAAABAcAAOD///8zAAyAAwEAAAAAAAAAAAwAAADw////AQAO0IMAAAAAAAAAAMAHAAAA+P//fweAA/wgAAAAAAAAAAA/AAQAAP////cDeOAHBAAAAAACAAA8AwIAAPj//98/wIdfAAAAAAAAAAB4hAEAAPD//99/wJ+/AAAAAAAAAAA8IAAAAPD//+c/+P//BQAAAAAAAIAHEAAAAP7/fz/B//9fAAAAAAAAQD8QAAAA+P//fv7//z8AAAAAAADAPwgAAAD6///f////HwAAAAAAAPr/AAAAgP93/////38AAAAAAAD8/wMAAAD/Afz///8/BAAAAACA//8BAADAH4D/////0QEAAAAA/v8HAACAAeD/////JwIAAAAA//8HAADwSP3///8/QgAAAAD4/z8AAICj7/7///8HAAAAAPz/PwAA4NGD/////xAAAADA//8LAAD+r/////8LAAAA8P//CADA//f///8/AAAAwP//EwDA//////8fAAAA/P//AAD+//////8AAAD8//8AQPn/////BwEA4P/3AwAD/v///4EBAPh/PAAgzv///x8EYPg/HAAA9////wcB/v/DAADc////P4P//yAGgP3///+//v8zhsHn////x/+fOQDf////+JeLD3Di//8BGMcDgPp/ALDHB0D8AgA+PgBwBAD0A4AAAHsEAAB+gABQAAAAAAA='),pts=[];let bit=0;
+ for(let i=0;i<90;i++){const lat=-90+2*(i+.5),n=Math.max(1,Math.round(360*Math.cos(lat*Math.PI/180)/2));
+  for(let j=0;j<n;j++){if((b.charCodeAt(bit>>3)>>(bit&7))&1){const lon=-180+(j+.5)*360/n,f=lat*Math.PI/180;pts.push([Math.sin(f),Math.cos(f),lon*Math.PI/180])}bit++}}return pts})();
+const GW=692,GH=806,GX=346,GCY=356,GR=268,GLAT=20;
+const cv=$("#globe"),cx=cv.getContext("2d");let dpr=2;
+const CITIES=[{k:"busan",lat:35.18,lon:129.08,m:"radiant",n:3,t:10.1},{k:"sea",lat:48.1,lon:-122.2,m:"cozy",n:5,t:10.7},{k:"la",lat:34.05,lon:-118.24,m:"stormy",n:12,t:11.2},{k:"ny",lat:40.71,lon:-74.01,m:"radiant",n:13,t:11.8},{k:"ber",lat:52.52,lon:13.4,m:"calm",n:3,t:12.4}];
+$("#orbs").innerHTML=CITIES.map(c=>`<div class="fcl" data-k="${c.k}"><span class="fg">${G[c.m]}</span><b>${c.n}</b></div>`).join("");
+CITIES.forEach(c=>{c.el=$(`.fcl[data-k="${c.k}"]`);c.b=c.el.querySelector("b")});
+let inkRGB="17,17,18",dark=false;
+const ink=a=>`rgba(${inkRGB},${a})`;
+const SUN={lat:-7,lon:-80};
+function drawGlobe(lon0,lat0=GLAT){
+ const c=cx,cxp=GW/2,cyp=GCY,R=GR;c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,GW,GH);
+ const f0=lat0*Math.PI/180,l0=lon0*Math.PI/180,sf0=Math.sin(f0),cf0=Math.cos(f0);
+ const proj=(lat,lon)=>{const f=lat*Math.PI/180,l=lon*Math.PI/180,cf=Math.cos(f),sf=Math.sin(f),d=l-l0,cd=Math.cos(d);return{x:cxp+R*cf*Math.sin(d),y:cyp-R*(cf0*sf-sf0*cf*cd),z:sf0*sf+cf0*cf*cd}};
+ const gr=c.createRadialGradient(cxp-R*.35,cyp-R*.4,R*.1,cxp,cyp,R);gr.addColorStop(0,ink(.015));gr.addColorStop(1,ink(.06));
+ c.fillStyle=dark?"rgba(13,13,14,.8)":"rgba(237,237,235,.8)";c.beginPath();c.arc(cxp,cyp,R,0,TAU);c.fill();c.fillStyle=gr;c.fill();c.lineWidth=1;c.strokeStyle=ink(.22);c.stroke();
+ c.setLineDash([1.5,4]);c.strokeStyle=ink(.14);c.beginPath();let first=true;for(let lon=-180;lon<=180;lon+=4){const p=proj(0,lon);if(p.z<0){first=true;continue}if(first){c.moveTo(p.x,p.y);first=false}else c.lineTo(p.x,p.y)}c.stroke();c.setLineDash([]);
+ const sd=Math.sin(SUN.lat*Math.PI/180),cdS=Math.cos(SUN.lat*Math.PI/180),lS=SUN.lon*Math.PI/180;
+ {const p=proj(SUN.lat,SUN.lon),vx=(p.x-cxp)/R,vy=(p.y-cyp)/R,vl=Math.hypot(vx,vy),ux=vl>1e-3?vx/vl:1,uy=vl>1e-3?vy/vl:0,g0=(1+p.z)/2;
+  const lg=c.createLinearGradient(cxp+ux*R,cyp+uy*R,cxp-ux*R,cyp-uy*R),sh=dark?"0,0,0":inkRGB,na=dark?.5:.11,cl=v=>Math.max(0,Math.min(1,v));
+  lg.addColorStop(0,`rgba(${sh},0)`);lg.addColorStop(cl(g0-.12),`rgba(${sh},0)`);lg.addColorStop(cl(g0+.12),`rgba(${sh},${na})`);lg.addColorStop(1,`rgba(${sh},${na})`);
+  c.fillStyle=lg;c.beginPath();c.arc(cxp,cyp,R-.5,0,TAU);c.fill()}
+ const P=[[new Path2D(),new Path2D(),new Path2D()],[new Path2D(),new Path2D(),new Path2D()],[new Path2D(),new Path2D(),new Path2D()]];
+ for(const [sf,cf,l] of LAND){const d=l-l0,cd=Math.cos(d),z=sf0*sf+cf0*cf*cd;if(z<=.02)continue;
+  const x=cxp+R*cf*Math.sin(d),y=cyp-R*(cf0*sf-sf0*cf*cd),r=.6+z*.75,e=sf*sd+cf*cdS*Math.cos(l-lS);
+  P[e>.1?0:e>-.1?1:2][z>.6?0:z>.3?1:2].rect(x-r,y-r,r*2,r*2)}
+ const DA=[.62,.4,.2],LK=[1,.9,.8];for(let i=0;i<3;i++)for(let j=0;j<3;j++){c.fillStyle=ink(DA[j]*LK[i]);c.fill(P[i][j])}
+ return proj}
+/* ---------- helpers ---------- */
+const cl=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const k=(t,a,b)=>cl((t-a)/(b-a));
+const io=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2, oc=x=>1-Math.pow(1-x,3), oq=x=>1-Math.pow(1-x,4);
+const back=x=>{const c1=1.7,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const lerp=(a,b,x)=>a+(b-a)*x;
+const bgEl=$("#bg"),fade=$("#fade"),stage=$("#stage"),hdr=$("#hdr"),stp=$("#stp"),jp=$("#jp"),cur=$("#cur"),tap=$("#tap"),lap=$("#lap"),bgm=$("#bgm"),scr=$("#scr"),cmp=$("#cmp"),mc=$("#mc"),mcb=mc.querySelector("b");
+mc.querySelector(".fg").innerHTML=G.radiant;
+const NICK="Marin",TXT="Feeling good!",Q1="What’s the weather ",Q2="inside",Q3=" you today?",QN=Q1.length+Q2.length+Q3.length;
+const QE=$("#q"),moods2=[...cmp.querySelectorAll(".mood")],nick=$("#nick"),jt=$("#jt");
+/* scene timings (seconds) */
+const T={q:[.45,.045],icons:2.15,cIn:3.25,m:[3.45,3.95,4.05],wide:[4.2,4.95],n:[5.0,5.4,5.45],nt:[5.6,.11],j:[6.25,6.7,6.75],jt:[6.9,.085],
+ send:[8.4,9.0],fly:[8.5,9.35],pill:[9.3,9.8],globe:[9.6,10.8],dock:[10.4,11.25],cities:11.35,
+ cIn2:12.4,la:[12.6,13.1,13.15],open:[13.25,14.3],h:[[14.5,14.9],[16.05,16.45],[17.6,18.0]],out:19.15,close:[19.15,20.3],
+ fin:[20.5,21.9],lap:[23.1,24.8],hold:28.6,end:29.4};
+CITIES.forEach(c=>{c.t=c.k==="ny"?T.dock[1]:T.cities+({sea:0,la:.28,ber:.56,busan:.84})[c.k]});
+/* Los Angeles, opened: every entry on a ring around the city */
+const LA=[["stormy"],["calm"],["stormy","beehappy · Los Angeles · 18d","Meetings with people who don't actually care about your opinion are very hard.."],["cozy","Han · Los Angeles · 18d","Warm sweater on cold clear night makes me ready for autumn"],["stormy"],["cozy","Paul · Los Angeles · 18d","Enjoying the nice weather as we approach fall."],["foggy"],["stormy"],["cozy"],["stormy"],["radiant","bless · Los Angeles · 18d","The weather inside me is sunny and bright despite the cloudy weather outside."],["calm"]];
+const HOV=[3,10,5];
+const orbs=$("#orbs");
+orbs.insertAdjacentHTML("beforeend",`<svg id="spk" width="1" height="1"><circle class="rg" cx="0" cy="0" r="10"/>${LA.map(()=>`<line x1="0" y1="0" x2="0" y2="0"/>`).join("")}<circle class="dot" cx="0" cy="0" r="3.2"/></svg><span class="ccl mono">Los Angeles</span>`+
+ LA.map((f,i)=>`<div class="forb" style="--dl:${(-i*.73).toFixed(2)}s"><span class="g">${G[f[0]]}</span></div>`).join("")+
+ HOV.map(i=>`<div class="tip"><span class="mono">${LA[i][1]}</span><p>${LA[i][2]}</p></div>`).join(""));
+const spk=$("#spk"),rg=spk.querySelector(".rg"),spokes=[...spk.querySelectorAll("line")],dot=spk.querySelector(".dot"),ccl=orbs.querySelector(".ccl"),fan=[...orbs.querySelectorAll(".forb")],tips=[...orbs.querySelectorAll(".tip")];
+const cityOf=kk=>CITIES.find(c=>c.k===kk);
+/* ---------- layout ---------- */
+let S0={s:1,x:0,y:0},CA={s:1,x:0,y:0},CB={s:1,x:0,y:0},VW=0,VH=0,SI={s:1,x:0,y:0},SL={s:1,x:0,y:0},CHS=1;
+function layout(){VW=innerWidth;VH=innerHeight;
+ const s0=Math.min(VW/1440,VH/900)*.95;S0={s:s0,x:(VW-1440*s0)/2,y:(VH-900*s0)/2};
+ const gs=Math.min(VW,VH)*.39/GR;SI={s:gs,x:VW/2-(GX+GW/2)*gs,y:VH/2-(70+GCY)*gs};
+ let fit="cover",sc=1;try{const a=frameElement&&frameElement.parentNode.querySelector("img.art");if(a){fit=getComputedStyle(a).objectFit;sc=fit==="contain"?1.3:1}}catch(_){}
+ const iw=2400,ih=1200,is=(fit==="contain"?Math.min(VW/iw,VH/ih):Math.max(VW/iw,VH/ih))*sc,w=iw*is,h=ih*is,x=(VW-w)/2,y=(VH-h)/2;
+ Object.assign(lap.style,{width:w+"px",height:h+"px",transform:`translate(${x}px,${y}px)`});
+ const sx=x+w*686/2700,sy=y+h*246.9/1350,ss=w*1330/2700/1440;SL={s:ss,x:sx,y:sy};
+ const rr=w*28/2700;scr.style.setProperty("--dr",Math.max(.45,Math.min(1,Math.max(14*ss,3)/14))+"px");Object.assign(scr.style,{borderRadius:`${rr}px ${rr}px 0 0`,backgroundSize:`${Math.max(14*ss,3)}px ${Math.max(14*ss,3)}px`,backgroundPosition:`${sx}px ${sy}px`,left:sx+"px",top:(y+h*228/1350)+"px",width:(w*1330/2700)+"px",height:(h*869/1350)+"px"});
+ // compose: close on the question + moods, then wide enough to show the whole text field
+ const cw=370,fa=nick.parentNode.offsetTop||110,fb=cmp.offsetHeight||300;
+ const fs=Math.min(VW*.8/cw,VH*.68/fa);CA={s:fs,x:(VW-cw*fs)/2,y:(VH-fa*fs)/2};
+ const s2=Math.min(VW*.84/cw,VH*.8/fb);CB={s:s2,x:(VW-cw*s2)/2,y:(VH-fb*s2)/2};
+ CHS=cl(Math.min(VW,VH)/600,.55,1.35);
+ const cz=Math.max(16,Math.min(34,Math.min(VW,VH)*.048));cur.style.width=cur.style.height=cz+"px";cur.style.margin=`${-cz/2}px 0 0 ${-cz/2}px`;tap.style.width=tap.style.height=cz*1.6+"px";tap.style.margin=`${-cz*.8}px 0 0 ${-cz*.8}px`;
+ const need=Math.max(SI.s*2.1,1)*(devicePixelRatio||1);dpr=Math.min(3.5,Math.max(1.5,need));cv.width=GW*dpr;cv.height=GH*dpr;cv.style.width=GW+"px";cv.style.height=GH+"px"}
+const mix=(a,b,x)=>({s:lerp(a.s,b.s,x),x:lerp(a.x,b.x,x),y:lerp(a.y,b.y,x)});
+const ctr=(el,dx=.5,dy=.5)=>{const r=el.getBoundingClientRect();return{x:r.left+r.width*dx,y:r.top+r.height*dy}};
+function theme(){let d=false;try{const r=parent.document.documentElement;d=r.dataset.theme?r.dataset.theme==="dark":parent.matchMedia("(prefers-color-scheme: dark)").matches}catch(_){d=matchMedia("(prefers-color-scheme: dark)").matches}
+ try{document.documentElement.style.colorScheme=parent.getComputedStyle(parent.document.documentElement).colorScheme||"normal"}catch(_){}
+ if(d!==dark||!lap.src){dark=d;document.documentElement.dataset.theme=d?"dark":"light";inkRGB=d?"237,237,237":"17,17,18";lap.src=d?"mock-dark/atmos.jpg":"mock/atmos.jpg"}}
+let qLast=-1;
+/* ---------- the timeline: everything is a pure function of t ---------- */
+function frame(t){
+ /* --- 1 · the question types itself, moods pop in, pick one, nickname, a line --- */
+ const cOut=io(k(t,T.send[0],T.send[1]));
+ cmp.style.opacity=(1-cOut)*oc(k(t,.1,.5));cmp.style.visibility=cOut>=1?"hidden":"";
+ const cc=mix(CA,CB,io(k(t,T.wide[0],T.wide[1])));
+ cmp.style.transform=`translate(${cc.x}px,${cc.y}px) scale(${cc.s})`;cmp.style.filter=cOut>0?`blur(${cOut*5}px)`:"";
+ const qn=Math.floor(cl((t-T.q[0])/T.q[1],0,QN));
+ if(qn!==qLast){qLast=qn;const a=Math.min(qn,Q1.length),b=Math.min(Math.max(qn-Q1.length,0),Q2.length),c=Math.max(qn-Q1.length-Q2.length,0);
+  QE.innerHTML=Q1.slice(0,a)+(b?`<em>${Q2.slice(0,b)}</em>`:"")+Q3.slice(0,c)+(qn<QN?'<span class="caret"></span>':"")+`<span class="ghost">${(Q1+Q2+Q3).slice(qn)}</span>`}
+ moods2.forEach((m,i)=>{const x=k(t,T.icons+i*.12,T.icons+i*.12+.5),g=m.firstElementChild;g.style.transform=`scale(${x>0?back(x)*(m.classList.contains("on")?1.1:1):0})`;g.style.opacity=i===0&&t>=T.fly[0]?0:cl(x*3);m.lastElementChild.style.opacity=oc(k(t,T.icons+i*.12+.15,T.icons+i*.12+.55))});
+ const rest=oc(k(t,T.wide[0]+.15,T.wide[1]));cmp.querySelectorAll(".fx").forEach(e=>{e.style.opacity=rest;e.style.transform=`translateY(${(1-rest)*12}px)`});
+ moods2[0].classList.toggle("on",t>=T.m[2]+.05);
+ const nn=Math.floor(cl((t-T.nt[0])/T.nt[1],0,NICK.length)),jn=Math.floor(cl((t-T.jt[0])/T.jt[1],0,TXT.length));
+ const nf=t>=T.n[2]&&t<T.j[2],jf=t>=T.j[2]&&t<T.send[0];
+ const nh=(nn?NICK.slice(0,nn):`<span class="ph">Enter your nickname</span>`)+(nf?'<span class="caret"></span>':"");
+ const jh=(jn?TXT.slice(0,jn):`<span class="ph">A line or two about your mood under today’s sky…</span>`)+(jf?'<span class="caret"></span>':"");
+ if(nick.__h!==nh){nick.innerHTML=nh;nick.__h=nh}if(jt.__h!==jh){jt.innerHTML=jh;jt.__h=jh}
+ nick.classList.toggle("f",nf);jt.classList.toggle("f",jf);
+ /* --- globe camera --- */
+ const op=io(k(t,T.open[0],T.open[1])),clz=io(k(t,T.close[0],T.close[1])),fz=t<T.close[0]?op:1-clz;   // how far we are flown into LA
+ const fk=io(k(t,T.fin[0],T.fin[1]));
+ const baseLon=-80+.55*(cl(t,T.globe[0],T.open[0])-T.globe[0])+7*Math.max(0,t-T.close[0]);
+ const lon=lerp(baseLon,-118.24+2,fz),lat0=lerp(20,30,fz);
+ const proj=drawGlobe(lon,lat0),lap0=proj(34.05,-118.24);
+ const zs=2.05,ZL={s:SI.s*zs,x:VW*.5-(GX+lap0.x)*SI.s*zs,y:VH*.5-(70+lap0.y)*SI.s*zs};
+ const lp=io(k(t,T.lap[0],T.lap[1]));let tr=mix(SI,ZL,fz);if(t>=T.fin[0])tr=mix(SI,S0,fk);if(t>=T.lap[0])tr=mix(S0,SL,lp);
+ const gIn=oc(k(t,T.globe[0],T.globe[1])),gsc=.86+.14*gIn;
+ stage.style.transform=`translate(${tr.x}px,${tr.y}px) scale(${tr.s})`;stage.style.opacity=gIn;
+ cv.style.transform=`scale(${gsc})`;orbs.style.transform=`scale(${gsc})`;cv.style.filter=gIn<1?`blur(${(1-gIn)*8}px)`:"";
+ const chipS=lerp(CHS/(tr.s*gsc),1,fk);
+ const R0=orbs.getBoundingClientRect(),toScr=p=>({x:R0.left+p.x*tr.s*gsc,y:R0.top+p.y*tr.s*gsc});
+ /* --- 2 · your mood flies to the middle and becomes a chip, then lands on New York --- */
+ const nyp=proj(40.71,-74.01),nyS=toScr(nyp);
+ const src=ctr(moods2[0].firstElementChild);
+ const fl=io(k(t,T.fly[0],T.fly[1])),pl=oc(k(t,T.pill[0],T.pill[1])),dk=io(k(t,T.dock[0],T.dock[1]));
+ const iconS=(38*1.1*cc.s)/22,bigS=CHS*2.4;
+ let ms=lerp(iconS,bigS,fl);ms=lerp(ms,CHS,dk);
+ const mx=lerp(lerp(src.x,VW/2-12*bigS*pl,fl),nyS.x,dk),my=lerp(lerp(src.y,VH/2,fl),nyS.y,dk);
+ mc.style.opacity=t>=T.fly[0]&&t<T.dock[1]?1:0;
+ mc.style.transform=`translate(${mx-15*ms}px,${my-15*ms}px) scale(${ms})`;
+ mc.style.setProperty("--p",pl);mcb.style.maxWidth=pl*28+"px";mcb.style.opacity=k(t,T.pill[0]+.15,T.pill[1]);
+ /* city chips */
+ const hov=t>=T.h[0][1]&&t<T.out;
+ CITIES.forEach(c=>{const p=proj(c.lat,c.lon),pk=k(t,c.t,c.t+.5),vis=cl((p.z-.04)/.12);
+  let o=c.k==="ny"?(t>=T.dock[1]?1:0)*vis:(pk>0?cl(pk*3):0)*vis;
+  if(c.k==="la")o*=1-k(t,T.la[2]+.1,T.la[2]+.4)*(1-k(t,T.close[0]+.3,T.close[0]+.8));
+  let bump=1;if(c.k==="la"){const b=k(t,T.la[2]-.05,T.la[2]+.25);if(b>0&&b<1)bump=1-.14*Math.sin(b*Math.PI)}
+  c.el.style.opacity=o;c.el.style.transform=`translate(${p.x-15}px,${p.y-15}px) scale(${(c.k==="ny"?1:pk<1?back(pk):1)*chipS*bump})`;c.__p=p});
+ /* the opened city: spokes, a ring, every entry around it */
+ const fo=k(t,T.open[0]+.35,T.open[1]+.25),fc=1-io(k(t,T.out,T.out+.55)),R=118*chipS;
+ const ringK=oc(fo)*fc;
+ spk.style.transform=`translate(${lap0.x}px,${lap0.y}px)`;spk.style.opacity=ringK;
+ rg.setAttribute("r",(R*ringK).toFixed(1));dot.setAttribute("r",(3.2*chipS).toFixed(2));
+ ccl.style.opacity=ringK;ccl.style.transform=`translate(${lap0.x}px,${lap0.y+12*chipS}px) translateX(-50%) scale(${chipS})`;
+ let hovI=-1;T.h.forEach((h,i)=>{const end=T.h[i+1]?T.h[i+1][0]:T.out;if(t>=h[1]&&t<end)hovI=HOV[i]});
+ fan.forEach((f,i)=>{const a=-Math.PI/2+i*TAU/fan.length,x=k(t,T.open[0]+.45+i*.05,T.open[0]+.45+i*.05+.45),r=R*(x>0?oc(x):0)*fc,px=lap0.x+Math.cos(a)*r,py=lap0.y+Math.sin(a)*r;
+  f.style.opacity=cl(x*3)*fc;f.style.transform=`translate(${px-13}px,${py-13}px) scale(${chipS*(hovI===i?1.22:1)})`;f.classList.toggle("on",hovI===i);f.__p={x:px,y:py};
+  const l=spokes[i];l.setAttribute("x2",(Math.cos(a)*r).toFixed(1));l.setAttribute("y2",(Math.sin(a)*r).toFixed(1))});
+ tips.forEach((tp,i)=>{const h=T.h[i],end=T.h[i+1]?T.h[i+1][0]:T.out,o=oc(k(t,h[1],h[1]+.28))*(1-k(t,end-.05,end+.22)),p=fan[HOV[i]].__p,right=p.x>=lap0.x-2;
+  const w=tp.offsetWidth*chipS,hh=tp.offsetHeight*chipS;tp.style.opacity=o;
+  let tx=right?p.x+16*chipS:p.x-16*chipS-w,ty=p.y-hh-14*chipS;const mnx=(8-tr.x)/tr.s-GX,mxx=(VW-8-tr.x)/tr.s-GX-w,mny=(8-tr.y)/tr.s-70;tx=Math.max(mnx,Math.min(mxx,tx));ty=Math.max(mny,ty);tp.style.transform=`translate(${tx}px,${ty}px) scale(${chipS})`});
+ /* --- 3 · the app gathers around the globe and the laptop seeps in at the same time --- */
+ const ui=oc(k(t,T.fin[0]+.45,T.fin[1]+.15)),ph=ui,ps=ui,pj=ui;
+ hdr.style.opacity=ph;hdr.style.transform=`translateY(${(1-ph)*-14}px)`;
+ stp.style.opacity=ps;stp.style.transform=`translateX(${(1-ps)*-36}px)`;
+ jp.style.opacity=pj;jp.style.transform=`translateX(${(1-pj)*36}px)`;
+ posts.forEach((p,i)=>{const q=oq(k(t,T.fin[0]+.55+i*.05,T.fin[0]+1.1+i*.05));p.style.opacity=q;p.style.transform=`translateY(${(1-q)*18}px)`});
+ // the laptop frame rides with the screen, so the app always sits exactly inside it while both settle
+ const lf=t>=T.lap[0]?tr.s/SL.s:1;$("#lapc").style.transform=`translate(${tr.x-SL.x*lf}px,${tr.y-SL.y*lf}px) scale(${lf})`;
+ const lo=oc(k(t,T.lap[0]+.15,T.lap[0]+.95));bgm.style.opacity=lo;lap.style.opacity=lo;scr.style.opacity=lo;
+ const bs=Math.max(14*tr.s,lerp(8,3,io(k(t,T.lap[0],T.lap[1]))));bgEl.style.backgroundSize=`${bs}px ${bs}px`;$("#sbg").style.backgroundSize=`${bs/tr.s}px ${bs/tr.s}px`;const dr=Math.max(.45,Math.min(1,bs/14));bgEl.style.setProperty("--dr",dr+"px");$("#sbg").style.setProperty("--dr",dr/tr.s+"px");bgEl.style.backgroundPosition=`${tr.x}px ${tr.y}px`;
+ /* --- the pointer: a soft, see-through circle, like a finger on a phone --- */
+ let cp=null,co=0;const H=(el,dx,dy)=>()=>ctr(el,dx,dy);
+ const ico=i=>H(moods2[i].firstElementChild,.5,.5);
+ const S1=()=>{const a=ctr(moods2[3].firstElementChild);return{x:a.x+VW*.04,y:a.y+VH*.2}};
+ const C1=[[T.cIn,T.m[0],S1,null],[T.m[0],T.m[1],S1,ico(0)],[T.m[1],T.n[0],ico(0),null],[T.n[0],T.n[1],ico(0),H(nick,.16,.55)],[T.n[1],T.j[0],H(nick,.16,.55),null],[T.j[0],T.j[1],H(nick,.16,.55),H(jt,.3,.42)],[T.j[1],T.send[0]+.3,H(jt,.3,.42),null]];
+ const laS=()=>toScr(cityOf("la").__p),fp=i=>()=>toScr(fan[i].__p),S2=()=>({x:VW*.62,y:VH*.84});
+ const C2=[[T.cIn2,T.la[0],S2,null],[T.la[0],T.la[1],S2,laS],[T.la[1],T.h[0][0],laS,null],[T.h[0][0],T.h[0][1],laS,fp(HOV[0])],[T.h[0][1],T.h[1][0],fp(HOV[0]),null],[T.h[1][0],T.h[1][1],fp(HOV[0]),fp(HOV[1])],[T.h[1][1],T.h[2][0],fp(HOV[1]),null],[T.h[2][0],T.h[2][1],fp(HOV[1]),fp(HOV[2])],[T.h[2][1],T.out+.45,fp(HOV[2]),null]];
+ for(const [a,b,P,Q] of t<T.send[1]?C1:C2){if(t>=a&&t<b){const x=io(k(t,a,b)),p=P(),q=Q?Q():p;cp={x:lerp(p.x,q.x,x),y:lerp(p.y,q.y,x)};break}}
+ if(t<T.send[1])co=Math.min(oc(k(t,T.cIn,T.cIn+.3)),1-k(t,T.send[0],T.send[0]+.3));
+ else co=Math.min(oc(k(t,T.cIn2,T.cIn2+.3)),1-k(t,T.out,T.out+.4));
+ const CL=[T.m[2],T.n[2],T.j[2],T.la[2]];
+ if(cp){const pr=CL.find(c=>t>=c-.06&&t<c+.22),press=pr!==undefined?Math.sin(k(t,pr-.06,pr+.22)*Math.PI):0;
+  cur.style.transform=`translate(${cp.x}px,${cp.y}px) scale(${(1-.28*press)*(hovI>=0?.82:1)})`;cur.classList.toggle("dn",press>.3)}
+ cur.style.opacity=cp?co:0;
+ let tpc=null;for(const c of CL)if(t>=c&&t<c+.55)tpc=c;
+ if(tpc!==null&&cp){const x=k(t,tpc,tpc+.55);tap.style.opacity=(1-x)*.35;tap.style.transform=`translate(${cp.x}px,${cp.y}px) scale(${.5+x*.9})`}else tap.style.opacity=0;
+ fade.style.opacity=Math.max(1-oc(k(t,0,.45)),io(k(t,T.hold,T.end)))}
+/* ---------- run only while the card is on screen ---------- */
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let t0=null,raf=0,pt=0,onScreen=true;
+function loop(now){raf=requestAnimationFrame(loop);if(t0===null)t0=now;let t=(now-t0)/1000;if(t>=T.end){t0=now;t=0}frame(t)}
+function start(){if(raf)return;if(t0!==null)t0=performance.now()-pt*1000;raf=requestAnimationFrame(loop)}
+function stop(){if(!raf)return;cancelAnimationFrame(raf);raf=0;pt=t0===null?0:(performance.now()-t0)/1000}
+try{new IntersectionObserver(es=>{onScreen=es[0].isIntersecting;onScreen?start():stop()}).observe(document.body)}catch(_){}
+addEventListener("resize",layout);
+setInterval(theme,500);
+document.addEventListener("visibilitychange",()=>document.hidden?stop():onScreen&&start());
+/* measure with the full question and empty fields in place, so the framing never crops the text field */
+QE.innerHTML=`<span class="ghost">${Q1}<em>${Q2}</em>${Q3}</span>`;nick.innerHTML='<span class="ph">Enter your nickname</span>';jt.innerHTML='<span class="ph">A line or two about your mood under today’s sky…</span>';
+theme();layout();
+const go=()=>{layout();if(reduce){frame(T.hold-.01);return}start()};
+(document.fonts&&document.fonts.ready?Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]):Promise.resolve()).then(go);
+window.__frame=t=>{stop();frame(0);layout();frame(t)};
+})();
+</script>
+</body>
+</html>
