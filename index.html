@@ -1875,12 +1875,12 @@ $("#feed").innerHTML=ITEMS.map((it,i)=>{
 
 const feed=$("#feed"), lis=[...feed.children];
 
-/* ---------- filter: all · vibe coding · work · concepts ---------- */
+/* ---------- filter: all · product work · built with AI · explorations ---------- */
 // side projects were vibe coded with AI, The VC and PFCT were real company work in Korea,
 // everything else is a concept, a hackathon or self-initiated
 function FCAT(p){return {side:"ai",vc:"work",pf:"work"}[p.group]||"concept"}
 const DEF="work";   // the filter that is on when the page opens
-const FLT=[["all","All"],["ai","Vibe coding"],["work","Work"],["concept","Concepts"]];
+const FLT=[["all","All"],["work","Product work"],["ai","Built with AI"],["concept","Explorations"]];
 (()=>{
   const count=c=>c==="all"?lis.length:lis.filter(li=>li.dataset.cat===c).length;
   const nav=document.createElement("nav");nav.className="flt";nav.id="flt";nav.setAttribute("aria-label","Filter projects");
