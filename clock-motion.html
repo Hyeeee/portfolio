@@ -69,7 +69,7 @@ class Ring {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  pixelDensity(constrain(displayDensity(), 2, 3));
+  pixelDensity(min(displayDensity(), 2));   // 2x is sharp enough here and uses far less memory than 3x
   rings = [
     new Ring({ count: 12, unit: 'h', labelEvery: 1, labelFn: i => (i === 0 ? '12' : String(i)), textSize: 34, drumY: -165, drumR: 215, dialR: 270 }),
     new Ring({ count: 12, unit: 'h', tick: 14, drumY: -74, drumR: 195, dialR: 215 }),

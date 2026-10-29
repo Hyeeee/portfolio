@@ -30,7 +30,7 @@ let VW = 1440, VH = 900;
 function embedCanvas() {
   if (window.innerWidth < 560) { VW = 390; VH = 520; }
   const c = createCanvas(VW, VH);
-  pixelDensity(Math.min(3, Math.max(1, displayDensity() * window.innerWidth / VW)));
+  pixelDensity(Math.min(2, Math.max(1, displayDensity() * window.innerWidth / VW)));
   fitCanvasToWindow();
   return c;
 }
