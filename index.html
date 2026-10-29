@@ -126,18 +126,19 @@ html.intro::-webkit-scrollbar{display:none}
 .go .stmt .w>span{transform:none;transition:transform 1.35s var(--out)}
 .go .sub{opacity:1;transform:none;transition:opacity 1s var(--ease) 1s,transform 1.3s var(--out) 1s}
 /* project filter: quiet text buttons, the chosen one in full ink with a hairline under it */
-.flt{display:flex;justify-content:center;flex-wrap:wrap;gap:4px clamp(18px,2.2vw,30px);margin:clamp(56px,7vw,104px) 0 0;position:relative;z-index:5}
-.flt button{position:relative;padding:6px 0 7px;font-family:var(--sans);font-size:13.5px;font-weight:500;letter-spacing:-.015em;color:var(--muted);transition:color .5s var(--ease)}
-.flt button sup{margin-left:3px;font-size:10px;letter-spacing:0;vertical-align:baseline;position:relative;top:-.55em;color:var(--soft);transition:color .5s var(--ease)}
-.flt button::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--fg);transform:scaleX(0);transform-origin:right;transition:transform .7s var(--out)}
+.flt{display:flex;justify-content:center;flex-wrap:wrap;gap:4px clamp(12px,1.4vw,20px);margin:clamp(56px,7vw,104px) 0 0;position:relative;z-index:5}
+.flt button{position:relative;padding:6px 0 1px;font-family:var(--sans);font-size:13.5px;font-weight:500;letter-spacing:-.015em;color:var(--muted);transition:color .5s var(--ease)}
+.flt button sup{margin-left:2px;font-family:var(--sans);font-size:10px;letter-spacing:0;vertical-align:baseline;position:relative;top:-.55em;color:var(--soft);transition:color .5s var(--ease)}
+.flt .fl{position:relative;display:inline-block;padding-bottom:6px}
+.flt button .fl::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--fg);transform:scaleX(0);transform-origin:right;transition:transform .7s var(--out)}
 .flt button:hover{color:var(--fg)}
 .flt button.on{color:var(--fg)}
 .flt button.on sup{color:var(--muted)}
-.flt button.on::after{transform:scaleX(1);transform-origin:left}
+.flt button.on .fl::after{transform:scaleX(1);transform-origin:left}
 .intro .flt{opacity:0;transform:translateY(14px)}
 .go .flt{opacity:1;transform:none;transition:opacity 1s var(--ease) 1.25s,transform 1.3s var(--out) 1.25s}
 .feed>li.f-off{display:none}
-.hero:has(.flt){padding-bottom:clamp(40px,4.4vw,72px)}
+.hero:has(.flt){padding-bottom:clamp(20px,2.2vw,36px)}
 .intro .nav{transform:translateY(-260%)}
 .go .nav{transform:none}
 
@@ -1882,7 +1883,7 @@ const FLT=[["all","All"],["ai","Vibe coding"],["work","Work"],["concept","Concep
 (()=>{
   const count=c=>c==="all"?lis.length:lis.filter(li=>li.dataset.cat===c).length;
   const nav=document.createElement("nav");nav.className="flt";nav.id="flt";nav.setAttribute("aria-label","Filter projects");
-  nav.innerHTML=FLT.filter(([c])=>count(c)>0).map(([c,l],k)=>`<button type="button" data-f="${c}" aria-pressed="${k===0}"${k===0?' class="on"':""}>${l}<sup class="num">${count(c)}</sup></button>`).join("");
+  nav.innerHTML=FLT.filter(([c])=>count(c)>0).map(([c,l],k)=>`<button type="button" data-f="${c}" aria-pressed="${k===0}"${k===0?' class="on"':""}><span class="fl">${l}</span><sup>${count(c)}</sup></button>`).join("");
   $("#sub").after(nav);
   let cur="all";
   nav.addEventListener("click",e=>{
