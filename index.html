@@ -1595,7 +1595,8 @@ setTimeout(function(){if(!r.classList.contains("run")){r.classList.remove("intro
   <nav class="nav-mid" aria-label="Main">
     <a class="chip item open" href="#top" data-go="index"><span class="sp"></span><span class="lab">Projects</span><sup>1</sup></a>
     <button class="chip item" type="button" data-go="lof"><span class="sp"></span><span class="lab">Archive</span><sup>2</sup></button>
-    <button class="chip item" type="button" data-go="contact" aria-expanded="false" aria-controls="panel"><span class="sp"></span><span class="lab">Contact</span><sup>3</sup></button>
+    <button class="chip item" type="button" data-go="photo"><span class="sp"></span><span class="lab">Photography</span><sup>3</sup></button>
+    <button class="chip item" type="button" data-go="contact" aria-expanded="false" aria-controls="panel"><span class="sp"></span><span class="lab">Contact</span><sup>4</sup></button>
     <div class="panel" id="panel">
       <a href="Marin_Hyejeong_Chung_Resume.pdf?v=3" download="Marin_Hyejeong_Chung_Resume.pdf"><span class="k">Resume</span><span class="v">Download PDF</span></a>
       <a href="mailto:hyendof@gmail.com" target="_blank" rel="noopener"><span class="k">Email</span><span class="v">hyendof@gmail.com</span></a>
@@ -2769,8 +2770,8 @@ function vzPrep(){pfPrep();$$("#sbody .bub, #sbody .hb").forEach(c=>{c.classList
   c.querySelectorAll(".vl").forEach(v=>{if(c.querySelector(".ln"))v.style.setProperty("--d",".6s")})})}
 let navPop=false;
 function openSheet(html,crumb,hash){
-  const fade=hash==="lof-archive"||hash==="blog";const isBlog=hash.startsWith("blog");sheet.classList.toggle("fx-fade",fade);root.classList.toggle("recede",fade);
-  $("#sbody").innerHTML=html;requestAnimationFrame(()=>{setTimeout(tocBuild,0);tightVZ($("#sbody"));syncArt();$$("#sbody .lot").forEach(e=>lotIO.observe(e));srInit()});root.classList.add("sheet-open");setActive(hash==="lof-archive"?"lof":isBlog?"blog":"index");sheet.scrollTop=0;
+  const fade=hash==="lof-archive"||hash==="blog"||hash==="photography";const isBlog=hash.startsWith("blog");sheet.classList.toggle("fx-fade",fade);root.classList.toggle("recede",fade);
+  $("#sbody").innerHTML=html;requestAnimationFrame(()=>{setTimeout(tocBuild,0);tightVZ($("#sbody"));syncArt();$$("#sbody .lot").forEach(e=>lotIO.observe(e));srInit()});root.classList.add("sheet-open");setActive(hash==="lof-archive"?"lof":hash==="photography"?"photo":isBlog?"blog":"index");sheet.scrollTop=0;
   if(!sheetOpen){lastFocus=document.activeElement;sheet.classList.add("open");sheetOpen=true;root.style.overflow="hidden";lenis&&lenis.stop()}
   else $$("#sheet .rise").forEach(el=>{el.style.animation="none";el.offsetHeight;el.style.animation=""});
 
@@ -2788,6 +2789,9 @@ function closeSheet(){if(!sheetOpen)return;toc.classList.remove("on");tocT=[];ro
   if(!navPop){const d=history.state&&history.state.d||0;if(d>0)history.go(-d);else history.replaceState(null,"",location.pathname+location.search)}lastFocus&&lastFocus.focus&&lastFocus.focus({preventScroll:true})}
 const openCase=slug=>{const p=PROJECTS.find(x=>x.slug===slug);if(p)openSheet(caseHTML(p),p.title,p.slug)};
 const IMGD=id=>IMG(id);
+/* Photography: placeholder until the photos are added */
+const photoHTML=()=>`<div class="arc"><div class="arc-intro rise"><p class="ai">Photography</p><p class="ai-sub">Photos I’ve taken. Coming soon.</p></div></div>`;
+const openPhoto=()=>openSheet(photoHTML(),"Photography","photography");
 const openLof=()=>{openSheet(lofHTML(),"Lof Archive","lof-archive");syncArt()};
 /* ---------- blog: Atmos + Physical Computing (from Notion) ---------- */
 const B="blog/";
@@ -2986,7 +2990,7 @@ const ct=$("#contact");let ctOpen=false;
 function togglePanel(force){const o=force??!ctOpen;if(o===ctOpen)return;ctOpen=o;
   if(o&&sheetOpen)closeSheet();
   ct.classList.toggle("open",o);root.classList.toggle("contact-open",o);contactChip.classList.toggle("open",o);contactChip.setAttribute("aria-expanded",o);
-  items.forEach(it=>{if(it.dataset.go==="index")it.classList.toggle("open",!o&&active==="index");if(it.dataset.go==="lof")it.classList.toggle("open",!o&&active==="lof");if(it.dataset.go==="blog")it.classList.toggle("open",!o&&active==="blog")});
+  items.forEach(it=>{if(it.dataset.go==="index")it.classList.toggle("open",!o&&active==="index");if(it.dataset.go==="lof")it.classList.toggle("open",!o&&active==="lof");if(it.dataset.go==="blog")it.classList.toggle("open",!o&&active==="blog");if(it.dataset.go==="photo")it.classList.toggle("open",!o&&active==="photo")});
   root.style.overflow=o?"hidden":"";lenis&&(o?lenis.stop():lenis.start())}
 $$("[data-go]").forEach(el=>el.addEventListener("click",e=>{
   const g=el.dataset.go;e.preventDefault();
@@ -2994,6 +2998,7 @@ $$("[data-go]").forEach(el=>el.addEventListener("click",e=>{
   togglePanel(false);
   if(g==="index"){setActive("index");if(sheetOpen)closeSheet();else (lenis?lenis.scrollTo(0,{duration:1.4}):scrollTo({top:0,behavior:"smooth"}));return}
   if(g==="lof"){openLof()}
+  if(g==="photo"){openPhoto()}
   if(g==="blog"){openBlog()}
 }));
 addEventListener("keydown",e=>{if(e.key==="Escape"&&ctOpen)togglePanel(false)});
@@ -3014,13 +3019,13 @@ addEventListener("keydown",e=>{
 });
 
 /* ---------- deep links + browser back/forward ---------- */
-const navTo=h=>{if(h==="lof-archive")openLof();else if(h==="blog")openBlog();else if(h.startsWith("blog/"))openPost(h.slice(5));else if(PROJECTS.some(p=>p.slug===h))openCase(h);else return false;return true};
+const navTo=h=>{if(h==="lof-archive")openLof();else if(h==="photography")openPhoto();else if(h==="blog")openBlog();else if(h.startsWith("blog/"))openPost(h.slice(5));else if(PROJECTS.some(p=>p.slug===h))openCase(h);else return false;return true};
 addEventListener("popstate",()=>{navPop=true;try{const h=location.hash.slice(1);if(!h||!navTo(h))closeSheet()}finally{navPop=false}});
 const h=location.hash.slice(1);
 if(h){navPop=true;try{navTo(h)}finally{navPop=false}}
 /* back to top inside the sheet */
 (()=>{const b=document.getElementById("s-top"),sh=document.getElementById("sheet");if(!b||!sh)return;
-  const upd=()=>{const h=location.hash.slice(1);const ok=sheetOpen&&h!=="lof-archive"&&sh.scrollTop>window.innerHeight*.8;b.classList.toggle("on",ok)};
+  const upd=()=>{const h=location.hash.slice(1);const ok=sheetOpen&&h!=="lof-archive"&&h!=="photography"&&sh.scrollTop>window.innerHeight*.8;b.classList.toggle("on",ok)};
   sh.addEventListener("scroll",upd,{passive:true});window.addEventListener("hashchange",upd);
   new MutationObserver(upd).observe(sh,{attributes:true,attributeFilter:["class"]});
   b.addEventListener("click",()=>{sh.scrollTo({top:0,behavior:"smooth"})});})();
