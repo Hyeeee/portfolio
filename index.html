@@ -1879,13 +1879,15 @@ const feed=$("#feed"), lis=[...feed.children];
 // side projects were vibe coded with AI, The VC and PFCT were real company work in Korea,
 // everything else is a concept, a hackathon or self-initiated
 function FCAT(p){return {side:"ai",vc:"work",pf:"work"}[p.group]||"concept"}
+const DEF="work";   // the filter that is on when the page opens
 const FLT=[["all","All"],["ai","Vibe coding"],["work","Work"],["concept","Concepts"]];
 (()=>{
   const count=c=>c==="all"?lis.length:lis.filter(li=>li.dataset.cat===c).length;
   const nav=document.createElement("nav");nav.className="flt";nav.id="flt";nav.setAttribute("aria-label","Filter projects");
-  nav.innerHTML=FLT.filter(([c])=>count(c)>0).map(([c,l],k)=>`<button type="button" data-f="${c}" aria-pressed="${k===0}"${k===0?' class="on"':""}><span class="fl">${l}</span><sup>${count(c)}</sup></button>`).join("");
+  nav.innerHTML=FLT.filter(([c])=>count(c)>0).map(([c,l],k)=>`<button type="button" data-f="${c}" aria-pressed="${c===DEF}"${c===DEF?' class="on"':""}><span class="fl">${l}</span><sup>${count(c)}</sup></button>`).join("");
   $("#sub").after(nav);
-  let cur="all";
+  let cur=DEF;
+  lis.forEach(li=>li.classList.toggle("f-off",li.dataset.cat!==DEF));   // open on Work
   nav.addEventListener("click",e=>{
     const b=e.target.closest("button[data-f]");if(!b||b.dataset.f===cur)return;
     cur=b.dataset.f;
@@ -1921,6 +1923,7 @@ $("#totop").addEventListener("click",e=>{e.preventDefault();lenis?lenis.scrollTo
 let introRunning=false;
 function intro(){
   if(reduce)return;
+  const lis=[...feed.children].filter(li=>!li.classList.contains("f-off"));   // only the cards the filter shows
   introRunning=true;
   const shift=$("#shift"), vw=innerWidth, vh=innerHeight;
   root.classList.add("intro");root.style.overflow="hidden";lenis&&lenis.stop();scrollTo(0,0);
