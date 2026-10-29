@@ -846,9 +846,14 @@ function windowResized() {
   // play mode: a light hint that the clock is real.
   // Until someone touches it, the drum gives a small turn every few seconds
   // (like a nudge from an invisible hand) and floats back on its own.
+  // the clock starts slightly blurred under the hint, and sharpens on the first touch
+  const blurCss = document.createElement('style');
+  blurCss.textContent = 'canvas{filter:blur(1.2px);transition:filter .7s ease}html.touched canvas{filter:none}';
+  document.head.appendChild(blurCss);
   let touched = false;
   const firstTouch = () => {
     if (touched) return; touched = true;
+    document.documentElement.classList.add('touched');
     try { parent.postMessage({ clk: 'touched' }, '*'); } catch (_) {}
   };
   ['pointerdown', 'touchstart', 'wheel'].forEach(t => window.addEventListener(t, firstTouch, { passive: true }));

@@ -897,13 +897,16 @@ html body .cs .sec-the-globe .cz-pp li::before{width:26px!important;height:26px!
 .dev-p15.one{width:min(56%,300px)}
 .dev-p15::after{content:"";position:absolute;inset:0;background:url(case/phone-frame-15.png) center/100% 100% no-repeat;pointer-events:none}
 .clk-f img{display:block;width:100%;height:auto}
-.clk-hint{display:flex;align-items:center;justify-content:center;gap:10px;margin:clamp(16px,2vw,26px) 0 0;font-size:13px;letter-spacing:-.005em;color:var(--muted);transition:opacity .8s var(--ease)}
+.clk-hint{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;background:rgba(255,255,255,.18);transition:opacity .7s var(--ease)}
+:root[data-theme="dark"] .clk-hint{background:rgba(0,0,0,.3)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .clk-hint{background:rgba(0,0,0,.3)}}
+.clk-hint p{display:flex;align-items:center;gap:12px;margin:0;padding:10px 18px;border-radius:999px;background:var(--bg);color:var(--fg);font-size:13px;letter-spacing:-.005em;box-shadow:0 10px 30px -14px rgba(0,0,0,.35);text-align:center}
 .clk-hint.off{opacity:0}
 .clk-hint .ch-m{display:none}
 @media (hover:none){.clk-hint .ch-d{display:none}.clk-hint .ch-m{display:inline}}
 .ch-ic{position:relative;width:34px;height:16px;flex:none}
 .ch-ic::before{content:"";position:absolute;left:4px;right:4px;top:50%;height:1px;background:currentColor;opacity:.35}
-.ch-ic i{position:absolute;top:50%;left:0;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;border:1.5px solid currentColor;background:var(--pn);animation:chDrag 2.6s cubic-bezier(.45,0,.25,1) infinite}
+.ch-ic i{position:absolute;top:50%;left:0;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;border:1.5px solid currentColor;background:var(--bg);animation:chDrag 2.6s cubic-bezier(.45,0,.25,1) infinite}
 @keyframes chDrag{0%,12%{transform:translateX(0)}50%,62%{transform:translateX(25px)}100%{transform:translateX(0)}}
 @media (prefers-reduced-motion:reduce){.ch-ic i{animation:none}}
 .clk-play{position:relative;aspect-ratio:16/10;background:#fff}
@@ -1805,7 +1808,7 @@ const pad=n=>String(n).padStart(2,"0");
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const root=document.documentElement;
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
-addEventListener("message",e=>{if(e.data&&e.data.clk==="touched")document.querySelectorAll(".clk-hint").forEach(h=>h.classList.add("off"))});
+addEventListener("message",e=>{if(e.data&&e.data.clk==="touched")document.querySelectorAll(".clk-hint").forEach(h=>{h.classList.add("off");h.parentNode.classList.add("used")})});
 const media=(id,label,cls="",style="",eager=false)=>`<div class="media ${cls}" style="${style}" data-label="${esc(label)}"><img src="${IMG(id)}" alt="${esc(label)}" ${eager?"":'loading="lazy"'} onerror="this.remove()"></div>`;
 
 /* ---------- theme ---------- */
@@ -2379,7 +2382,7 @@ clock:{sec:[
  {k:"Light & dark",h:"The sky picks the theme",b:"When it’s daytime in the city you pick, the clock turns light, and at night it goes dark. Below, the clock keeps switching between a city where it’s day and one where it’s night, so you can watch the rings turn and the theme follow. You can still switch it yourself, and your choice stays until you change cities or the sun comes up or goes down there.",
   blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr clk-play clk-ldp"><iframe src="clock-panel.html?mode=ld" title="The clock switching between day and night cities" loading="lazy" tabindex="-1" aria-hidden="true"></iframe></div></div></figure>`}]},
  {k:"Try it",h:"Turn it, flatten it, travel with it",b:"This is the real clock running inside the page. Drag it to change the angle, switch views and themes, or pick another city at the bottom.",
-  blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr clk-play"><iframe src="clock-panel.html?mode=play" title="Drum World Clock" loading="lazy"></iframe></div></div><p class="clk-hint" aria-hidden="true"><span class="ch-ic"><i></i></span><span class="ch-d">Drag to turn it · Double click to flatten · Pick a city below</span><span class="ch-m">Drag to turn it · Double tap to flatten</span></p></figure>`},
+  blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr clk-play"><iframe src="clock-panel.html?mode=play" title="Drum World Clock" loading="lazy"></iframe><div class="clk-hint" aria-hidden="true"><p><span class="ch-ic"><i></i></span><span class="ch-d">Drag to turn it · Double click to flatten · Pick a city below</span><span class="ch-m">Drag to turn it · Double tap to flatten</span></p></div></div></div></figure>`},
    {t:"cards",cols:4,num:true,items:[
     {h:"Drag",d:"Rotate the clock to see it from any angle. Let go and it floats back."},
     {h:"Scroll or pinch",d:"Zoom in and out. On phones it’s a two finger pinch."},
