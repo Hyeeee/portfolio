@@ -5,15 +5,42 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Drum World Clock</title>
 <meta name="robots" content="noindex">
-<style>html,body{margin:0;overflow:hidden;background:#fff}</style>
+<style>html,body{margin:0;overflow:hidden;background:#fff}canvas{display:block}</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/p5.min.js"></script>
 </head>
 <body>
 <script>
-// Embedded copy of the Drum World Clock for the case study.
-// Same code as the live clock, except: colors follow the portfolio's theme,
-// the page can still scroll over it, and it doesn't ask for your location.
+/*
+  The Drum World Clock, embedded in the case study.
+  It's the same code as the live clock, with a few changes for living inside a page:
+
+  - It always draws a full-size screen (1440 x 900 on wide frames, 390 x 520 on
+    phones) and then shrinks the canvas to fit the frame, so the proportions are
+    exactly the same as the real clock.
+  - ?mode=play  : the interactive version. Colors follow the portfolio's theme,
+                  and the page can still scroll over it.
+  - ?mode=ld    : a self-running demo for the Light & dark section. It keeps only
+                  the header and the clock, and switches between a city where it's
+                  day and a city where it's night, so you can watch the theme follow.
+*/
 const EMBED = true;
+const MODE = new URLSearchParams(location.search).get('mode') || 'play';
+let VW = 1440, VH = 900;
+
+function embedCanvas() {
+  if (MODE === 'ld') { VW = 1100; VH = 760; }
+  else if (window.innerWidth < 560) { VW = 390; VH = 520; }
+  const c = createCanvas(VW, VH);
+  pixelDensity(Math.min(3, Math.max(1, displayDensity() * window.innerWidth / VW)));
+  fitCanvasToWindow();
+  return c;
+}
+// keep the drawing size, only change how big it looks on screen
+function fitCanvasToWindow() {
+  const el = document.querySelector('canvas'); if (!el) return;
+  el.style.width = window.innerWidth + 'px';
+  el.style.height = window.innerHeight + 'px';
+}
 </script>
 <script>
 /*
@@ -162,9 +189,9 @@ class Ring {
 //  SETUP
 // =================================================================
 function setup() {
-  const cnv = createCanvas(windowWidth, windowHeight);
+  const cnv = EMBED ? embedCanvas() : createCanvas(windowWidth, windowHeight);
   // draw at the screen's real sharpness (3x on most phones, 2x on Retina laptops)
-  pixelDensity(constrain(displayDensity(), 2, 3));
+  if (!EMBED) pixelDensity(constrain(displayDensity(), 2, 3));
   // phones: stop the browser from scrolling / zooming the page while you touch the clock
   cnv.style('touch-action', EMBED ? 'pan-y' : 'none');   // embedded: vertical swipes still scroll the page
   canHover = window.matchMedia('(hover: hover)').matches;
@@ -785,21 +812,59 @@ function keyPressed() {
 }
 
 function windowResized() {
+  if (EMBED) { fitCanvasToWindow(); return; }
   resizeCanvas(windowWidth, windowHeight);
 }
 
 </script>
 <script>
-// follow the portfolio's light / dark theme
-let parentDark = null;
-function syncTheme() {
-  let d = false;
-  try { const r = parent.document.documentElement; d = r.dataset.theme ? r.dataset.theme === 'dark' : parent.matchMedia('(prefers-color-scheme: dark)').matches; }
-  catch (_) { d = matchMedia('(prefers-color-scheme: dark)').matches; }
-  if (d !== parentDark) { parentDark = d; setLight(!d); }
-}
-setInterval(syncTheme, 400);
-window.addEventListener('load', () => setTimeout(syncTheme, 50));
+// ---------- embed setup ----------
+(function () {
+  // no tilting with the mouse position (it pushed the clock off center in a small frame)
+  const startNoHover = () => { canHover = false; };
+  window.addEventListener('load', () => setTimeout(startNoHover, 0));
+
+  if (MODE === 'ld') {
+    // only the header and the clock, centered in the frame
+    drawControls = () => {};
+    drawCityList = () => {};
+    const baseLayout = computeLayout;
+    computeLayout = function () {
+      const L = baseLayout();
+      const top = L.head.bottom + 40, bottom = height - 50;
+      L.clock.box = { cx: width / 2, cy: (top + bottom) / 2, w: width - 160, h: bottom - top };
+      L.short = true;          // center the clock in its box
+      L.list.maxScroll = 0;
+      return L;
+    };
+    document.documentElement.style.pointerEvents = 'none';
+
+    // pick one city where it's day and one where it's night, then switch every few seconds
+    const isDay = c => { const h = getTime(c, new Date()).h; return h >= DAY_START && h < DAY_END; };
+    let k = 0;
+    function step() {
+      const day = CITIES.findIndex(isDay), night = CITIES.findIndex(c => !isDay(c));
+      const pair = [day, night].filter(i => i >= 0);
+      if (!pair.length) return;
+      const i = pair[k++ % pair.length];
+      setCity(i);
+      setTimeout(() => setLight(isDay(CITIES[i])), 30);   // the theme follows the sky there
+    }
+    window.addEventListener('load', () => { setTimeout(step, 300); setInterval(step, 3800); });
+    return;
+  }
+
+  // play mode: colors follow the portfolio's light / dark theme
+  let parentDark = null;
+  function syncTheme() {
+    let d = false;
+    try { const r = parent.document.documentElement; d = r.dataset.theme ? r.dataset.theme === 'dark' : parent.matchMedia('(prefers-color-scheme: dark)').matches; }
+    catch (_) { d = matchMedia('(prefers-color-scheme: dark)').matches; }
+    if (d !== parentDark) { parentDark = d; setLight(!d); }
+  }
+  setInterval(syncTheme, 400);
+  window.addEventListener('load', () => setTimeout(syncTheme, 50));
+})();
 </script>
 </body>
 </html>

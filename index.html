@@ -125,6 +125,19 @@ html.intro::-webkit-scrollbar{display:none}
 .feed .media::before{transition:opacity .8s var(--ease)}
 .go .stmt .w>span{transform:none;transition:transform 1.35s var(--out)}
 .go .sub{opacity:1;transform:none;transition:opacity 1s var(--ease) 1s,transform 1.3s var(--out) 1s}
+/* project filter: quiet text buttons, the chosen one in full ink with a hairline under it */
+.flt{display:flex;justify-content:center;flex-wrap:wrap;gap:4px clamp(18px,2.2vw,30px);margin:clamp(56px,7vw,104px) 0 0;position:relative;z-index:5}
+.flt button{position:relative;padding:6px 0 7px;font-family:var(--sans);font-size:13.5px;font-weight:500;letter-spacing:-.015em;color:var(--muted);transition:color .5s var(--ease)}
+.flt button sup{margin-left:3px;font-size:10px;letter-spacing:0;vertical-align:baseline;position:relative;top:-.55em;color:var(--soft);transition:color .5s var(--ease)}
+.flt button::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--fg);transform:scaleX(0);transform-origin:right;transition:transform .7s var(--out)}
+.flt button:hover{color:var(--fg)}
+.flt button.on{color:var(--fg)}
+.flt button.on sup{color:var(--muted)}
+.flt button.on::after{transform:scaleX(1);transform-origin:left}
+.intro .flt{opacity:0;transform:translateY(14px)}
+.go .flt{opacity:1;transform:none;transition:opacity 1s var(--ease) 1.25s,transform 1.3s var(--out) 1.25s}
+.feed>li.f-off{display:none}
+.hero:has(.flt){padding-bottom:clamp(40px,4.4vw,72px)}
 .intro .nav{transform:translateY(-260%)}
 .go .nav{transform:none}
 
@@ -864,6 +877,19 @@ html body .cs .sec-the-globe .cz-pp li::before{width:26px!important;height:26px!
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .thm-d{display:block!important}:root:not([data-theme="light"]) .thm-l{display:none!important}}
 .atm-ld{position:relative}
 .clk-f{padding:0!important;overflow:hidden}
+.clk-c{display:flex;align-items:center;justify-content:center;padding:clamp(28px,4vw,56px) clamp(16px,3vw,40px)!important;min-height:clamp(160px,18vw,240px)}
+.clk-c img{display:block;max-width:100%;height:auto;width:auto;zoom:.5}
+.clk-c.clk-wide img{zoom:1;max-height:none;width:100%;max-width:640px}
+.clk-c.clk-wide img[src*="swipe"]{max-width:480px}
+.clk-c figcaption{position:absolute;left:0;right:0;bottom:14px}
+.clk-c.clk-wide{position:relative;flex-direction:column;padding-bottom:clamp(40px,5vw,60px)!important}
+.clk-ld{position:relative;aspect-ratio:1100/760;padding:0!important;overflow:hidden}
+.clk-ld iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none}
+.clk-phs{display:flex;justify-content:center;align-items:flex-start;gap:clamp(12px,3.4vw,48px);padding:clamp(32px,5vw,64px) 16px!important}
+.dev-p15{position:relative;flex:none;width:min(28%,236px);aspect-ratio:710/1474;filter:drop-shadow(0 18px 22px rgba(0,0,0,.18))}
+.dev-p15 .scr{position:absolute;left:4.085%;top:2.103%;width:91.83%;height:96%;border-radius:15.3%/7.07%;overflow:hidden;background:#000}
+.dev-p15 .scr img{display:block;width:100%;height:100%;object-fit:cover}
+.dev-p15::after{content:"";position:absolute;inset:0;background:url(case/phone-frame-15.png) center/100% 100% no-repeat;pointer-events:none}
 .clk-f img{display:block;width:100%;height:auto}
 .clk-play{position:relative;aspect-ratio:16/10;background:#fff}
 :root[data-theme="dark"] .clk-play{background:#000}
@@ -1842,11 +1868,47 @@ $("#feed").innerHTML=ITEMS.map((it,i)=>{
   if(it.type==="lof"){const A=art(i,"lof");return `<li><button class="tile" type="button" data-lof>
       <div class="media" data-label="Lof Archive"><img class="art" src="${A.img}" alt="">${veil(`<span>Lof</span><span>2019</span>`,"Before screens, leather. Twelve cases, purses and ink-on-leather pieces, cut, dyed and stitched by hand.","See all 12 objects",A.fog)}</div>
       <span class="cap"><span class="t">Lof Archive</span><span class="y num">${ARCHIVE.length} objects · 2019</span></span></button></li>`}
-  const p=it.p, A=art(i);return `<li class="${FULL.has(p.slug)?'full ':WIDE.has(p.slug)?'wide ':''}${LIFE.has(p.slug)?'ph':'mk'}" style="--fp:${FOCUS[p.slug]||'50% 50%'}"><a class="tile" href="#${p.slug}" data-case="${p.slug}">
+  const p=it.p, A=art(i);return `<li data-cat="${FCAT(p)}" class="${FULL.has(p.slug)?'full ':WIDE.has(p.slug)?'wide ':''}${LIFE.has(p.slug)?'ph':'mk'}" style="--fp:${FOCUS[p.slug]||'50% 50%'}"><a class="tile" href="#${p.slug}" data-case="${p.slug}">
       <div class="media" data-label="${esc(p.title)}"><img class="art" src="${pic(p.slug)}" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}" data-fb="${i}" alt="">${MOTION[p.slug]&&!reduce?`<iframe class="am" src="${MOTION[p.slug]}" title="${esc(p.title)} motion preview" tabindex="-1" aria-hidden="true"></iframe>`:''}${veilCase(p,pic(p.slug)).replace('<img class="fog"',`<img class="fog" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}"`)}</div>
       <span class="cap"><span class="t">${p.title}</span><span class="y num">${p.client} · ${p.year}</span><span class="l">${LINE[p.slug]||p.sum}</span></span></a></li>`}).join("");
 
 const feed=$("#feed"), lis=[...feed.children];
+
+/* ---------- filter: all · vibe coding · work · concepts ---------- */
+// side projects were vibe coded with AI, The VC and PFCT were real company work in Korea,
+// everything else is a concept, a hackathon or self-initiated
+function FCAT(p){return {side:"ai",vc:"work",pf:"work"}[p.group]||"concept"}
+const FLT=[["all","All"],["ai","Vibe coding"],["work","Work"],["concept","Concepts"]];
+(()=>{
+  const count=c=>c==="all"?lis.length:lis.filter(li=>li.dataset.cat===c).length;
+  const nav=document.createElement("nav");nav.className="flt";nav.id="flt";nav.setAttribute("aria-label","Filter projects");
+  nav.innerHTML=FLT.filter(([c])=>count(c)>0).map(([c,l],k)=>`<button type="button" data-f="${c}" aria-pressed="${k===0}"${k===0?' class="on"':""}>${l}<sup class="num">${count(c)}</sup></button>`).join("");
+  $("#sub").after(nav);
+  let cur="all";
+  nav.addEventListener("click",e=>{
+    const b=e.target.closest("button[data-f]");if(!b||b.dataset.f===cur)return;
+    cur=b.dataset.f;
+    nav.querySelectorAll("button").forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-pressed",on)});
+    applyFilter(cur);
+  });
+  function applyFilter(c){
+    const show=li=>c==="all"||li.dataset.cat===c;
+    const leaving=lis.filter(li=>!li.classList.contains("f-off")&&!show(li));
+    const run=()=>{
+      // FLIP: remember where every visible card is, change the grid, then glide them into place
+      const first=new Map(lis.map(li=>[li,li.classList.contains("f-off")?null:li.getBoundingClientRect()]));
+      lis.forEach(li=>{li.classList.toggle("f-off",!show(li));li.style.opacity=""});
+      if(reduce)return;
+      lis.forEach((li,k)=>{if(li.classList.contains("f-off"))return;const a=first.get(li),b=li.getBoundingClientRect();
+        if(!a){li.animate([{opacity:0,transform:"translateY(28px)"},{opacity:1,transform:"none"}],{duration:900,delay:60+k*35,easing:"cubic-bezier(.16,1,.3,1)",fill:"backwards"});return}
+        const dx=a.left-b.left,dy=a.top-b.top;
+        if(Math.abs(dx)+Math.abs(dy)>1)li.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:"none"}],{duration:1000,easing:"cubic-bezier(.16,1,.3,1)"})});
+    };
+    if(reduce||!leaving.length)return run();
+    leaving.forEach(li=>li.animate([{opacity:1,transform:"none"},{opacity:0,transform:"scale(.98)"}],{duration:240,easing:"ease-in",fill:"forwards"}));
+    setTimeout(()=>{leaving.forEach(li=>li.getAnimations().forEach(a=>a.cancel()));run()},230);
+  }
+})();
 syncArt();try{sysDark.addEventListener('change',syncArt)}catch(_){}
 feed.querySelectorAll("img[data-fb]").forEach(im=>{im.onerror=()=>{im.onerror=null;const A=art(+im.dataset.fb);im.src=A.img;const f=im.parentNode.querySelector(".fog");if(f)f.src=A.fog}});
 /* ---------- smooth scroll ---------- */
@@ -2288,22 +2350,28 @@ clock:{sec:[
    {h:"Real time",d:"Every ring follows the real hour, minute and second, in whichever city you pick."}]}]},
  {k:"The idea",h:"Taking a clock apart",b:["I wanted to take a clock apart into its pieces, hours, minutes and seconds, and turn it into an interactive tool where you can change the perspective and the mode.","So each unit became its own ring, stacked on top of the others like a drum. Instead of hands moving around a face, the rings turn, and the current time always ends up at the front."],
   blocks:[{t:"html",html:`<figure class="pn clk-f"><img class="thm-l" src="case/clock/parts.jpg" alt="The clock split into four rings: hours, hour marks, minutes and seconds" loading="lazy"><img class="thm-d" src="case/clock/parts-d.jpg" alt="The clock split into four rings: hours, hour marks, minutes and seconds" loading="lazy"></figure>`}]},
- {k:"Versions with Claude",h:"From LED pixels to thin lines",b:["I started by describing the assignment to Claude, and the first draft was a pixel clock made of glowing 3D blocks. It worked, but it looked like every other LED clock.","Then I found a reference of a rotating dial, with nothing but white lines and numbers on black, and asked Claude to rebuild it in that direction. From there it was a lot of small rounds. I looked at each version, pointed out what felt off, and kept going."],
-  blocks:[{t:"html",html:`<div class="atm-v">${[["v1","Pixel blocks","The first draft. The time was spelled out in colorful 3D blocks you could knock around with the mouse."],["v2","Black and white rings","After the reference, I dropped the color and turned the hours, minutes and seconds into stacked rings."],["v3","Lining up the present","The current hour, minute and second now sit on one line at the front, and the numbers run clockwise."],["v4","Phones and the last details","Text buttons, a swipeable city row, and light or dark depending on the time of day in each city."]].map(([f,h,d])=>`<figure><div class="pn atm-vc">${f==="v4"?`<img class="thm-l" src="case/clock/v4.jpg" alt="${h}" loading="lazy"><img class="thm-d" src="case/clock/v4-d.jpg" alt="${h}" loading="lazy">`:`<img src="case/clock/${f}.jpg" alt="${h}" loading="lazy">`}</div><h3>${h}</h3><p>${d}</p></figure>`).join("")}</div>`}]},
  {k:"Two views",h:"Drum and dial",b:"The same four rings can be read in two ways. You can switch between them with the buttons, or just double click the clock.",
   blocks:[{t:"html",html:`<div class="atm-m">${[["drum","Drum","The rings are stacked in 3D and seen from a slight angle. The hour is on top and the seconds are at the bottom, and the time you’re looking at is the line at the front."],["dial","Dial","The camera moves straight above and the rings flatten into a perfect circle, so it reads like a classic watch face again."]].map(([f,h,d])=>`<figure><div class="pn clk-f"><img class="thm-l" src="case/clock/${f}.jpg" alt="${h} view" loading="lazy"><img class="thm-d" src="case/clock/${f}-d.jpg" alt="${h} view" loading="lazy"></div><h3>${h}</h3><p>${d}</p></figure>`).join("")}</div>`}]},
+ {k:"Around the clock",h:"Just enough around it",b:"I kept everything around the clock small and quiet, in one typeface, so the rings stay the main thing on the screen.",
+  blocks:[{t:"html",html:`<div class="atm-m">${[["header","Where and when","The city you’re looking at, a big digital time for a quick read, and how far it is from New York with today’s date."],["modes","Two simple switches","DRUM or DIAL, and DARK or LIGHT. The one that’s on is bright and underlined, so you can tell at a glance what you’re looking at."]].map(([f,h,d])=>`<figure><div class="pn clk-c"><img class="thm-l" src="case/clock/${f}.png" alt="${h}" loading="lazy"><img class="thm-d" src="case/clock/${f}-d.png" alt="${h}" loading="lazy"></div><h3>${h}</h3><p>${d}</p></figure>`).join("")}</div>`}]},
+ {k:"World cities",h:"Every city, measured from New York",b:["The clock opens on wherever you are, marked with a small dot. Next to it are Seoul, then cities in Europe, the Americas and Australia, then a few more in other time zones. I made sure no two cities share the same time, so every one is worth checking.","Since I live in New York, every city shows how far it is from here, like EDT +13 for Seoul. In winter the label changes to EST on its own, and every city’s daylight saving time is handled by the browser."],
+  blocks:[{t:"html",html:`<figure class="pn clk-c clk-wide"><img class="thm-l" src="case/clock/cities.png" alt="The city row" loading="lazy"><img class="thm-d" src="case/clock/cities-d.png" alt="The city row" loading="lazy"></figure>`},
+   {t:"table",head:["","What it shows","Why"],rows:[
+    ["Your city","● New York","The browser knows your time zone, and with permission it also finds your city name."],
+    ["Time difference","EDT +13, EST −3","Easier to think in hours from home than in GMT."],
+    ["Day or night","Light or dark","From 6 am to 6 pm in that city the clock turns light, the rest of the day it’s dark."]]}]},
+ {k:"Light & dark",h:"The sky picks the theme",b:"When it’s daytime in the city you pick, the clock turns light, and at night it goes dark. Below, the clock keeps switching between a city where it’s day and one where it’s night, so you can watch the rings turn and the theme follow. You can still switch it yourself, and your choice stays until you change cities or the sun comes up or goes down there.",
+  blocks:[{t:"html",html:`<figure class="pn clk-ld"><iframe src="clock-panel.html?mode=ld" title="The clock switching between day and night cities" loading="lazy" tabindex="-1" aria-hidden="true"></iframe></figure>`}]},
  {k:"Try it",h:"Turn it, flatten it, travel with it",b:"This is the real clock running inside the page. Drag it to change the angle, switch views and themes, or pick another city at the bottom.",
-  blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr clk-play"><iframe src="clock-panel.html" title="Drum World Clock" loading="lazy"></iframe></div></div></figure>`},
+  blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr clk-play"><iframe src="clock-panel.html?mode=play" title="Drum World Clock" loading="lazy"></iframe></div></div></figure>`},
    {t:"cards",cols:4,num:true,items:[
     {h:"Drag",d:"Rotate the clock to see it from any angle. Let go and it floats back."},
     {h:"Scroll or pinch",d:"Zoom in and out. On phones it’s a two finger pinch."},
     {h:"Double click",d:"Flatten the drum into a dial and back. On phones, double tap."},
     {h:"Pick a city",d:"Tap any city in the row, and every ring turns to its time."}]}]},
- {k:"World cities",h:"Every city, measured from New York",b:["The clock opens on wherever you are, marked with a small dot. Next to it are Seoul, then cities in Europe, the Americas and Australia, then a few more in other time zones. I made sure no two cities share the same time, so every one is worth checking.","Since I live in New York, every city shows how far it is from here, like EDT +13 for Seoul. In winter the label changes to EST on its own, and every city’s daylight saving time is handled by the browser."],
-  blocks:[{t:"table",head:["","What it shows","Why"],rows:[
-    ["Your city","● New York","The browser knows your time zone, and with permission it also finds your city name."],
-    ["Time difference","EDT +13, EST −3","Easier to think in hours from home than in GMT."],
-    ["Day or night","Light or dark","From 6 am to 6 pm in that city the clock turns light, the rest of the day it’s dark."]]}]},
+ {k:"Mobile",h:"Made for phones too",b:"On a phone, the clock sits in the middle of the screen and gets as big as it can. All the cities live in one row that you can swipe sideways, with a soft fade at the edge so you know there’s more. You rotate with one finger and zoom with two.",
+  blocks:[{t:"html",html:`<figure class="pn clk-phs"><div class="dev-p15"><div class="scr"><img class="thm-l" src="case/clock/ph-drum.jpg" alt="" loading="lazy"><img class="thm-d" src="case/clock/ph-drum-d.jpg" alt="" loading="lazy"></div></div><div class="dev-p15"><div class="scr"><img class="thm-l" src="case/clock/ph-dial.jpg" alt="" loading="lazy"><img class="thm-d" src="case/clock/ph-dial-d.jpg" alt="" loading="lazy"></div></div><div class="dev-p15"><div class="scr"><img class="thm-l" src="case/clock/ph-list.jpg" alt="" loading="lazy"><img class="thm-d" src="case/clock/ph-list-d.jpg" alt="" loading="lazy"></div></div></figure>`},
+   {t:"html",html:`<figure class="pn clk-c clk-wide"><img class="thm-l" src="case/clock/swipe.png" alt="The swipeable city row on a phone" loading="lazy"><img class="thm-d" src="case/clock/swipe-d.png" alt="The swipeable city row on a phone" loading="lazy"><figcaption>The city row on a phone, swiped halfway</figcaption></figure>`}]},
  {k:"Small details",h:"Things I kept fixing",b:"Most of the work was in small things that felt slightly off. Each one was a short back and forth with Claude, where I described what I saw and we fixed it together.",
   blocks:[{t:"table",head:["What felt off","What I changed"],rows:[
     ["The current hour sat a little to the side of the minutes and seconds","Each ring now snaps to whole numbers, so the present always lines up in one line"],
@@ -2312,10 +2380,6 @@ clock:{sec:[
     ["The highlighted tick ran into its number","The current tick still grows, but it stops before reaching the label"],
     ["The clock looked like it was sinking","It now measures what is actually drawn, sits right under the header on desktop and in the middle on phones"],
     ["The rest of the clock competed with the time","Everything that isn’t the current time is a little softer, so the white stands out"]]}]},
- {k:"Light & dark",h:"The sky picks the theme",b:"When it’s daytime in the city you pick, the clock turns light, and at night it goes dark. You can still switch it yourself, and your choice stays until you change cities or the sun comes up or goes down there.",
-  blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr atm-ld"><img src="case/clock/ld-l.jpg" alt="New York in the morning, in light mode" loading="lazy"><img class="dk" src="case/clock/ld-d.jpg" alt="Seoul at night, in dark mode" loading="lazy"></div></div></figure>`}]},
- {k:"Mobile",h:"Made for phones too",b:"On a phone, the clock sits in the middle of the screen and gets as big as it can. All the cities live in one row that you can swipe sideways, and you rotate with one finger and zoom with two.",
-  blocks:[{t:"html",html:`<figure class="pn clk-f"><img class="thm-l" src="case/clock/mobile.jpg" alt="The clock on three phone screens" loading="lazy"><img class="thm-d" src="case/clock/mobile-d.jpg" alt="The clock on three phone screens" loading="lazy"></figure>`}]},
  {k:"Under the hood",h:"How the code works",b:"I asked Claude to explain every part in plain words and to comment the code, so I could follow what each piece does.",
   blocks:[{t:"cards",cols:2,items:[
    {h:"A Ring class",d:"Each ring knows how many marks it has, how big it is, where it sits in the drum and in the dial, and how far it has turned. It eases toward the current time instead of jumping."},
@@ -2324,7 +2388,7 @@ clock:{sec:[
    {h:"Real time zones",d:"The browser’s built in time zone tools give the exact time in each city, including daylight saving, without any server."}]}]},
  {k:"Reflections",h:"What I learned, and what I’d improve",blocks:[{t:"close",lh:"What I learned",nh:"What I’d improve",
   learned:[
-   ["References changed the direction","The first draft only became interesting once I showed Claude a reference instead of describing a clock in words."],
+   ["References changed the direction","The clock only became interesting once I showed Claude a reference instead of describing a clock in words."],
    ["Small details made it feel finished","Lining up the present, the direction of the numbers and the spacing took longer than the 3D itself, and mattered more."],
    ["I understood the code by asking","Asking Claude to explain each part made the assignment’s loops and class actually make sense to me."]],
   next:[
