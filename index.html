@@ -863,6 +863,13 @@ html body .cs .sec-the-globe .cz-pp li::before{width:26px!important;height:26px!
 :root[data-theme="dark"] .thm-d{display:block!important}:root[data-theme="dark"] .thm-l{display:none!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .thm-d{display:block!important}:root:not([data-theme="light"]) .thm-l{display:none!important}}
 .atm-ld{position:relative}
+.clk-f{padding:0!important;overflow:hidden}
+.clk-f img{display:block;width:100%;height:auto}
+.clk-play{position:relative;aspect-ratio:16/10;background:#fff}
+:root[data-theme="dark"] .clk-play{background:#000}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .clk-play{background:#000}}
+.clk-play iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+@media (max-width:700px){.clk-play{aspect-ratio:3/4}}
 .atm-ld .dk{position:absolute;inset:0;width:100%;height:100%;animation:atmLD 6s ease-in-out infinite}
 @keyframes atmLD{0%,42%{opacity:0}50%,92%{opacity:1}100%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.atm-ld .dk{animation:none;opacity:1}}
@@ -1626,6 +1633,11 @@ const PROJECTS = [
   vsum:"What if checking the weather could also be a little moment to check in with yourself? I designed Atmos and built it with Claude, so you can see the weather and leave a short mood on a globe everyone shares.",
   intro:"What if checking the weather could also be a little moment to check in with yourself? That question turned into Atmos, a small side project where weather visualization and mood journaling live in the same place. I designed it and built it by vibe coding with Claude, and along the way I got to play a lot with typography, motion and live weather data to explore the idea of “the weather inside you.” It’s still a work in progress, and I keep changing things.",
   problem:"",hl:[],stats:null,imgs:[]},
+ {slug:"clock",title:"Drum World Clock",client:"SVA",group:"side",disc:"Creative Coding",year:"2026",time:"Oct 2026",role:"Designer",methods:"Vibe coding, Creative coding, p5.js",
+  sum:"A world clock taken apart into rings, which you can turn, flatten and take to any city.",
+  vsum:"I wanted to take a clock apart into its pieces, hours, minutes and seconds, and turn it into an interactive tool where you can change the perspective and the mode. I built it with p5.js and Claude for a creative coding class at SVA.",
+  intro:"For a creative coding assignment at SVA, I wanted to take a clock apart. Instead of hands on one face, I separated the hours, minutes and seconds into their own rings and stacked them like a drum. Each ring turns on its own, so the current time always lines up at the front. Then I made it interactive, so you can change the perspective, flatten it into a dial, switch between light and dark, and check the time in cities around the world. I built it with p5.js by vibe coding with Claude.",
+  problem:"",hl:[],stats:null,imgs:[]},
  {slug:"homepage",title:"Homepage",client:"The VC",group:"vc",disc:"Product Design",year:"2024",time:"Mar – May 2024",role:"Product Designer",methods:"UX Research, Prototyping, Testing",
   sum:"A modular homepage that recommends key content based on user behavior and interest tags.",
   vsum:"I redesigned the homepage of The VC, a startup intelligence platform in South Korea, simplifying an overwhelming layout so users could reach profiles, investment data and trends faster.",
@@ -1781,9 +1793,9 @@ const RATIO=["4/5","1/1","4/5","3/4","4/3","2/3","1/1","4/5","3/4","4/3","1/1","
 const HIDDEN=["referral-flow","scooter-sharing","recipe-wellness","collections","the-vc-design-system","kyc-verification"];
 const SHOWN=PROJECTS.filter(p=>!HIDDEN.includes(p.slug));
 /* feed rows: M+P · P+M · M+P · P+M — real photos mixed with clean mockups */
-const ORDER=["atmos","homepage","grants","unsecured-loan","mortgage","pf-design-system","tech-conference","video-conferencing","stock-trading"];
-const FULL=new Set(["atmos"]);
-const WIDE=new Set(["grants","unsecured-loan","tech-conference","video-conferencing"]);
+const ORDER=["atmos","clock","homepage","grants","unsecured-loan","mortgage","pf-design-system","tech-conference","video-conferencing","stock-trading"];
+const FULL=new Set([]);
+const WIDE=new Set(["atmos","grants","unsecured-loan","tech-conference","video-conferencing"]);
 const LIFE=new Set(["homepage","mortgage","tech-conference","stock-trading"]);
 const SEQ=ORDER.map(s=>SHOWN.find(p=>p.slug===s)).filter(Boolean).concat(SHOWN.filter(p=>!ORDER.includes(p.slug)));
 const ITEMS=ORDER.map(s=>SHOWN.find(p=>p.slug===s)).filter(Boolean).concat(SHOWN.filter(p=>!ORDER.includes(p.slug))).map(p=>({type:"case",p}));
@@ -1815,13 +1827,15 @@ const veil=(k,d,go,fog)=>`<div class="veil" aria-hidden="true"><img class="fog" 
 /* hover note for projects: role + timeline up top, the longer story in the middle */
 const veilCase=(p,fog)=>`<div class="veil" aria-hidden="true"><img class="fog" src="${fog}" alt=""><dl class="vm"><div><dt>Role</dt><dd>${p.role}</dd></div><div><dt>Timeline</dt><dd>${p.time}</dd></div><div><dt>Type</dt><dd>${p.disc}</dd></div></dl><p class="vd">${p.vsum||p.intro||p.sum}</p><span class="vgo">Open case <svg class="arw" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h8M5.8 1.8 9 5 5.8 8.2"/></svg></span></div>`;
 /* one short line under each card */
-const LINE={"atmos":"Weather and mood, built with Claude.","homepage":"A homepage that recommends by interest.","grants":"Scattered government funding, made browsable.","collections":"Thematic lists for tracking startup signals.","the-vc-design-system":"One shared language for The VC’s product.","unsecured-loan":"Spreading risk across many small loans.","tech-conference":"A conference site that speaks to developers.","mortgage":"A mortgage without paperwork or branch visits.","pf-design-system":"One component library for web, iOS and Android.","kyc-verification":"Identity checks with fewer steps.","stock-trading":"A friendlier first step into investing.","video-conferencing":"WECO — video calls everyone can join. Final Winner.","recipe-wellness":"Recipes and habits for everyday wellness."};
+const LINE={"atmos":"Weather and mood, built with Claude.","clock":"A clock taken apart into rings.","homepage":"A homepage that recommends by interest.","grants":"Scattered government funding, made browsable.","collections":"Thematic lists for tracking startup signals.","the-vc-design-system":"One shared language for The VC’s product.","unsecured-loan":"Spreading risk across many small loans.","tech-conference":"A conference site that speaks to developers.","mortgage":"A mortgage without paperwork or branch visits.","pf-design-system":"One component library for web, iOS and Android.","kyc-verification":"Identity checks with fewer steps.","stock-trading":"A friendlier first step into investing.","video-conferencing":"WECO — video calls everyone can join. Final Winner.","recipe-wellness":"Recipes and habits for everyday wellness."};
 const THUMB={"unsecured-loan":"unsecured-loan-3"};
 const pic=s=>LIFE.has(s)?`shots/${s}.jpg`:`mock/${THUMB[s]||s}.jpg`;
 /* mockups have a dark-card twin; photos keep their own light */
-const DARKMOCK=new Set(["atmos","grants","unsecured-loan","pf-design-system","video-conferencing"]);
+const DARKMOCK=new Set(["atmos","clock","grants","unsecured-loan","pf-design-system","video-conferencing"]);
 const DARKSHOT=new Set([]);
 const picD=s=>DARKSHOT.has(s)?`shots-dark/${s}.jpg`:DARKMOCK.has(s)&&!LIFE.has(s)?`mock-dark/${THUMB[s]||s}.jpg`:pic(s);
+/* live motion thumbnails (iframes over the still image) */
+const MOTION={"atmos":"atmos-motion.html","clock":"clock-motion.html"};
 /* where to keep the subject when a photo is cropped to a landscape card on phones */
 const FOCUS={"homepage":"55% 46%","mortgage":"52% 40%","stock-trading":"45% 32%","tech-conference":"60% 50%"};
 $("#feed").innerHTML=ITEMS.map((it,i)=>{
@@ -1829,7 +1843,7 @@ $("#feed").innerHTML=ITEMS.map((it,i)=>{
       <div class="media" data-label="Lof Archive"><img class="art" src="${A.img}" alt="">${veil(`<span>Lof</span><span>2019</span>`,"Before screens, leather. Twelve cases, purses and ink-on-leather pieces, cut, dyed and stitched by hand.","See all 12 objects",A.fog)}</div>
       <span class="cap"><span class="t">Lof Archive</span><span class="y num">${ARCHIVE.length} objects · 2019</span></span></button></li>`}
   const p=it.p, A=art(i);return `<li class="${FULL.has(p.slug)?'full ':WIDE.has(p.slug)?'wide ':''}${LIFE.has(p.slug)?'ph':'mk'}" style="--fp:${FOCUS[p.slug]||'50% 50%'}"><a class="tile" href="#${p.slug}" data-case="${p.slug}">
-      <div class="media" data-label="${esc(p.title)}"><img class="art" src="${pic(p.slug)}" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}" data-fb="${i}" alt="">${p.slug==="atmos"&&!reduce?'<iframe class="am" src="atmos-motion.html" title="Atmos motion preview" tabindex="-1" aria-hidden="true"></iframe>':''}${veilCase(p,pic(p.slug)).replace('<img class="fog"',`<img class="fog" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}"`)}</div>
+      <div class="media" data-label="${esc(p.title)}"><img class="art" src="${pic(p.slug)}" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}" data-fb="${i}" alt="">${MOTION[p.slug]&&!reduce?`<iframe class="am" src="${MOTION[p.slug]}" title="${esc(p.title)} motion preview" tabindex="-1" aria-hidden="true"></iframe>`:''}${veilCase(p,pic(p.slug)).replace('<img class="fog"',`<img class="fog" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}"`)}</div>
       <span class="cap"><span class="t">${p.title}</span><span class="y num">${p.client} · ${p.year}</span><span class="l">${LINE[p.slug]||p.sum}</span></span></a></li>`}).join("");
 
 const feed=$("#feed"), lis=[...feed.children];
@@ -2266,6 +2280,58 @@ atmos:{sec:[
    ["Explain the globe sooner","New visitors don’t always realize they can tap the numbers, so a short hint the first time would help."],
    ["Show my own pattern","Seeing my moods next to the weather over a few weeks would turn single check ins into real reflection."],
    ["Bring people back","A gentle daily reminder around the time someone usually checks the weather."]]}]}]},
+clock:{sec:[
+ {k:"The brief",h:"A clock made of loops",b:["The assignment for my creative coding class at SVA was to build a visual clock in p5.js. It had to show hours, minutes and seconds, update in real time, use nested loops and organize the code with at least one class.","Most clocks in class turned into pixel grids or numbers. I wanted mine to feel more like an object you could hold and turn."],
+  blocks:[{t:"cards",cols:3,items:[
+   {h:"Nested loops",d:"An outer loop goes through every ring, and an inner loop walks around each one to draw its ticks and numbers."},
+   {h:"One class",d:"A <code>Ring</code> class keeps each ring’s size, height, rotation and drawing in one place."},
+   {h:"Real time",d:"Every ring follows the real hour, minute and second, in whichever city you pick."}]}]},
+ {k:"The idea",h:"Taking a clock apart",b:["I wanted to take a clock apart into its pieces, hours, minutes and seconds, and turn it into an interactive tool where you can change the perspective and the mode.","So each unit became its own ring, stacked on top of the others like a drum. Instead of hands moving around a face, the rings turn, and the current time always ends up at the front."],
+  blocks:[{t:"html",html:`<figure class="pn clk-f"><img class="thm-l" src="case/clock/parts.jpg" alt="The clock split into four rings: hours, hour marks, minutes and seconds" loading="lazy"><img class="thm-d" src="case/clock/parts-d.jpg" alt="The clock split into four rings: hours, hour marks, minutes and seconds" loading="lazy"></figure>`}]},
+ {k:"Versions with Claude",h:"From LED pixels to thin lines",b:["I started by describing the assignment to Claude, and the first draft was a pixel clock made of glowing 3D blocks. It worked, but it looked like every other LED clock.","Then I found a reference of a rotating dial, with nothing but white lines and numbers on black, and asked Claude to rebuild it in that direction. From there it was a lot of small rounds. I looked at each version, pointed out what felt off, and kept going."],
+  blocks:[{t:"html",html:`<div class="atm-v">${[["v1","Pixel blocks","The first draft. The time was spelled out in colorful 3D blocks you could knock around with the mouse."],["v2","Black and white rings","After the reference, I dropped the color and turned the hours, minutes and seconds into stacked rings."],["v3","Lining up the present","The current hour, minute and second now sit on one line at the front, and the numbers run clockwise."],["v4","Phones and the last details","Text buttons, a swipeable city row, and light or dark depending on the time of day in each city."]].map(([f,h,d])=>`<figure><div class="pn atm-vc">${f==="v4"?`<img class="thm-l" src="case/clock/v4.jpg" alt="${h}" loading="lazy"><img class="thm-d" src="case/clock/v4-d.jpg" alt="${h}" loading="lazy">`:`<img src="case/clock/${f}.jpg" alt="${h}" loading="lazy">`}</div><h3>${h}</h3><p>${d}</p></figure>`).join("")}</div>`}]},
+ {k:"Two views",h:"Drum and dial",b:"The same four rings can be read in two ways. You can switch between them with the buttons, or just double click the clock.",
+  blocks:[{t:"html",html:`<div class="atm-m">${[["drum","Drum","The rings are stacked in 3D and seen from a slight angle. The hour is on top and the seconds are at the bottom, and the time you’re looking at is the line at the front."],["dial","Dial","The camera moves straight above and the rings flatten into a perfect circle, so it reads like a classic watch face again."]].map(([f,h,d])=>`<figure><div class="pn clk-f"><img class="thm-l" src="case/clock/${f}.jpg" alt="${h} view" loading="lazy"><img class="thm-d" src="case/clock/${f}-d.jpg" alt="${h} view" loading="lazy"></div><h3>${h}</h3><p>${d}</p></figure>`).join("")}</div>`}]},
+ {k:"Try it",h:"Turn it, flatten it, travel with it",b:"This is the real clock running inside the page. Drag it to change the angle, switch views and themes, or pick another city at the bottom.",
+  blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr clk-play"><iframe src="clock-panel.html" title="Drum World Clock" loading="lazy"></iframe></div></div></figure>`},
+   {t:"cards",cols:4,num:true,items:[
+    {h:"Drag",d:"Rotate the clock to see it from any angle. Let go and it floats back."},
+    {h:"Scroll or pinch",d:"Zoom in and out. On phones it’s a two finger pinch."},
+    {h:"Double click",d:"Flatten the drum into a dial and back. On phones, double tap."},
+    {h:"Pick a city",d:"Tap any city in the row, and every ring turns to its time."}]}]},
+ {k:"World cities",h:"Every city, measured from New York",b:["The clock opens on wherever you are, marked with a small dot. Next to it are Seoul, then cities in Europe, the Americas and Australia, then a few more in other time zones. I made sure no two cities share the same time, so every one is worth checking.","Since I live in New York, every city shows how far it is from here, like EDT +13 for Seoul. In winter the label changes to EST on its own, and every city’s daylight saving time is handled by the browser."],
+  blocks:[{t:"table",head:["","What it shows","Why"],rows:[
+    ["Your city","● New York","The browser knows your time zone, and with permission it also finds your city name."],
+    ["Time difference","EDT +13, EST −3","Easier to think in hours from home than in GMT."],
+    ["Day or night","Light or dark","From 6 am to 6 pm in that city the clock turns light, the rest of the day it’s dark."]]}]},
+ {k:"Small details",h:"Things I kept fixing",b:"Most of the work was in small things that felt slightly off. Each one was a short back and forth with Claude, where I described what I saw and we fixed it together.",
+  blocks:[{t:"table",head:["What felt off","What I changed"],rows:[
+    ["The current hour sat a little to the side of the minutes and seconds","Each ring now snaps to whole numbers, so the present always lines up in one line"],
+    ["The numbers ran counter clockwise","I flipped the direction so it reads like a real watch"],
+    ["The dial looked slightly squashed","In dial view the camera looks straight down, so the rings are true circles"],
+    ["The highlighted tick ran into its number","The current tick still grows, but it stops before reaching the label"],
+    ["The clock looked like it was sinking","It now measures what is actually drawn, sits right under the header on desktop and in the middle on phones"],
+    ["The rest of the clock competed with the time","Everything that isn’t the current time is a little softer, so the white stands out"]]}]},
+ {k:"Light & dark",h:"The sky picks the theme",b:"When it’s daytime in the city you pick, the clock turns light, and at night it goes dark. You can still switch it yourself, and your choice stays until you change cities or the sun comes up or goes down there.",
+  blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr atm-ld"><img src="case/clock/ld-l.jpg" alt="New York in the morning, in light mode" loading="lazy"><img class="dk" src="case/clock/ld-d.jpg" alt="Seoul at night, in dark mode" loading="lazy"></div></div></figure>`}]},
+ {k:"Mobile",h:"Made for phones too",b:"On a phone, the clock sits in the middle of the screen and gets as big as it can. All the cities live in one row that you can swipe sideways, and you rotate with one finger and zoom with two.",
+  blocks:[{t:"html",html:`<figure class="pn clk-f"><img class="thm-l" src="case/clock/mobile.jpg" alt="The clock on three phone screens" loading="lazy"><img class="thm-d" src="case/clock/mobile-d.jpg" alt="The clock on three phone screens" loading="lazy"></figure>`}]},
+ {k:"Under the hood",h:"How the code works",b:"I asked Claude to explain every part in plain words and to comment the code, so I could follow what each piece does.",
+  blocks:[{t:"cards",cols:2,items:[
+   {h:"A Ring class",d:"Each ring knows how many marks it has, how big it is, where it sits in the drum and in the dial, and how far it has turned. It eases toward the current time instead of jumping."},
+   {h:"Nested loops",d:"The outer loop goes through the four rings and the inner loop goes around each one, 12 or 60 times, drawing a tick or a number at every step."},
+   {h:"3D without WebGL",d:"Every point is rotated and then shrunk with distance using a small perspective formula, so the lines and numbers stay sharp on a plain 2D canvas."},
+   {h:"Real time zones",d:"The browser’s built in time zone tools give the exact time in each city, including daylight saving, without any server."}]}]},
+ {k:"Reflections",h:"What I learned, and what I’d improve",blocks:[{t:"close",lh:"What I learned",nh:"What I’d improve",
+  learned:[
+   ["References changed the direction","The first draft only became interesting once I showed Claude a reference instead of describing a clock in words."],
+   ["Small details made it feel finished","Lining up the present, the direction of the numbers and the spacing took longer than the 3D itself, and mattered more."],
+   ["I understood the code by asking","Asking Claude to explain each part made the assignment’s loops and class actually make sense to me."]],
+  next:[
+   ["Let people add cities","A search to add any city to the row, and remember it next time."],
+   ["Show the sun","A subtle hint of sunrise and sunset on each city, not just day or night."],
+   ["Sound","A soft tick when the seconds ring clicks forward, for people who want it."]]},
+   {t:"link",u:"https://hyeeee.github.io/clock/",l:"Open the clock"}]}]},
 grants:{sec:[
  {k:"Project background",h:"Grants were scattered and hard to manage",b:"Startups in Korea rely heavily on government grants, but finding and managing them was frustrating. Information was spread across sources, search and filters didn’t work well, and saving or applying was hard. It was clear we needed a simpler, centralized place.",
   blocks:[{t:"table",h:"How users applied for grants",head:["","Awareness","Exploration","Saving","Application"],rows:[

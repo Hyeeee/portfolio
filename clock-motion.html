@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Drum World Clock motion</title>
+<meta name="robots" content="noindex">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#EDEDEB}
+:root[data-theme="dark"] body,:root[data-theme="dark"]{background:#0D0D0E}
+canvas{display:block}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/p5.min.js"></script>
+</head>
+<body>
+<script>
+/*
+  Feed thumbnail for the Drum World Clock.
+  The real clock, stripped down: just the rings, running on the viewer's time.
+  It slowly sways, and every few seconds flattens from DRUM into DIAL and back.
+  Colors follow the portfolio's light / dark theme (read from the parent page).
+*/
+const GROUND = { light: [237, 237, 235], dark: [13, 13, 14] };
+const INK    = { light: [17, 17, 18],    dark: [237, 237, 237] };
+const FONT = 'Helvetica,Arial,sans-serif';
+const FOCAL = 900;
+const CYCLE = 16000, HOLD_DRUM = 0.5, MORPH = 0.12;   // timing of the drum -> dial loop
+
+let dark = false, rings = [], morph = 0, yaw = 0, pitch = 0.62;
+let cx = 0, cy = 0, unit = 1;
+// ?still=drum|dial&t=10:08:42 renders one fixed frame (used for the static cover image)
+const Q = new URLSearchParams(location.search);
+const STILL = Q.get('still'), FIXED = (Q.get('t') || '').split(':').map(Number);
+
+class Ring {
+  constructor(o) { Object.assign(this, { tick: 0, labelEvery: 0, textSize: 12 }, o); this.angle = 0; this.y = o.drumY; this.r = o.drumR; }
+  update(v) {
+    const target = (v / this.count) * TWO_PI;
+    let d = target - this.angle; d = ((d + PI) % TWO_PI + TWO_PI) % TWO_PI - PI;
+    this.angle += d * 0.12;
+    this.y = lerp(this.drumY, 0, morph);
+    this.r = lerp(this.drumR, this.dialR, morph);
+  }
+  outerR() { return this.tick > 0 ? this.r : this.r - this.textSize * 0.35; }
+  display(v) {
+    const step = TWO_PI / this.count, cur = ((floor(v) % this.count) + this.count) % this.count;
+    for (let i = 0; i < this.count; i++) {
+      const a = this.angle - i * step, on = i === cur;
+      if (this.tick > 0) {
+        const long = i % 5 === 0 && this.count === 60;
+        const len = this.tick * min((long ? 1.8 : 1) * (on ? 1.6 : 1), 1.8);
+        const p1 = proj(this.r * sin(a), this.y, this.r * cos(a));
+        const p2 = proj((this.r - len) * sin(a), this.y, (this.r - len) * cos(a));
+        stroke(ink(on ? 255 : depthA(p1.z, this.r, 55, 180)));
+        strokeWeight(on ? 2.2 : 1.25);
+        line(p1.x, p1.y, p2.x, p2.y);
+      }
+      if (this.labelEvery && i % this.labelEvery === 0) {
+        flatText(this.labelFn(i), a, this.r - this.tick * 1.8 - this.textSize * 0.9, this.y, this.textSize, on);
+      }
+    }
+  }
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  pixelDensity(constrain(displayDensity(), 2, 3));
+  rings = [
+    new Ring({ count: 12, unit: 'h', labelEvery: 1, labelFn: i => (i === 0 ? '12' : String(i)), textSize: 34, drumY: -165, drumR: 215, dialR: 270 }),
+    new Ring({ count: 12, unit: 'h', tick: 14, drumY: -75, drumR: 195, dialR: 215 }),
+    new Ring({ count: 60, unit: 'm', tick: 7, labelEvery: 5, labelFn: i => nf(i, 2), textSize: 11, drumY: 55, drumR: 210, dialR: 185 }),
+    new Ring({ count: 60, unit: 's', tick: 6, drumY: 155, drumR: 210, dialR: 130 }),
+  ];
+  theme(); setInterval(theme, 500);
+}
+
+function draw() {
+  const g = dark ? GROUND.dark : GROUND.light;
+  background(g[0], g[1], g[2]);
+
+  // drum for a while, flatten into the dial, hold, then lift back up
+  const t = (millis() % CYCLE) / CYCLE;
+  let target;
+  if (t < HOLD_DRUM) target = 0;
+  else if (t < HOLD_DRUM + MORPH) target = ease((t - HOLD_DRUM) / MORPH);
+  else if (t < 1 - MORPH) target = 1;
+  else target = 1 - ease((t - (1 - MORPH)) / MORPH);
+  morph = STILL ? (STILL === 'dial' ? 1 : 0) : target;
+
+  yaw = STILL ? 0.12 * (1 - morph) : sin(millis() * 0.00035) * 0.32 * (1 - morph);
+  pitch = lerp(0.62, HALF_PI, morph);
+  fit();
+
+  const now = new Date();
+  const vals = FIXED.length === 3 && !isNaN(FIXED[0])
+    ? { h: FIXED[0] % 12, m: FIXED[1], s: FIXED[2] }
+    : { h: now.getHours() % 12, m: now.getMinutes(), s: now.getSeconds() };
+  for (const r of rings) { r.update(vals[r.unit]); r.display(vals[r.unit]); }
+}
+
+const ease = x => x < 0.5 ? 4 * x * x * x : 1 - pow(-2 * x + 2, 3) / 2;
+
+// scale + center the clock on what is actually drawn, with a little air around it
+function fit() {
+  const s = { yaw, cx, cy, unit }; cx = 0; cy = 0; unit = 1;
+  let x1 = 1e9, y1 = 1e9, x2 = -1e9, y2 = -1e9;
+  for (const r of rings) for (let i = 0; i < 24; i++) {
+    const a = i / 24 * TWO_PI, R = r.outerR(), p = proj(R * sin(a), r.y, R * cos(a));
+    x1 = min(x1, p.x); x2 = max(x2, p.x); y1 = min(y1, p.y); y2 = max(y2, p.y);
+  }
+  const pad = min(width, height) * 0.12;
+  const u = min((width - pad * 2) / (x2 - x1), (height - pad * 2) / (y2 - y1));
+  unit = u; cx = width / 2 - (x1 + x2) / 2 * u; cy = height / 2 - (y1 + y2) / 2 * u;
+}
+
+function proj(x, y, z) {
+  const cY = cos(yaw), sY = sin(yaw), cP = cos(pitch), sP = sin(pitch);
+  const x1 = x * cY + z * sY, z1 = -x * sY + z * cY;
+  const y2 = y * cP + z1 * sP, z2 = -y * sP + z1 * cP;
+  const k = FOCAL / (FOCAL - z2) * unit;
+  return { x: cx + x1 * k, y: cy + y2 * k, z: z2 };
+}
+
+const depthA = (z, r, a, b) => map(z, -r * 1.2, r * 1.2, a, b, true);
+function ink(a) { const c = dark ? INK.dark : INK.light; return color(c[0], c[1], c[2], a); }
+
+function flatText(str, a, r, y, size, on) {
+  const px = r * sin(a), pz = r * cos(a);
+  const p = proj(px, y, pz), pu = proj(px + cos(a), y, pz - sin(a)), pv = proj(px + sin(a), y, pz + cos(a));
+  push();
+  applyMatrix(pu.x - p.x, pu.y - p.y, pv.x - p.x, pv.y - p.y, p.x, p.y);
+  noStroke(); fill(ink(on ? 255 : depthA(p.z, r, 55, 175)));
+  textFont(FONT); textSize(size); textAlign(CENTER, CENTER); text(str, 0, 0);
+  pop();
+}
+
+// follow the portfolio's theme (same rule as the Atmos thumbnail)
+function theme() {
+  let d = false;
+  try { const r = parent.document.documentElement; d = r.dataset.theme ? r.dataset.theme === 'dark' : parent.matchMedia('(prefers-color-scheme: dark)').matches; }
+  catch (_) { d = matchMedia('(prefers-color-scheme: dark)').matches; }
+  const q = new URLSearchParams(location.search).get('theme');
+  if (q) d = q === 'dark';
+  if (d !== dark) { dark = d; document.documentElement.dataset.theme = d ? 'dark' : 'light'; }
+}
+
+function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+</script>
+</body>
+</html>
