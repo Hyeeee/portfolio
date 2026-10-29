@@ -897,6 +897,15 @@ html body .cs .sec-the-globe .cz-pp li::before{width:26px!important;height:26px!
 .dev-p15.one{width:min(56%,300px)}
 .dev-p15::after{content:"";position:absolute;inset:0;background:url(case/phone-frame-15.png) center/100% 100% no-repeat;pointer-events:none}
 .clk-f img{display:block;width:100%;height:auto}
+.clk-hint{display:flex;align-items:center;justify-content:center;gap:10px;margin:clamp(16px,2vw,26px) 0 0;font-size:13px;letter-spacing:-.005em;color:var(--muted);transition:opacity .8s var(--ease)}
+.clk-hint.off{opacity:0}
+.clk-hint .ch-m{display:none}
+@media (hover:none){.clk-hint .ch-d{display:none}.clk-hint .ch-m{display:inline}}
+.ch-ic{position:relative;width:34px;height:16px;flex:none}
+.ch-ic::before{content:"";position:absolute;left:4px;right:4px;top:50%;height:1px;background:currentColor;opacity:.35}
+.ch-ic i{position:absolute;top:50%;left:0;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;border:1.5px solid currentColor;background:var(--pn);animation:chDrag 2.6s cubic-bezier(.45,0,.25,1) infinite}
+@keyframes chDrag{0%,12%{transform:translateX(0)}50%,62%{transform:translateX(25px)}100%{transform:translateX(0)}}
+@media (prefers-reduced-motion:reduce){.ch-ic i{animation:none}}
 .clk-play{position:relative;aspect-ratio:16/10;background:#fff}
 :root[data-theme="dark"] .clk-play{background:#000}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .clk-play{background:#000}}
@@ -1796,6 +1805,7 @@ const pad=n=>String(n).padStart(2,"0");
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const root=document.documentElement;
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+addEventListener("message",e=>{if(e.data&&e.data.clk==="touched")document.querySelectorAll(".clk-hint").forEach(h=>h.classList.add("off"))});
 const media=(id,label,cls="",style="",eager=false)=>`<div class="media ${cls}" style="${style}" data-label="${esc(label)}"><img src="${IMG(id)}" alt="${esc(label)}" ${eager?"":'loading="lazy"'} onerror="this.remove()"></div>`;
 
 /* ---------- theme ---------- */
@@ -2361,7 +2371,7 @@ clock:{sec:[
    {h:"One class",d:"A <code>Ring</code> class keeps each ring’s size, height, rotation and drawing in one place."},
    {h:"Real time",d:"Every ring follows the real hour, minute and second, in whichever city you pick."}]}]},
  {k:"The idea",h:"Taking a clock apart",b:["I wanted to take a clock apart into its pieces, hours, minutes and seconds, and turn it into an interactive tool where you can change the perspective and the mode.","So each unit became its own ring, stacked on top of the others like a drum. Instead of hands moving around a face, the rings turn, and the current time always ends up at the front."],
-  blocks:[{t:"html",html:`<figure class="pn clk-f"><img class="thm-l" src="case/clock/parts.jpg" alt="The clock split into four rings: hours, hour marks, minutes and seconds" loading="lazy"><img class="thm-d" src="case/clock/parts-d.jpg" alt="The clock split into four rings: hours, hour marks, minutes and seconds" loading="lazy"></figure>`}]},
+  blocks:[{t:"html",html:`<figure class="pn clk-f"><img class="thm-l" src="case/clock/parts.jpg" alt="The clock split into four rings: hours, hour marks, minutes and seconds" loading="lazy"><img class="thm-d" src="case/clock/parts-d.jpg" alt="The clock split into four rings: hours, hour marks, minutes and seconds" loading="lazy">${reduce?"":`<iframe class="cv-am" src="clock-motion.html?view=parts&ground=pn&pad=0.1" title="The four rings, live" tabindex="-1" aria-hidden="true" loading="lazy"></iframe>`}</figure>`}]},
  {k:"Two views",h:"Drum and dial",b:"The same four rings can be read in two ways. You can switch between them with the buttons, or just double click the clock.",
   blocks:[{t:"html",html:`<div class="atm-m">${[["drum","Drum","The rings are stacked in 3D and seen from a slight angle. The hour is on top and the seconds are at the bottom, and the time you’re looking at is the line at the front."],["dial","Dial","The camera moves straight above and the rings flatten into a perfect circle, so it reads like a classic watch face again."]].map(([f,h,d])=>`<figure><div class="pn clk-f"><img class="thm-l" src="case/clock/${f}.jpg" alt="${h} view" loading="lazy"><img class="thm-d" src="case/clock/${f}-d.jpg" alt="${h} view" loading="lazy">${reduce?"":`<iframe class="cv-am" src="clock-motion.html?view=${f}&ground=pn&pad=0.17" title="${h} view, live" tabindex="-1" aria-hidden="true" loading="lazy"></iframe>`}</div><h3>${h}</h3><p>${d}</p></figure>`).join("")}</div>`}]},
  {k:"Around the clock",h:"Just enough around it",b:"I kept everything around the clock small and quiet, in one typeface, so the rings stay the main thing on the screen.",
@@ -2369,7 +2379,7 @@ clock:{sec:[
  {k:"Light & dark",h:"The sky picks the theme",b:"When it’s daytime in the city you pick, the clock turns light, and at night it goes dark. Below, the clock keeps switching between a city where it’s day and one where it’s night, so you can watch the rings turn and the theme follow. You can still switch it yourself, and your choice stays until you change cities or the sun comes up or goes down there.",
   blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr clk-play clk-ldp"><iframe src="clock-panel.html?mode=ld" title="The clock switching between day and night cities" loading="lazy" tabindex="-1" aria-hidden="true"></iframe></div></div></figure>`}]},
  {k:"Try it",h:"Turn it, flatten it, travel with it",b:"This is the real clock running inside the page. Drag it to change the angle, switch views and themes, or pick another city at the bottom.",
-  blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr clk-play"><iframe src="clock-panel.html?mode=play" title="Drum World Clock" loading="lazy"></iframe></div></div></figure>`},
+  blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr clk-play"><iframe src="clock-panel.html?mode=play" title="Drum World Clock" loading="lazy"></iframe></div></div><p class="clk-hint" aria-hidden="true"><span class="ch-ic"><i></i></span><span class="ch-d">Drag to turn it · Double click to flatten · Pick a city below</span><span class="ch-m">Drag to turn it · Double tap to flatten</span></p></figure>`},
    {t:"cards",cols:4,num:true,items:[
     {h:"Drag",d:"Rotate the clock to see it from any angle. Let go and it floats back."},
     {h:"Scroll or pinch",d:"Zoom in and out. On phones it’s a two finger pinch."},
@@ -2771,7 +2781,7 @@ function vzPrep(){pfPrep();$$("#sbody .bub, #sbody .hb").forEach(c=>{c.classList
 let navPop=false;
 function openSheet(html,crumb,hash){
   const fade=hash==="lof-archive"||hash==="blog"||hash==="photography";const isBlog=hash.startsWith("blog");sheet.classList.toggle("fx-fade",fade);root.classList.toggle("recede",fade);
-  $("#sbody").innerHTML=html;requestAnimationFrame(()=>{setTimeout(tocBuild,0);tightVZ($("#sbody"));syncArt();$$("#sbody .lot").forEach(e=>lotIO.observe(e));$$("#sbody video[autoplay]").forEach(v=>{v.muted=true;const pr=v.play();pr&&pr.catch(()=>{})});srInit()});root.classList.add("sheet-open");setActive(hash==="lof-archive"?"lof":hash==="photography"?"photo":isBlog?"blog":"index");sheet.scrollTop=0;
+  $("#sbody").innerHTML=html;requestAnimationFrame(()=>{setTimeout(tocBuild,0);tightVZ($("#sbody"));syncArt();$$("#sbody .lot").forEach(e=>lotIO.observe(e));$$("#sbody .clk-hint").forEach(h=>h.classList.remove("off"));$$("#sbody video[autoplay]").forEach(v=>{v.muted=true;const pr=v.play();pr&&pr.catch(()=>{})});srInit()});root.classList.add("sheet-open");setActive(hash==="lof-archive"?"lof":hash==="photography"?"photo":isBlog?"blog":"index");sheet.scrollTop=0;
   if(!sheetOpen){lastFocus=document.activeElement;sheet.classList.add("open");sheetOpen=true;root.style.overflow="hidden";lenis&&lenis.stop()}
   else $$("#sheet .rise").forEach(el=>{el.style.animation="none";el.offsetHeight;el.style.animation=""});
 

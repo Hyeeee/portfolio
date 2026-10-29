@@ -526,7 +526,8 @@ function edgeFade(x1, x2, bg, y, h) {
 // Top-right controls: segmented text buttons on every screen size.
 function drawControls() {
   drawTextButtons();
-  cursor(hitBoxes.some((b) => isInside(b)) ? HAND : dragging ? MOVE : ARROW);
+  // in the portfolio, an open hand says "you can grab this"
+  cursor(hitBoxes.some((b) => isInside(b)) ? HAND : dragging ? 'grabbing' : (EMBED && MODE === 'play') ? 'grab' : ARROW);
 }
 
 // Minimal text buttons. The chosen word is bright with a thin underline,
@@ -841,6 +842,22 @@ function windowResized() {
     window.addEventListener('load', () => { setTimeout(step, 300); setInterval(step, 3800); });
     return;
   }
+
+  // play mode: a light hint that the clock is real.
+  // Until someone touches it, the drum gives a small turn every few seconds
+  // (like a nudge from an invisible hand) and floats back on its own.
+  let touched = false;
+  const firstTouch = () => {
+    if (touched) return; touched = true;
+    try { parent.postMessage({ clk: 'touched' }, '*'); } catch (_) {}
+  };
+  ['pointerdown', 'touchstart', 'wheel'].forEach(t => window.addEventListener(t, firstTouch, { passive: true }));
+  let nudge = 0;
+  setInterval(() => {
+    if (touched || dragging || viewDial || document.hidden) return;
+    dragYaw = (nudge++ % 2 ? -1 : 1) * 0.45;   // swing one way, then the other next time
+    dragPitch = -0.12;
+  }, 5200);
 
   // play mode: colors follow the portfolio's light / dark theme
   let parentDark = null;
