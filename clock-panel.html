@@ -28,8 +28,7 @@ const MODE = new URLSearchParams(location.search).get('mode') || 'play';
 let VW = 1440, VH = 900;
 
 function embedCanvas() {
-  if (MODE === 'ld') { VW = 1100; VH = 760; }
-  else if (window.innerWidth < 560) { VW = 390; VH = 520; }
+  if (window.innerWidth < 560) { VW = 390; VH = 520; }
   const c = createCanvas(VW, VH);
   pixelDensity(Math.min(3, Math.max(1, displayDensity() * window.innerWidth / VW)));
   fitCanvasToWindow();
@@ -825,18 +824,7 @@ function windowResized() {
   window.addEventListener('load', () => setTimeout(startNoHover, 0));
 
   if (MODE === 'ld') {
-    // only the header and the clock, centered in the frame
-    drawControls = () => {};
-    drawCityList = () => {};
-    const baseLayout = computeLayout;
-    computeLayout = function () {
-      const L = baseLayout();
-      const top = L.head.bottom + 40, bottom = height - 50;
-      L.clock.box = { cx: width / 2, cy: (top + bottom) / 2, w: width - 160, h: bottom - top };
-      L.short = true;          // center the clock in its box
-      L.list.maxScroll = 0;
-      return L;
-    };
+    // the full clock, untouched: it just changes city on its own
     document.documentElement.style.pointerEvents = 'none';
 
     // pick one city where it's day and one where it's night, then switch every few seconds

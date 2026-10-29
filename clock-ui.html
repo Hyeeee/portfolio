@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Drum World Clock UI</title>
+<meta name="robots" content="noindex">
+<style>
+/*
+  Live versions of the two small UI crops in the clock case study.
+  ?part=header  the city / big time / offset + date, ticking every second
+                and stepping through a few cities
+  ?part=modes   the DRUM DIAL / DARK LIGHT switches, flipping on their own
+  Sizes are in vw so the whole thing scales with the card it sits in.
+  Colors follow the portfolio's light / dark theme (read from the parent page).
+*/
+:root{--bg:#F2F2F2;--ink:#111112;--mute:#7B7B7E;--off:#A3A3A6}
+:root[data-theme="dark"]{--bg:#161616;--ink:#EDEDEB;--mute:#8C8C90;--off:#5E5E62}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+body{display:grid;place-items:center;font-family:Helvetica,Arial,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+.part{display:none}
+[data-part="header"] .head,[data-part="modes"] .modes{display:block}
+
+/* header */
+.head{width:34.5vw;transform:translateX(-6vw)}
+.city{font-size:2.35vw;letter-spacing:.01em;color:var(--mute);height:2.9vw;white-space:nowrap}
+.city i{font-style:normal;font-size:.8em;margin-right:.35em;position:relative;top:-.08em}
+.time{font-size:9.4vw;line-height:1;letter-spacing:-.01em;margin:.25vw 0 0 -.35vw;font-variant-numeric:tabular-nums;white-space:nowrap}
+.date{font-size:2.35vw;color:var(--mute);margin-top:2.4vw;white-space:nowrap;word-spacing:.08em}
+.date b{font-weight:400;margin-right:2vw}
+.swap{transition:opacity .45s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+.out{opacity:0;transform:translateY(.6vw)}
+
+/* modes */
+.modes{white-space:nowrap}
+.grp{display:inline-flex;gap:3vw;vertical-align:top}
+.grp+.grp{margin-left:6.4vw}
+.m{position:relative;font-size:2.35vw;letter-spacing:.01em;color:var(--off);transition:color .5s ease;padding-bottom:.95vw}
+.m.on{color:var(--ink)}
+.m::after{content:"";position:absolute;left:-.1vw;right:-.1vw;bottom:0;height:.22vw;min-height:1.5px;background:var(--ink);transform:scaleX(0);transform-origin:right;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.m.on::after{transform:scaleX(1);transform-origin:left}
+@media (prefers-reduced-motion:reduce){.swap,.m,.m::after{transition:none}}
+</style>
+</head>
+<body>
+<div class="part head">
+  <div class="city swap" id="city"></div>
+  <div class="time" id="time"></div>
+  <div class="date swap" id="date"></div>
+</div>
+<div class="part modes">
+  <span class="grp"><span class="m" data-k="view" data-v="drum">DRUM</span><span class="m" data-k="view" data-v="dial">DIAL</span></span><span class="grp"><span class="m" data-k="theme" data-v="dark">DARK</span><span class="m" data-k="theme" data-v="light">LIGHT</span></span>
+</div>
+<script>
+const Q = new URLSearchParams(location.search);
+document.body.dataset.part = Q.get('part') || 'header';
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---- header: same cities and wording as the real clock ----
+const CITIES = [
+  { name: 'NEW YORK',    tz: 'America/New_York', here: true },
+  { name: 'SEOUL',       tz: 'Asia/Seoul' },
+  { name: 'LONDON',      tz: 'Europe/London' },
+  { name: 'PARIS',       tz: 'Europe/Paris' },
+  { name: 'LOS ANGELES', tz: 'America/Los_Angeles' },
+  { name: 'SYDNEY',      tz: 'Australia/Sydney' },
+];
+const parts = (tz, d) => Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23',
+  year: 'numeric', month: 'short', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  .formatToParts(d).map(p => [p.type, p.value]));
+const wall = (tz, d) => { const p = parts(tz, d); return Date.UTC(+p.year, ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].indexOf(p.month), +p.day, +p.hour, +p.minute) / 60000; };
+const nyAbbr = d => new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', timeZoneName: 'short' }).formatToParts(d).find(p => p.type === 'timeZoneName').value;
+let ci = 0;
+const $ = id => document.getElementById(id);
+function paintHeader(withText) {
+  const d = new Date(), c = CITIES[ci], p = parts(c.tz, d);
+  $('time').textContent = `${p.hour}:${p.minute}:${p.second}`;
+  if (!withText) return;
+  const h = Math.round((wall(c.tz, d) - wall('America/New_York', d)) / 60);
+  $('city').innerHTML = (c.here ? '<i>●</i>' : '') + c.name;
+  $('date').innerHTML = `<b>${nyAbbr(d)}${h ? (h > 0 ? ' +' : ' −') + Math.abs(h) : ''}</b>${p.weekday.toUpperCase()}, ${p.month.toUpperCase()} ${p.day}`;
+}
+if (document.body.dataset.part === 'header') {
+  paintHeader(true);
+  setInterval(() => paintHeader(false), 250);
+  if (!reduce) setInterval(() => {
+    const sw = [$('city'), $('date')];
+    sw.forEach(e => e.classList.add('out'));
+    setTimeout(() => { ci = (ci + 1) % CITIES.length; paintHeader(true); sw.forEach(e => e.classList.remove('out')); }, 380);
+  }, 3600);
+}
+
+// ---- modes: flip one switch at a time ----
+const STEPS = [['drum','light'], ['dial','light'], ['dial','dark'], ['drum','dark']];
+let si = 0;
+function paintModes() {
+  const [v, t] = STEPS[si];
+  document.querySelectorAll('.m').forEach(m => m.classList.toggle('on', m.dataset.v === (m.dataset.k === 'view' ? v : t)));
+}
+if (document.body.dataset.part === 'modes') {
+  paintModes();
+  if (!reduce) setInterval(() => { si = (si + 1) % STEPS.length; paintModes(); }, 2200);
+}
+
+// ---- follow the portfolio's theme ----
+function theme() {
+  let d = false;
+  try { const r = parent.document.documentElement; d = r.dataset.theme ? r.dataset.theme === 'dark' : parent.matchMedia('(prefers-color-scheme: dark)').matches; }
+  catch (_) { d = matchMedia('(prefers-color-scheme: dark)').matches; }
+  const q = Q.get('theme'); if (q) d = q === 'dark';
+  document.documentElement.dataset.theme = d ? 'dark' : 'light';
+}
+theme(); setInterval(theme, 500);
+</script>
+</body>
+</html>

@@ -158,7 +158,9 @@ button{font:inherit;color:inherit;cursor:default}
 @keyframes ring{0%{transform:scale(.7);opacity:.3}100%{transform:scale(1.9);opacity:0}}
 .fcl{transition:border-color .2s}.fcl.on{border-color:var(--ink)}
 #tap{position:fixed;left:0;top:0;width:33px;height:33px;margin:-16px 0 0 -16px;border-radius:50%;border:1.5px solid var(--ink-3);z-index:8;opacity:0;pointer-events:none}
+html.pn{--ground:#F2F2F2}html.pn[data-theme="dark"]{--ground:#161616}
 </style>
+<script>if(new URLSearchParams(location.search).get("ground")==="pn")document.documentElement.classList.add("pn");</script>
 </head>
 <body>
 <div id="bg" class="dots"></div><div id="bgm"></div><div id="lapc"><img id="lap" alt=""><div id="scr" class="dots"></div></div>

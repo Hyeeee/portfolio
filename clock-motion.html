@@ -9,10 +9,12 @@
 html,body{margin:0;height:100%;overflow:hidden;background:#EDEDEB}
 :root[data-theme="dark"] body,:root[data-theme="dark"]{background:#0D0D0E}
 canvas{display:block}
+html.pn,html.pn body{background:#F2F2F2}html.pn[data-theme="dark"],html.pn[data-theme="dark"] body{background:#161616}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/p5.min.js"></script>
 </head>
 <body>
+<script>if(new URLSearchParams(location.search).get('ground')==='pn')document.documentElement.classList.add('pn');</script>
 <script>
 /*
   Feed thumbnail for the Drum World Clock.
@@ -20,7 +22,10 @@ canvas{display:block}
   It slowly sways, and every few seconds flattens from DRUM into DIAL and back.
   Colors follow the portfolio's light / dark theme (read from the parent page).
 */
-const GROUND = { light: [237, 237, 235], dark: [13, 13, 14] };
+// ?ground=pn matches the case-study panel color instead of the feed's
+const GROUND = new URLSearchParams(location.search).get('ground') === 'pn'
+  ? { light: [242, 242, 242], dark: [22, 22, 22] }
+  : { light: [237, 237, 235], dark: [13, 13, 14] };
 const INK    = { light: [17, 17, 18],    dark: [237, 237, 237] };
 const FONT = 'Helvetica,Arial,sans-serif';
 const FOCAL = 900;
@@ -30,7 +35,7 @@ let dark = false, rings = [], morph = 0, yaw = 0, pitch = 0.62;
 let cx = 0, cy = 0, unit = 1;
 // ?still=drum|dial&t=10:08:42 renders one fixed frame (used for the static cover image)
 const Q = new URLSearchParams(location.search);
-const STILL = Q.get('still'), FIXED = (Q.get('t') || '').split(':').map(Number);
+const STILL = Q.get('still'), VIEW = Q.get('view'), PAD = parseFloat(Q.get('pad')) || 0.12, FIXED = (Q.get('t') || '').split(':').map(Number);
 
 class Ring {
   constructor(o) { Object.assign(this, { tick: 0, labelEvery: 0, textSize: 12 }, o); this.angle = 0; this.y = o.drumY; this.r = o.drumR; }
@@ -85,9 +90,12 @@ function draw() {
   else if (t < HOLD_DRUM + MORPH) target = ease((t - HOLD_DRUM) / MORPH);
   else if (t < 1 - MORPH) target = 1;
   else target = 1 - ease((t - (1 - MORPH)) / MORPH);
-  morph = STILL ? (STILL === 'dial' ? 1 : 0) : target;
+  // ?view=drum|dial holds one view (live time, gentle sway) instead of looping
+  const hold = STILL || VIEW;
+  morph = hold ? (hold === 'dial' ? 1 : 0) : target;
 
   yaw = STILL ? 0.12 * (1 - morph) : sin(millis() * 0.00035) * 0.32 * (1 - morph);
+  if (VIEW === 'dial') yaw = 0;
   pitch = lerp(0.62, HALF_PI, morph);
   fit();
 
@@ -108,7 +116,7 @@ function fit() {
     const a = i / 24 * TWO_PI, R = r.outerR(), p = proj(R * sin(a), r.y, R * cos(a));
     x1 = min(x1, p.x); x2 = max(x2, p.x); y1 = min(y1, p.y); y2 = max(y2, p.y);
   }
-  const pad = min(width, height) * 0.12;
+  const pad = min(width, height) * PAD;
   const u = min((width - pad * 2) / (x2 - x1), (height - pad * 2) / (y2 - y1));
   unit = u; cx = width / 2 - (x1 + x2) / 2 * u; cy = height / 2 - (y1 + y2) / 2 * u;
 }

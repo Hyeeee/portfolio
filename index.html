@@ -877,11 +877,15 @@ html body .cs .sec-the-globe .cz-pp li::before{width:26px!important;height:26px!
 :root[data-theme="dark"] .thm-d{display:block!important}:root[data-theme="dark"] .thm-l{display:none!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .thm-d{display:block!important}:root:not([data-theme="light"]) .thm-l{display:none!important}}
 .atm-ld{position:relative}
-.clk-f{padding:0!important;overflow:hidden}
+.clk-f{padding:0!important;overflow:hidden;position:relative}
+.clk-f iframe.cv-am{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;display:block}
 .clk-c{display:flex;align-items:center;justify-content:center;padding:clamp(28px,4vw,56px) clamp(16px,3vw,40px)!important;min-height:clamp(160px,18vw,240px)}
 .clk-c img{display:block;max-width:100%;height:auto;width:auto;zoom:.5}
 .clk-c.clk-wide img{zoom:1;max-height:none;width:100%;max-width:640px}
 .clk-c.clk-wide img[src*="swipe"]{max-width:480px}
+.clk-c.clk-live{position:relative;padding:0!important;min-height:0;aspect-ratio:900/480}
+.clk-c.clk-live>img{display:none!important}
+.clk-c.clk-live iframe.cv-am{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;display:block}
 .clk-c figcaption{position:absolute;left:0;right:0;bottom:14px}
 .clk-c.clk-wide{position:relative;flex-direction:column;padding-bottom:clamp(40px,5vw,60px)!important}
 .clk-ld{position:relative;aspect-ratio:1100/760;padding:0!important;overflow:hidden}
@@ -896,6 +900,7 @@ html body .cs .sec-the-globe .cz-pp li::before{width:26px!important;height:26px!
 .clk-play{position:relative;aspect-ratio:16/10;background:#fff}
 :root[data-theme="dark"] .clk-play{background:#000}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .clk-play{background:#000}}
+.clk-ldp iframe{pointer-events:none}
 .clk-play iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
 @media (max-width:700px){.clk-play{aspect-ratio:3/4}}
 .atm-ld .dk{position:absolute;inset:0;width:100%;height:100%;animation:atmLD 6s ease-in-out infinite}
@@ -1215,7 +1220,8 @@ main#top,#sheet{transition:filter .9s cubic-bezier(.76,0,.24,1)}
 .cs .steps li{background:none!important;border-radius:0!important;border-left:1px solid color-mix(in srgb,var(--fg) 12%,transparent);padding:2px 0 2px 14px!important}
 @media (max-width:700px){.cs .cz-g[style*="--c:4"]{grid-template-columns:repeat(2,minmax(0,1fr))}.cs .cz-g[style*="--c:4"] .card{padding:14px}.pfc{transform-origin:center;height:130px}.pfc-col{padding:0 10px}.pfc-row{gap:5px}.pfc .pt{padding:4px 7px;font-size:10px}.pfc .md{width:88%;padding:12px 8px 8px}.pfc .md .btn{font-size:10px;padding:6px 0}.pfc .md>div{gap:4px}}
 /* one cover size and one card colour for every project */
-.cs .pn-cover{aspect-ratio:1808/1098;padding:0!important;background:#F2F2F2!important;overflow:hidden;display:block}
+.cs .pn-cover iframe.cv-am{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;display:block}
+.cs .pn-cover{position:relative;aspect-ratio:1808/1098;padding:0!important;background:#F2F2F2!important;overflow:hidden;display:block}
 .cs .pn-cover>img,.cs .pn-cover>video,.cs .pn-cover .cz-img{display:block;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover;margin:0;border-radius:0}
 .cs{--c-card:var(--pn)}
 .cs .vzf,.cs .jr li,.cs .cz-heat,.cs .cz-close .pn,.cs .card,.cs .pn:not(.pn-cover){background:var(--pn)}
@@ -1665,7 +1671,7 @@ const PROJECTS = [
  {slug:"clock",title:"Drum World Clock",client:"Side project",group:"side",disc:"Creative Coding",year:"2026",time:"Oct 2026",role:"Designer",methods:"Vibe coding, Creative coding, p5.js",
   sum:"A world clock taken apart into rings, which you can turn, flatten and take to any city.",
   vsum:"I wanted to take a clock apart into its pieces, hours, minutes and seconds, and turn it into an interactive tool where you can change the perspective and the mode. I built it with p5.js and Claude for a creative coding class at SVA.",
-  intro:"For a creative coding assignment at SVA, I wanted to take a clock apart. Instead of hands on one face, I separated the hours, minutes and seconds into their own rings and stacked them like a drum. Each ring turns on its own, so the current time always lines up at the front. Then I made it interactive, so you can change the perspective, flatten it into a dial, switch between light and dark, and check the time in cities around the world. I built it with p5.js by vibe coding with Claude.",
+  intro:"As a side project, I wanted to take a clock apart. Instead of hands on one face, I separated the hours, minutes and seconds into their own rings and stacked them like a drum. Each ring turns on its own, so the current time always lines up at the front. Then I made it interactive, so you can change the perspective, flatten it into a dial, switch between light and dark, and check the time in cities around the world. I built it with p5.js by vibe coding with Claude.",
   problem:"",hl:[],stats:null,imgs:[]},
  {slug:"homepage",title:"Homepage",client:"The VC",group:"vc",disc:"Product Design",year:"2024",time:"Mar – May 2024",role:"Product Designer",methods:"UX Research, Prototyping, Testing",
   sum:"A modular homepage that recommends key content based on user behavior and interest tags.",
@@ -2357,17 +2363,11 @@ clock:{sec:[
  {k:"The idea",h:"Taking a clock apart",b:["I wanted to take a clock apart into its pieces, hours, minutes and seconds, and turn it into an interactive tool where you can change the perspective and the mode.","So each unit became its own ring, stacked on top of the others like a drum. Instead of hands moving around a face, the rings turn, and the current time always ends up at the front."],
   blocks:[{t:"html",html:`<figure class="pn clk-f"><img class="thm-l" src="case/clock/parts.jpg" alt="The clock split into four rings: hours, hour marks, minutes and seconds" loading="lazy"><img class="thm-d" src="case/clock/parts-d.jpg" alt="The clock split into four rings: hours, hour marks, minutes and seconds" loading="lazy"></figure>`}]},
  {k:"Two views",h:"Drum and dial",b:"The same four rings can be read in two ways. You can switch between them with the buttons, or just double click the clock.",
-  blocks:[{t:"html",html:`<div class="atm-m">${[["drum","Drum","The rings are stacked in 3D and seen from a slight angle. The hour is on top and the seconds are at the bottom, and the time you’re looking at is the line at the front."],["dial","Dial","The camera moves straight above and the rings flatten into a perfect circle, so it reads like a classic watch face again."]].map(([f,h,d])=>`<figure><div class="pn clk-f"><img class="thm-l" src="case/clock/${f}.jpg" alt="${h} view" loading="lazy"><img class="thm-d" src="case/clock/${f}-d.jpg" alt="${h} view" loading="lazy"></div><h3>${h}</h3><p>${d}</p></figure>`).join("")}</div>`}]},
+  blocks:[{t:"html",html:`<div class="atm-m">${[["drum","Drum","The rings are stacked in 3D and seen from a slight angle. The hour is on top and the seconds are at the bottom, and the time you’re looking at is the line at the front."],["dial","Dial","The camera moves straight above and the rings flatten into a perfect circle, so it reads like a classic watch face again."]].map(([f,h,d])=>`<figure><div class="pn clk-f"><img class="thm-l" src="case/clock/${f}.jpg" alt="${h} view" loading="lazy"><img class="thm-d" src="case/clock/${f}-d.jpg" alt="${h} view" loading="lazy">${reduce?"":`<iframe class="cv-am" src="clock-motion.html?view=${f}&ground=pn&pad=0.17" title="${h} view, live" tabindex="-1" aria-hidden="true" loading="lazy"></iframe>`}</div><h3>${h}</h3><p>${d}</p></figure>`).join("")}</div>`}]},
  {k:"Around the clock",h:"Just enough around it",b:"I kept everything around the clock small and quiet, in one typeface, so the rings stay the main thing on the screen.",
-  blocks:[{t:"html",html:`<div class="atm-m">${[["header","Where and when","The city you’re looking at, a big digital time for a quick read, and how far it is from New York with today’s date."],["modes","Two simple switches","DRUM or DIAL, and DARK or LIGHT. The one that’s on is bright and underlined, so you can tell at a glance what you’re looking at."]].map(([f,h,d])=>`<figure><div class="pn clk-c"><img class="thm-l" src="case/clock/${f}.png" alt="${h}" loading="lazy"><img class="thm-d" src="case/clock/${f}-d.png" alt="${h}" loading="lazy"></div><h3>${h}</h3><p>${d}</p></figure>`).join("")}</div>`}]},
- {k:"World cities",h:"Every city, measured from New York",b:["The clock opens on wherever you are, marked with a small dot. Next to it are Seoul, then cities in Europe, the Americas and Australia, then a few more in other time zones. I made sure no two cities share the same time, so every one is worth checking.","Since I live in New York, every city shows how far it is from here, like EDT +13 for Seoul. In winter the label changes to EST on its own, and every city’s daylight saving time is handled by the browser."],
-  blocks:[{t:"html",html:`<figure class="pn clk-c clk-wide"><img class="thm-l" src="case/clock/cities.png" alt="The city row" loading="lazy"><img class="thm-d" src="case/clock/cities-d.png" alt="The city row" loading="lazy"></figure>`},
-   {t:"table",head:["","What it shows","Why"],rows:[
-    ["Your city","● New York","The browser knows your time zone, and with permission it also finds your city name."],
-    ["Time difference","EDT +13, EST −3","Easier to think in hours from home than in GMT."],
-    ["Day or night","Light or dark","From 6 am to 6 pm in that city the clock turns light, the rest of the day it’s dark."]]}]},
+  blocks:[{t:"html",html:`<div class="atm-m">${[["header","Where and when","The city you’re looking at, a big digital time for a quick read, and how far it is from New York with today’s date."],["modes","Two simple switches","DRUM or DIAL, and DARK or LIGHT. The one that’s on is bright and underlined, so you can tell at a glance what you’re looking at."]].map(([f,h,d])=>`<figure><div class="pn clk-c${reduce?"":" clk-live"}"><img class="thm-l" src="case/clock/${f}.png" alt="${h}" loading="lazy"><img class="thm-d" src="case/clock/${f}-d.png" alt="${h}" loading="lazy">${reduce?"":`<iframe class="cv-am" src="clock-ui.html?part=${f}" title="${h}, live" tabindex="-1" aria-hidden="true" loading="lazy"></iframe>`}</div><h3>${h}</h3><p>${d}</p></figure>`).join("")}</div>`}]},
  {k:"Light & dark",h:"The sky picks the theme",b:"When it’s daytime in the city you pick, the clock turns light, and at night it goes dark. Below, the clock keeps switching between a city where it’s day and one where it’s night, so you can watch the rings turn and the theme follow. You can still switch it yourself, and your choice stays until you change cities or the sun comes up or goes down there.",
-  blocks:[{t:"html",html:`<figure class="pn clk-ld"><iframe src="clock-panel.html?mode=ld" title="The clock switching between day and night cities" loading="lazy" tabindex="-1" aria-hidden="true"></iframe></figure>`}]},
+  blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr clk-play clk-ldp"><iframe src="clock-panel.html?mode=ld" title="The clock switching between day and night cities" loading="lazy" tabindex="-1" aria-hidden="true"></iframe></div></div></figure>`}]},
  {k:"Try it",h:"Turn it, flatten it, travel with it",b:"This is the real clock running inside the page. Drag it to change the angle, switch views and themes, or pick another city at the bottom.",
   blocks:[{t:"html",html:`<figure class="pn atm-ipf"><div class="ipad"><i class="cam"></i><div class="scr clk-play"><iframe src="clock-panel.html?mode=play" title="Drum World Clock" loading="lazy"></iframe></div></div></figure>`},
    {t:"cards",cols:4,num:true,items:[
@@ -2649,7 +2649,7 @@ function longCase(p,C){
     <div class="s-head">${csK(C.client||p.client,C.time||p.time)}<h1 id="s-title" class="rise">${p.title}</h1>
       <dl class="meta rise"><div><dt>Timeline</dt><dd>${C.time||p.time}</dd></div><div><dt>Role</dt><dd>${C.role||p.role}</dd></div><div><dt>Methods</dt><dd>${C.methods||p.methods}</dd></div></dl>
       <p class="lead rise">${C.intro||p.intro}</p></div>
-    ${C.lot?`<figure class="pn pn-cover cv-lot rise"><div class="lot lot-c" data-src="${C.lot}"><img src="${C.lotPoster}" alt="${esc(p.title)}"></div></figure>`:C.cover?`<figure class="pn pn-cover rise" style="${C.coverBg?`background:${C.coverBg}`:""}">${lcMedia(C.cover)}</figure>`:`<figure class="pn pn-cover cv-u rise${C.credit?" cv-has-cr":""}"><img src="case/covers/${p.slug}${isDark()?"-d":""}.jpg?v=8" data-l="case/covers/${p.slug}.jpg?v=8" data-d="case/covers/${p.slug}-d.jpg?v=8" alt="${esc(p.title)}">${C.credit||""}</figure>`}
+    ${C.lot?`<figure class="pn pn-cover cv-lot rise"><div class="lot lot-c" data-src="${C.lot}"><img src="${C.lotPoster}" alt="${esc(p.title)}"></div></figure>`:C.cover?`<figure class="pn pn-cover rise" style="${C.coverBg?`background:${C.coverBg}`:""}">${lcMedia(C.cover)}</figure>`:`<figure class="pn pn-cover cv-u rise${C.credit?" cv-has-cr":""}"><img src="case/covers/${p.slug}${isDark()?"-d":""}.jpg?v=8" data-l="case/covers/${p.slug}.jpg?v=8" data-d="case/covers/${p.slug}-d.jpg?v=8" alt="${esc(p.title)}">${MOTION[p.slug]&&!reduce?`<iframe class="cv-am" src="${MOTION[p.slug]}?ground=pn" title="${esc(p.title)} motion" tabindex="-1" aria-hidden="true"></iframe>`:""}${C.credit||""}</figure>`}
     ${C.sec.map((s,k)=>`<section class="cz ${secK(s.k)}">
       <header class="cz-h"><span class="cz-k"><i>${String(k+1).padStart(2,"0")}</i>${s.k}</span><h2>${s.h}</h2>${s.b?`<div class="cz-b">${[].concat(s.b).map(x=>`<p>${x}</p>`).join("")}</div>`:""}</header>
       <div class="cz-body">${(s.blocks||[]).map(b=>LCB[b.t](b)).join("")}</div></section>`).join("")}
