@@ -125,20 +125,6 @@ html.intro::-webkit-scrollbar{display:none}
 .feed .media::before{transition:opacity .8s var(--ease)}
 .go .stmt .w>span{transform:none;transition:transform 1.35s var(--out)}
 .go .sub{opacity:1;transform:none;transition:opacity 1s var(--ease) 1s,transform 1.3s var(--out) 1s}
-/* project filter: quiet text buttons, the chosen one in full ink with a hairline under it */
-.flt{display:flex;justify-content:center;flex-wrap:wrap;gap:4px clamp(12px,1.4vw,20px);margin:clamp(72px,8.6vw,128px) 0 0;position:relative;z-index:5}
-.flt button{position:relative;padding:6px 0 1px;font-family:var(--sans);font-size:13.5px;font-weight:500;letter-spacing:-.015em;color:var(--muted);transition:color .5s var(--ease)}
-.flt button sup{margin-left:2px;font-family:var(--sans);font-size:10px;letter-spacing:0;vertical-align:baseline;position:relative;top:-.55em;color:var(--soft);transition:color .5s var(--ease)}
-.flt .fl{position:relative;display:inline-block;padding-bottom:2px}
-.flt button .fl::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--fg);transform:scaleX(0);transform-origin:right;transition:transform .7s var(--out)}
-.flt button:hover{color:var(--fg)}
-.flt button.on{color:var(--fg)}
-.flt button.on sup{color:var(--muted)}
-.flt button.on .fl::after{transform:scaleX(1);transform-origin:left}
-.intro .flt{opacity:0;transform:translateY(14px)}
-.go .flt{opacity:1;transform:none;transition:opacity 1s var(--ease) 1.25s,transform 1.3s var(--out) 1.25s}
-.feed>li.f-off{display:none}
-.hero:has(.flt){padding-bottom:clamp(20px,2.2vw,36px)}
 .intro .nav{transform:translateY(-260%)}
 .go .nav{transform:none}
 
@@ -1900,50 +1886,13 @@ $("#feed").innerHTML=ITEMS.map((it,i)=>{
   if(it.type==="lof"){const A=art(i,"lof");return `<li><button class="tile" type="button" data-lof>
       <div class="media" data-label="Lof Archive"><img class="art" src="${A.img}" alt="">${veil(`<span>Lof</span><span>2019</span>`,"Before screens, leather. Twelve cases, purses and ink-on-leather pieces, cut, dyed and stitched by hand.","See all 12 objects",A.fog)}</div>
       <span class="cap"><span class="t">Lof Archive</span><span class="y num">${ARCHIVE.length} objects · 2019</span></span></button></li>`}
-  const p=it.p, A=art(i);return `<li data-cat="${FCAT(p)}" class="${FULL.has(p.slug)?'full ':WIDE.has(p.slug)?'wide ':''}${LIFE.has(p.slug)?'ph':'mk'}" style="--fp:${FOCUS[p.slug]||'50% 50%'}"><a class="tile" href="#${p.slug}" data-case="${p.slug}">
+  const p=it.p, A=art(i);return `<li class="${FULL.has(p.slug)?'full ':WIDE.has(p.slug)?'wide ':''}${LIFE.has(p.slug)?'ph':'mk'}" style="--fp:${FOCUS[p.slug]||'50% 50%'}"><a class="tile" href="#${p.slug}" data-case="${p.slug}">
       <div class="media" data-label="${esc(p.title)}"><img class="art" src="${pic(p.slug)}" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}" data-fb="${i}" alt="">${MOTION[p.slug]&&!reduce?`<iframe class="am" data-src="${MOTION[p.slug]}" title="${esc(p.title)} motion preview" tabindex="-1" aria-hidden="true"></iframe>`:''}${veilCase(p,pic(p.slug)).replace('<img class="fog"',`<img class="fog" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}"`)}</div>
       <span class="cap"><span class="t">${p.title}</span><span class="y num">${p.client} · ${p.year}</span><span class="l">${LINE[p.slug]||p.sum}</span></span></a></li>`}).join("");
 
 lazyFrames($("#feed"));
 const feed=$("#feed"), lis=[...feed.children];
 
-/* ---------- filter: all · product work · built with AI · explorations ---------- */
-// side projects were vibe coded with AI, The VC and PFCT were real company work in Korea,
-// everything else is a concept, a hackathon or self-initiated
-function FCAT(p){return {side:"ai",vc:"work",pf:"work"}[p.group]||"concept"}
-const DEF="work";   // the filter that is on when the page opens
-const FLT=[["all","All"],["work","Product work"],["ai","Built with AI"],["concept","Explorations"]];
-(()=>{
-  const count=c=>c==="all"?lis.length:lis.filter(li=>li.dataset.cat===c).length;
-  const nav=document.createElement("nav");nav.className="flt";nav.id="flt";nav.setAttribute("aria-label","Filter projects");
-  nav.innerHTML=FLT.filter(([c])=>count(c)>0).map(([c,l],k)=>`<button type="button" data-f="${c}" aria-pressed="${c===DEF}"${c===DEF?' class="on"':""}><span class="fl">${l}</span><sup>${count(c)}</sup></button>`).join("");
-  $("#sub").after(nav);
-  let cur=DEF;
-  lis.forEach(li=>li.classList.toggle("f-off",li.dataset.cat!==DEF));   // open on Work
-  nav.addEventListener("click",e=>{
-    const b=e.target.closest("button[data-f]");if(!b||b.dataset.f===cur)return;
-    cur=b.dataset.f;
-    nav.querySelectorAll("button").forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-pressed",on)});
-    applyFilter(cur);
-  });
-  function applyFilter(c){
-    const show=li=>c==="all"||li.dataset.cat===c;
-    const leaving=lis.filter(li=>!li.classList.contains("f-off")&&!show(li));
-    const run=()=>{
-      // FLIP: remember where every visible card is, change the grid, then glide them into place
-      const first=new Map(lis.map(li=>[li,li.classList.contains("f-off")?null:li.getBoundingClientRect()]));
-      lis.forEach(li=>{li.classList.toggle("f-off",!show(li));li.style.opacity=""});
-      if(reduce)return;
-      lis.forEach((li,k)=>{if(li.classList.contains("f-off"))return;const a=first.get(li),b=li.getBoundingClientRect();
-        if(!a){li.animate([{opacity:0,transform:"translateY(28px)"},{opacity:1,transform:"none"}],{duration:900,delay:60+k*35,easing:"cubic-bezier(.16,1,.3,1)",fill:"backwards"});return}
-        const dx=a.left-b.left,dy=a.top-b.top;
-        if(Math.abs(dx)+Math.abs(dy)>1)li.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:"none"}],{duration:1000,easing:"cubic-bezier(.16,1,.3,1)"})});
-    };
-    if(reduce||!leaving.length)return run();
-    leaving.forEach(li=>li.animate([{opacity:1,transform:"none"},{opacity:0,transform:"scale(.98)"}],{duration:240,easing:"ease-in",fill:"forwards"}));
-    setTimeout(()=>{leaving.forEach(li=>li.getAnimations().forEach(a=>a.cancel()));run()},230);
-  }
-})();
 syncArt();try{sysDark.addEventListener('change',syncArt)}catch(_){}
 feed.querySelectorAll("img[data-fb]").forEach(im=>{im.onerror=()=>{im.onerror=null;const A=art(+im.dataset.fb);im.src=A.img;const f=im.parentNode.querySelector(".fog");if(f)f.src=A.fog}});
 /* ---------- smooth scroll ---------- */
@@ -1955,7 +1904,7 @@ $("#totop").addEventListener("click",e=>{e.preventDefault();lenis?lenis.scrollTo
 let introRunning=false;
 function intro(){
   if(reduce)return;
-  const lis=[...feed.children].filter(li=>!li.classList.contains("f-off"));   // only the cards the filter shows
+  const lis=[...feed.children];
   introRunning=true;
   const shift=$("#shift"), vw=innerWidth, vh=innerHeight;
   root.classList.add("intro");root.style.overflow="hidden";lenis&&lenis.stop();scrollTo(0,0);
