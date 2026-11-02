@@ -1599,6 +1599,10 @@ html body .feed .veil .vd{-webkit-line-clamp:3!important;max-width:40em}
 html body .feed .veil .vgo{margin-top:8px}
 :root[data-theme="dark"] body .feed .veil{background:linear-gradient(to top,rgba(18,18,18,.8),rgba(18,18,18,.64) 60%,rgba(18,18,18,.3))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body .feed .veil{background:linear-gradient(to top,rgba(18,18,18,.8),rgba(18,18,18,.64) 60%,rgba(18,18,18,.3))}}
+html body .feed .veil .vch{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+html body .feed .veil .vch i{font-style:normal;font-size:12px;font-weight:450;letter-spacing:-.005em;line-height:1;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1px rgba(11,11,11,.1);color:#0B0B0B;white-space:nowrap}
+:root[data-theme="dark"] body .feed .veil .vch i{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:#F4F4F4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body .feed .veil .vch i{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:#F4F4F4}}
 </style>
 
 <script>
@@ -1870,9 +1874,11 @@ function art(i,kind){
   const url=c.toDataURL("image/jpeg",.84);
   return {img:url,fog:url};
 }
-const veil=(k,d,go,fog)=>`<div class="veil" aria-hidden="true"><img class="fog" src="${fog}" alt=""><p class="vd">${d}</p><span class="vgo">${go} <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ic"><path d="M1 5h8M5.8 1.8 9 5 5.8 8.2"/></svg></span></div>`;
+const veil=(k,d,go,fog,ch)=>`<div class="veil" aria-hidden="true"><img class="fog" src="${fog}" alt=""><p class="vd">${d}</p>${ch?`<span class="vch">${ch.map(x=>`<i>${x}</i>`).join("")}</span>`:`<span class="vgo">${go} <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ic"><path d="M1 5h8M5.8 1.8 9 5 5.8 8.2"/></svg></span>`}</div>`;
 /* hover note for projects: role + timeline up top, the longer story in the middle */
-const veilCase=(p,fog)=>`<div class="veil" aria-hidden="true"><img class="fog" src="${fog}" alt=""><p class="vd">${p.vsum||p.intro||p.sum}</p><span class="vgo">Open case <svg class="arw" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h8M5.8 1.8 9 5 5.8 8.2"/></svg></span></div>`;
+/* chips under the hover note: timeline, role and each method, the same facts the case page lists */
+const vchips=p=>{let C={};try{C=CASES[p.slug]||{}}catch(_){}const m=String(C.methods||p.methods||"").split(",").map(x=>x.trim()).filter(Boolean);return `<span class="vch">${[C.time||p.time,C.role||p.role,...m].filter(Boolean).map(x=>`<i>${x}</i>`).join("")}</span>`};
+const veilCase=(p,fog)=>`<div class="veil" aria-hidden="true"><img class="fog" src="${fog}" alt=""><p class="vd">${p.vsum||p.intro||p.sum}</p>${vchips(p)}</div>`;
 /* one short line under each card */
 const LINE={"atmos":"A weather journal connecting your surroundings and your mood.","clock":"A clock taken apart into rings.","homepage":"A homepage that recommends by interest.","grants":"Scattered government funding, made browsable.","collections":"Thematic lists for tracking startup signals.","the-vc-design-system":"One shared language for The VC’s product.","unsecured-loan":"Spreading risk across many small loans.","tech-conference":"A conference site that speaks to developers.","mortgage":"A mortgage without paperwork or branch visits.","pf-design-system":"One component library for web, iOS and Android.","kyc-verification":"Identity checks with fewer steps.","stock-trading":"A friendlier first step into investing.","video-conferencing":"WECO — video calls everyone can join. Final Winner.","recipe-wellness":"Recipes and habits for everyday wellness."};
 const THUMB={"unsecured-loan":"unsecured-loan-3"};
@@ -1899,7 +1905,7 @@ const MOTION={"atmos":"atmos-motion.html","clock":"clock-motion.html"};
 const FOCUS={"homepage":"55% 46%","mortgage":"52% 40%","stock-trading":"45% 32%","tech-conference":"60% 50%"};
 $("#feed").innerHTML=ITEMS.map((it,i)=>{
   if(it.type==="lof"){const A=art(i,"lof");return `<li><button class="tile" type="button" data-lof>
-      <div class="media" data-label="Lof Archive"><img class="art" src="${A.img}" alt="">${veil(`<span>Lof</span><span>2019</span>`,"Before screens, leather. Twelve cases, purses and ink-on-leather pieces, cut, dyed and stitched by hand.","See all 12 objects",A.fog)}</div>
+      <div class="media" data-label="Lof Archive"><img class="art" src="${A.img}" alt="">${veil(`<span>Lof</span><span>2019</span>`,"Before screens, leather. Twelve cases, purses and ink-on-leather pieces, cut, dyed and stitched by hand.",null,A.fog,["2019","Handmade leather","12 objects"])}</div>
       <span class="cap"><span class="t">Lof Archive</span><span class="y num">${ARCHIVE.length} objects · 2019</span></span></button></li>`}
   const p=it.p, A=art(i);return `<li class="${FULL.has(p.slug)?'full ':WIDE.has(p.slug)?'wide ':''}${LIFE.has(p.slug)?'ph':'mk'}" style="--fp:${FOCUS[p.slug]||'50% 50%'}"><a class="tile" href="#${p.slug}" data-case="${p.slug}">
       <div class="media" data-label="${esc(p.title)}"><img class="art" src="${pic(p.slug)}" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}" data-fb="${i}" alt="">${MOTION[p.slug]&&!reduce?`<iframe class="am" data-src="${MOTION[p.slug]}" title="${esc(p.title)} motion preview" tabindex="-1" aria-hidden="true"></iframe>`:''}${veilCase(p,pic(p.slug)).replace('<img class="fog"',`<img class="fog" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}"`)}</div>
