@@ -1590,8 +1590,8 @@ html body .feed .veil{inset:auto 0 0 0!important;top:auto!important;justify-cont
   --fz:clamp(120px,11vw,180px);padding:calc(var(--fz) + 8px) clamp(22px,2.4vw,36px) clamp(22px,2.4vw,36px)!important;
   -webkit-mask-image:linear-gradient(to top,#000 calc(100% - var(--fz)),rgba(0,0,0,.86) calc(100% - var(--fz)*.82),rgba(0,0,0,.62) calc(100% - var(--fz)*.62),rgba(0,0,0,.36) calc(100% - var(--fz)*.4),rgba(0,0,0,.14) calc(100% - var(--fz)*.2),transparent)!important;
           mask-image:linear-gradient(to top,#000 calc(100% - var(--fz)),rgba(0,0,0,.86) calc(100% - var(--fz)*.82),rgba(0,0,0,.62) calc(100% - var(--fz)*.62),rgba(0,0,0,.36) calc(100% - var(--fz)*.4),rgba(0,0,0,.14) calc(100% - var(--fz)*.2),transparent)!important;
-  -webkit-backdrop-filter:blur(22px) saturate(1.25);backdrop-filter:blur(22px) saturate(1.25);
-  background:linear-gradient(to top,rgba(250,250,250,.78),rgba(250,250,250,.62) 60%,rgba(250,250,250,.3));
+  -webkit-backdrop-filter:blur(34px) saturate(1.1);backdrop-filter:blur(34px) saturate(1.1);
+  background:linear-gradient(to top,rgba(248,248,248,.9),rgba(248,248,248,.78) 60%,rgba(248,248,248,.4));
   opacity:0;transform:translateY(18px);transition:opacity .55s var(--ease),transform .8s var(--out)}
 html body .feed .tile.absorb .veil{opacity:1;transform:none}
 html body .feed .veil .fog,html body .feed .veil::before,html body .feed .veil::after{display:none!important}
@@ -1600,7 +1600,7 @@ html body .feed .veil .vgo{margin-top:8px}
 :root[data-theme="dark"] body .feed .veil{background:linear-gradient(to top,rgba(18,18,18,.8),rgba(18,18,18,.64) 60%,rgba(18,18,18,.3))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body .feed .veil{background:linear-gradient(to top,rgba(18,18,18,.8),rgba(18,18,18,.64) 60%,rgba(18,18,18,.3))}}
 html body .feed .veil .vch{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-html body .feed .veil .vch i{font-style:normal;font-size:12px;font-weight:450;letter-spacing:-.005em;line-height:1;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1px rgba(11,11,11,.1);color:#0B0B0B;white-space:nowrap}
+html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;letter-spacing:-.005em;line-height:1;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.22);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:inset 0 0 0 1px rgba(11,11,11,.09);color:#0B0B0B;white-space:nowrap}
 :root[data-theme="dark"] body .feed .veil .vch i{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:#F4F4F4}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body .feed .veil .vch i{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:#F4F4F4}}
 </style>
