@@ -1584,6 +1584,19 @@ main#top,#sheet{transition:filter .9s cubic-bezier(.76,0,.24,1)}
 .vc-yt iframe{width:100%;height:100%;border:0;display:block}
 .vc-cert{padding:clamp(20px,2.2vw,32px)!important;display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2vw,28px)}
 @media(max-width:640px){.cv-cr{display:none}.vc-cert{grid-template-columns:1fr}}
+
+/* hover note: only the bottom of the card frosts over, so the thumbnail stays visible above it */
+html body .feed .veil{inset:auto 0 0 0!important;top:auto!important;justify-content:flex-end;gap:14px;
+  padding:clamp(64px,6vw,96px) clamp(22px,2.4vw,36px) clamp(22px,2.4vw,36px)!important;
+  -webkit-mask-image:linear-gradient(to top,#000 calc(100% - clamp(48px,4.6vw,72px)),transparent)!important;mask-image:linear-gradient(to top,#000 calc(100% - clamp(48px,4.6vw,72px)),transparent)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(1.25);backdrop-filter:blur(22px) saturate(1.25);
+  background:linear-gradient(to top,rgba(250,250,250,.78),rgba(250,250,250,.62) 60%,rgba(250,250,250,.3));
+  opacity:0;transform:translateY(18px);transition:opacity .55s var(--ease),transform .8s var(--out)}
+html body .feed .tile.absorb .veil{opacity:1;transform:none}
+html body .feed .veil .fog,html body .feed .veil::before,html body .feed .veil::after{display:none!important}
+html body .feed .veil .vd{-webkit-line-clamp:3!important;max-width:40em}
+:root[data-theme="dark"] body .feed .veil{background:linear-gradient(to top,rgba(18,18,18,.8),rgba(18,18,18,.64) 60%,rgba(18,18,18,.3))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body .feed .veil{background:linear-gradient(to top,rgba(18,18,18,.8),rgba(18,18,18,.64) 60%,rgba(18,18,18,.3))}}
 </style>
 
 <script>
@@ -2052,11 +2065,10 @@ intro();
       const m=card.querySelector(".media").getBoundingClientRect();
       tx=Math.min(m.right-6,Math.max(m.left+6,ex));ty=Math.min(m.bottom-6,Math.max(m.top+6,ey));
       near=Math.hypot(x-tx,y-ty)<40;
-      const fx=Math.max(tx-m.left,m.right-tx)*1.45, fy=Math.max(ty-m.top,m.bottom-ty)*1.45;
-      trx=near?fx:SMALL();tryy=near?fy:SMALL();
-      grow=Math.max(0,Math.min(1,(Math.max(rx/fx,ry/fy)-.2)/.75));
+      // once it reaches the card it sinks in: shrinks, softens and fades where the cursor entered
+      trx=tryy=near?0:SMALL();
       clipR=near?m:null;
-      if(grow>.32&&absorbed!==card){release();absorbed=card;
+      if(near&&absorbed!==card){release();absorbed=card;
         const v=card.querySelector(".veil");v.style.setProperty("--ox",((tx-m.left)/m.width*100).toFixed(1)+"%");v.style.setProperty("--oy",((ty-m.top)/m.height*100).toFixed(1)+"%");
         card.classList.add("absorb")}
       if(absorbed===card) top=0;
@@ -2074,8 +2086,8 @@ intro();
     const k=card?.3:.075, nx=x+(tx-x)*k, ny=y+(ty-y)*k;
     vx+=((nx-x)-vx)*.25; vy+=((ny-y)-vy)*.25; x=nx;y=ny;
     const kr=card?.19:.14; rx+=(trx-rx)*kr; ry+=(tryy-ry)*kr;
-    op+=(top-op)*(top<op?.12:.22);
-    bv+=((card&&near?150:0)-bv)*(card&&near?.45:.3);
+    op+=(top-op)*(top<op?(card?.09:.12):.22);
+    bv+=((card&&near?24:0)-bv)*(card&&near?.2:.3);
     const off=y<-S||y>H+S;
     if(Math.max(rx,ry)<1||op<.02||off){if(shown){cvs.style.visibility="hidden";shown=false}if(glassOn){gl2.style.visibility="hidden";glassOn=false}return}
     if(!shown){cvs.style.visibility="visible";shown=true}
