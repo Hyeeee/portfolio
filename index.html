@@ -1856,7 +1856,7 @@ const SHOWN=PROJECTS.filter(p=>!HIDDEN.includes(p.slug));
 const ORDER=["atmos","clock","homepage","grants","unsecured-loan","mortgage","pf-design-system","tech-conference","video-conferencing","stock-trading"];
 const FULL=new Set([]);
 const WIDE=new Set(["atmos","grants","unsecured-loan","tech-conference","video-conferencing"]);
-const LIFE=new Set(["homepage","mortgage","tech-conference","stock-trading"]);
+const LIFE=new Set(["homepage","mortgage","tech-conference","stock-trading","clock"]);
 const SEQ=ORDER.map(s=>SHOWN.find(p=>p.slug===s)).filter(Boolean).concat(SHOWN.filter(p=>!ORDER.includes(p.slug)));
 const ITEMS=ORDER.map(s=>SHOWN.find(p=>p.slug===s)).filter(Boolean).concat(SHOWN.filter(p=>!ORDER.includes(p.slug))).map(p=>({type:"case",p}));
 /* placeholder art, drawn once: soft colour fields + a device-like card, grain from one shared tile, plus a pre-blurred copy for the fog */
@@ -1894,7 +1894,7 @@ const THUMB={"unsecured-loan":"unsecured-loan-3"};
 const pic=s=>LIFE.has(s)?`shots/${s}.jpg`:`mock/${THUMB[s]||s}.jpg`;
 /* mockups have a dark-card twin; photos keep their own light */
 const DARKMOCK=new Set(["atmos","clock","grants","unsecured-loan","pf-design-system","video-conferencing"]);
-const DARKSHOT=new Set([]);
+const DARKSHOT=new Set(["clock"]);
 const picD=s=>DARKSHOT.has(s)?`shots-dark/${s}.jpg`:DARKMOCK.has(s)&&!LIFE.has(s)?`mock-dark/${THUMB[s]||s}.jpg`:pic(s);
 /* live frames only run while they're on screen.
    Each animated iframe starts with data-src; when it comes near the viewport it gets its src,
@@ -1909,7 +1909,7 @@ function lfOff(f,watch){clearTimeout(f._lfT);lfIO.unobserve(f);if(!f._lfOn){if(w
 function lazyFrames(scope){scope.querySelectorAll("iframe[data-src]").forEach(f=>lfIO.observe(f))}
 function feedFrames(on){$$("#feed iframe[data-src]").forEach(f=>{if(on){lfIO.unobserve(f);lfIO.observe(f)}else lfOff(f,false)})}
 /* live motion thumbnails (iframes over the still image) */
-const MOTION={"atmos":"atmos-motion.html","clock":"clock-motion.html"};
+const MOTION={"atmos":"atmos-motion.html","clock":"clock-motion.html?ground=wrist&pad=0.07"};
 /* where to keep the subject when a photo is cropped to a landscape card on phones */
 const FOCUS={"homepage":"55% 46%","mortgage":"52% 40%","stock-trading":"45% 32%","tech-conference":"60% 50%"};
 $("#feed").innerHTML=ITEMS.map((it,i)=>{

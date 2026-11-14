@@ -14,7 +14,7 @@ html.watch,html.watch body{background:#000!important}html.pn,html.pn body{backgr
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/p5.min.js"></script>
 </head>
 <body>
-<script>{const g=new URLSearchParams(location.search).get('ground');if(g==='pn'||g==='watch')document.documentElement.classList.add(g)}</script>
+<script>{const g=new URLSearchParams(location.search).get('ground');if(g==='pn'||g==='watch'||g==='wrist')document.documentElement.classList.add(g)}</script>
 <script>
 /*
   Feed thumbnail for the Orbit Clock.
@@ -25,6 +25,10 @@ html.watch,html.watch body{background:#000!important}html.pn,html.pn body{backgr
 // ?ground=pn matches the case-study panel color instead of the feed's
 const GQ = new URLSearchParams(location.search).get('ground');
 // ?ground=watch is pure black, like a watch face
+// ?ground=wrist: the feed thumbnail. A photo of the watch on a wrist, with the clock running on its screen
+const WRIST = GQ === 'wrist';
+const WIMG = { w: 1400, h: 2100 }, WSCR = { x: 562, y: 809, w: 345, h: 419, r: 63 };   // screen area inside the photo
+let wristImg = { light: null, dark: null }, BOX = null;
 const GROUND = GQ === 'watch' ? { light: [0, 0, 0], dark: [0, 0, 0] }
   : GQ === 'pn' ? { light: [242, 242, 242], dark: [22, 22, 22] }
   : { light: [234, 234, 234], dark: [42, 42, 42] };
@@ -71,7 +75,8 @@ class Ring {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  pixelDensity(min(displayDensity(), 2));   // 2x is sharp enough here and uses far less memory than 3x
+  pixelDensity(min(displayDensity(), 2));
+  if (WRIST) { wristImg.light = loadImage('case/clock/wrist-l.jpg'); wristImg.dark = loadImage('case/clock/wrist-d.jpg'); }   // 2x is sharp enough here and uses far less memory than 3x
   rings = [
     new Ring({ count: 12, unit: 'h', labelEvery: 1, labelFn: i => (i === 0 ? '12' : String(i)), textSize: 34, drumY: -165, drumR: 215, dialR: 270 }),
     new Ring({ count: 12, unit: 'h', tick: 14, drumY: -74, drumR: 195, dialR: 215 }),
@@ -107,7 +112,18 @@ function draw() {
   const vals = FIXED.length === 3 && !isNaN(FIXED[0])
     ? { h: FIXED[0] % 12, m: FIXED[1], s: FIXED[2] }
     : { h: now.getHours() % 12, m: now.getMinutes(), s: now.getSeconds() };
+  if (WRIST) {
+    // the photo fills the card like object-fit: cover; the clock is clipped to the watch screen
+    const img = dark ? wristImg.dark : wristImg.light;
+    const k = max(width / WIMG.w, height / WIMG.h), ox = (width - WIMG.w * k) / 2, oy = (height - WIMG.h * k) / 2;
+    if (img && img.width) image(img, ox, oy, WIMG.w * k, WIMG.h * k);
+    BOX = { x: ox + WSCR.x * k, y: oy + WSCR.y * k, w: WSCR.w * k, h: WSCR.h * k };
+    fit();
+    drawingContext.save(); drawingContext.beginPath(); drawingContext.roundRect(BOX.x, BOX.y, BOX.w, BOX.h, WSCR.r * k); drawingContext.clip();
+    noStroke(); fill(0); rect(BOX.x, BOX.y, BOX.w, BOX.h);
+  }
   for (const r of rings) { r.update(vals[r.unit]); r.display(vals[r.unit]); }
+  if (WRIST) drawingContext.restore();
   if (PARTS) drawPartLabels();
 }
 
@@ -135,11 +151,12 @@ function fit() {
     const a = i / 24 * TWO_PI, R = r.outerR(), p = proj(R * sin(a), r.y, R * cos(a));
     x1 = min(x1, p.x); x2 = max(x2, p.x); y1 = min(y1, p.y); y2 = max(y2, p.y);
   }
-  const pad = min(width, height) * PAD;
+  const B = BOX || { x: 0, y: 0, w: width, h: height };
+  const pad = min(B.w, B.h) * PAD;
   // parts view: the clock sits a bit right of center to leave room for the names
-  const bx = PARTS ? width * 0.6 : width / 2, bw = PARTS ? width * 0.62 : width - pad * 2;
-  const u = min(bw / (x2 - x1), (height - pad * 2) / (y2 - y1));
-  unit = u; cx = bx - (x1 + x2) / 2 * u; cy = height / 2 - (y1 + y2) / 2 * u;
+  const bx = PARTS ? width * 0.6 : B.x + B.w / 2, bw = PARTS ? width * 0.62 : B.w - pad * 2;
+  const u = min(bw / (x2 - x1), (B.h - pad * 2) / (y2 - y1));
+  unit = u; cx = bx - (x1 + x2) / 2 * u; cy = B.y + B.h / 2 - (y1 + y2) / 2 * u;
 }
 
 function proj(x, y, z) {
@@ -151,7 +168,7 @@ function proj(x, y, z) {
 }
 
 const depthA = (z, r, a, b) => map(z, -r * 1.2, r * 1.2, a, b, true);
-function ink(a) { const c = dark ? INK.dark : INK.light; return color(c[0], c[1], c[2], a); }
+function ink(a) { const c = (dark || WRIST) ? INK.dark : INK.light; return color(c[0], c[1], c[2], a); }
 
 function flatText(str, a, r, y, size, on) {
   const px = r * sin(a), pz = r * cos(a);
