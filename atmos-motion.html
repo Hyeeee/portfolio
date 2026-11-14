@@ -10,9 +10,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-:root{--ground:#EDEDEB;--dots:rgba(17,17,17,.035);--ink:#111112;--ink-2:#55565B;--ink-3:#8C8D92;--line:rgba(17,17,18,.09);--line-2:rgba(17,17,18,.18);--glass:rgba(255,255,255,.58);--glass-2:rgba(247,247,246,.8);--glass-hi:rgba(255,255,255,.85);--glass-solid:rgba(250,250,249,.8);--glass-brd:rgba(255,255,255,.75);--fill:rgba(17,17,18,.05);--shadow:0 18px 50px -30px rgba(0,0,0,.28);--on-ink:#FAFAF9;--mk:#EAEAEA;--panel:rgba(248,248,247,.8);
+:root{--ground:#EAEAEA;--dots:rgba(17,17,17,.035);--ink:#111112;--ink-2:#55565B;--ink-3:#8C8D92;--line:rgba(17,17,18,.09);--line-2:rgba(17,17,18,.18);--glass:rgba(255,255,255,.58);--glass-2:rgba(247,247,246,.8);--glass-hi:rgba(255,255,255,.85);--glass-solid:rgba(250,250,249,.8);--glass-brd:rgba(255,255,255,.75);--fill:rgba(17,17,18,.05);--shadow:0 18px 50px -30px rgba(0,0,0,.28);--on-ink:#FAFAF9;--mk:#EAEAEA;--panel:rgba(248,248,247,.8);
  --font:'Geist','Noto Sans KR',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;--serif:'Instrument Serif',Georgia,'Times New Roman',serif}
-:root[data-theme="dark"]{--ground:#0D0D0E;--dots:rgba(255,255,255,.028);--ink:#EDEDED;--ink-2:#A2A3A8;--ink-3:#6B6C71;--line:rgba(255,255,255,.08);--line-2:rgba(255,255,255,.16);--glass:rgba(24,24,26,.55);--glass-2:rgba(22,22,24,.8);--glass-hi:rgba(255,255,255,.09);--glass-solid:rgba(26,26,28,.8);--glass-brd:rgba(255,255,255,.09);--fill:rgba(255,255,255,.06);--shadow:0 18px 50px -24px rgba(0,0,0,.8);--on-ink:#0D0D0E;--mk:#2A2A2A;--panel:rgba(22,22,24,.8)}
+:root[data-theme="dark"]{--ground:#2A2A2A;--dots:rgba(255,255,255,.028);--ink:#EDEDED;--ink-2:#A2A3A8;--ink-3:#6B6C71;--line:rgba(255,255,255,.08);--line-2:rgba(255,255,255,.16);--glass:rgba(24,24,26,.55);--glass-2:rgba(22,22,24,.8);--glass-hi:rgba(255,255,255,.09);--glass-solid:rgba(26,26,28,.8);--glass-brd:rgba(255,255,255,.09);--fill:rgba(255,255,255,.06);--shadow:0 18px 50px -24px rgba(0,0,0,.8);--on-ink:#2A2A2A;--mk:#2A2A2A;--panel:rgba(22,22,24,.8)}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden}
 body{background:var(--ground);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -255,7 +255,7 @@ function drawGlobe(lon0,lat0=GLAT){
  const f0=lat0*Math.PI/180,l0=lon0*Math.PI/180,sf0=Math.sin(f0),cf0=Math.cos(f0);
  const proj=(lat,lon)=>{const f=lat*Math.PI/180,l=lon*Math.PI/180,cf=Math.cos(f),sf=Math.sin(f),d=l-l0,cd=Math.cos(d);return{x:cxp+R*cf*Math.sin(d),y:cyp-R*(cf0*sf-sf0*cf*cd),z:sf0*sf+cf0*cf*cd}};
  const gr=c.createRadialGradient(cxp-R*.35,cyp-R*.4,R*.1,cxp,cyp,R);gr.addColorStop(0,ink(.015));gr.addColorStop(1,ink(.06));
- c.fillStyle=dark?"rgba(13,13,14,.8)":"rgba(237,237,235,.8)";c.beginPath();c.arc(cxp,cyp,R,0,TAU);c.fill();c.fillStyle=gr;c.fill();c.lineWidth=1;c.strokeStyle=ink(.22);c.stroke();
+ c.fillStyle=dark?"rgba(42,42,42,.8)":"rgba(234,234,234,.8)";c.beginPath();c.arc(cxp,cyp,R,0,TAU);c.fill();c.fillStyle=gr;c.fill();c.lineWidth=1;c.strokeStyle=ink(.22);c.stroke();
  c.setLineDash([1.5,4]);c.strokeStyle=ink(.14);c.beginPath();let first=true;for(let lon=-180;lon<=180;lon+=4){const p=proj(0,lon);if(p.z<0){first=true;continue}if(first){c.moveTo(p.x,p.y);first=false}else c.lineTo(p.x,p.y)}c.stroke();c.setLineDash([]);
  const sd=Math.sin(SUN.lat*Math.PI/180),cdS=Math.cos(SUN.lat*Math.PI/180),lS=SUN.lon*Math.PI/180;
  {const p=proj(SUN.lat,SUN.lon),vx=(p.x-cxp)/R,vy=(p.y-cyp)/R,vl=Math.hypot(vx,vy),ux=vl>1e-3?vx/vl:1,uy=vl>1e-3?vy/vl:0,g0=(1+p.z)/2;

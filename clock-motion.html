@@ -6,8 +6,8 @@
 <title>Orbit Clock motion</title>
 <meta name="robots" content="noindex">
 <style>
-html,body{margin:0;height:100%;overflow:hidden;background:#EDEDEB}
-:root[data-theme="dark"] body,:root[data-theme="dark"]{background:#0D0D0E}
+html,body{margin:0;height:100%;overflow:hidden;background:#EAEAEA}
+:root[data-theme="dark"] body,:root[data-theme="dark"]{background:#2A2A2A}
 canvas{display:block}
 html.watch,html.watch body{background:#000!important}html.pn,html.pn body{background:#F2F2F2}html.pn[data-theme="dark"],html.pn[data-theme="dark"] body{background:#161616}
 </style>
@@ -27,7 +27,7 @@ const GQ = new URLSearchParams(location.search).get('ground');
 // ?ground=watch is pure black, like a watch face
 const GROUND = GQ === 'watch' ? { light: [0, 0, 0], dark: [0, 0, 0] }
   : GQ === 'pn' ? { light: [242, 242, 242], dark: [22, 22, 22] }
-  : { light: [237, 237, 235], dark: [13, 13, 14] };
+  : { light: [234, 234, 234], dark: [42, 42, 42] };
 const INK    = { light: [17, 17, 18],    dark: [237, 237, 237] };
 const FONT = 'Helvetica,Arial,sans-serif';
 const FOCAL = 900;
