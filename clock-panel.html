@@ -37,8 +37,9 @@ function embedCanvas() {
 // keep the drawing size, only change how big it looks on screen
 function fitCanvasToWindow() {
   const el = document.querySelector('canvas'); if (!el) return;
-  el.style.width = window.innerWidth + 'px';
-  el.style.height = window.innerHeight + 'px';
+  // vw / vh follow the iframe's exact (fractional) size, so the canvas reaches the very bottom edge
+  el.style.width = '100vw';
+  el.style.height = '100vh';
 }
 </script>
 <script>
@@ -227,7 +228,11 @@ function setup() {
 function draw() {
   // fade between dark and light mode
   theme = lerp(theme, lightMode ? 1 : 0, 0.1);
-  background(mixTheme('bg'));
+  const bgc = mixTheme('bg');
+  background(bgc);
+  // the page behind the canvas takes the same color, so the sub-pixel gap under it never shows as a white line
+  const bgs = 'rgb(' + bgc.map(Math.round).join(',') + ')';
+  if (document.body.style.background !== bgs) document.documentElement.style.background = document.body.style.background = bgs;
   hitBoxes = [];
 
   L = computeLayout();

@@ -1603,6 +1603,21 @@ html body .feed .veil .vch{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
 html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;letter-spacing:-.005em;line-height:1;padding:8px 12px;border-radius:999px;background:rgba(11,11,11,.045);box-shadow:inset 0 0 0 1px rgba(11,11,11,.12);color:#0B0B0B;white-space:nowrap}
 :root[data-theme="dark"] body .feed .veil .vch i{background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);color:#F4F4F4}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body .feed .veil .vch i{background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);color:#F4F4F4}}
+
+/* Orbit Clock: phone and watch side by side */
+.clk-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.clk-two>.clk-phs{margin:0;align-items:center}
+@media (max-width:700px){.clk-two{grid-template-columns:minmax(0,1fr)}}
+.clk-wf{display:flex;justify-content:center}
+.dev-watch{position:relative;width:min(54%,260px);aspect-ratio:41/49;margin:24% 0;filter:drop-shadow(0 18px 22px rgba(0,0,0,.2))}
+.dev-watch .band{position:absolute;left:15%;width:70%;height:46%;background:linear-gradient(90deg,#1d1d1f,#2c2c2e 50%,#1d1d1f)}
+.dev-watch .band.t{bottom:80%;border-radius:12% 12% 0 0/20% 20% 0 0}
+.dev-watch .band.b{top:80%;border-radius:0 0 12% 12%/0 0 20% 20%}
+.dev-watch .case{position:absolute;inset:0;border-radius:24%/20%;background:linear-gradient(145deg,#4a4a4d,#1b1b1d 55%,#2e2e30);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08)}
+.dev-watch .crown{position:absolute;right:-4.5%;top:24%;width:6%;height:15%;border-radius:30%/14%;background:linear-gradient(90deg,#2a2a2c,#5a5a5d 60%,#333)}
+.dev-watch .sbtn{position:absolute;right:-2.5%;top:50%;width:3.5%;height:20%;border-radius:40%/10%;background:linear-gradient(90deg,#2a2a2c,#4a4a4c)}
+.dev-watch .scr{position:absolute;inset:5.5%;border-radius:19%/16%;overflow:hidden;background:#000;box-shadow:inset 0 0 0 2px #000}
+.dev-watch .scr iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
 </style>
 
 <script>
@@ -2367,8 +2382,8 @@ clock:{sec:[
     {h:"Scroll or pinch",d:"Zoom in and out. On phones it’s a two finger pinch."},
     {h:"Double click",d:"Flatten the orbit into a dial and back. On phones, double tap."},
     {h:"Pick a city",d:"Tap any city in the row, and every ring turns to its time."}]}]},
- {k:"Mobile",h:"Made for phones too",b:"On a phone, the clock sits in the middle of the screen and gets as big as it can. All the cities live in one row that you can swipe sideways, with a soft fade at the edge so you know there’s more. You rotate with one finger and zoom with two.",
-  blocks:[{t:"html",html:`<figure class="pn clk-phs"><div class="dev-p15 one"><div class="scr"><video src="case/clock/mobile.mp4" poster="case/clock/mobile-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="The clock running on an iPhone"></video></div></div></figure>`}]},
+ {k:"Mobile",h:"Made for phones too",b:"On a phone, the clock sits in the middle of the screen and gets as big as it can. All the cities live in one row that you can swipe sideways, with a soft fade at the edge so you know there’s more. You rotate with one finger and zoom with two. Later I also built it in Xcode as an Apple Watch face.",
+  blocks:[{t:"html",html:`<div class="clk-two"><figure class="pn clk-phs"><div class="dev-p15 one"><div class="scr"><video src="case/clock/mobile.mp4" poster="case/clock/mobile-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="The clock running on an iPhone"></video></div></div></figure><figure class="pn clk-phs clk-wf"><div class="dev-watch"><i class="band t"></i><i class="band b"></i><div class="case"><i class="crown"></i><i class="sbtn"></i><div class="scr"><iframe data-src="clock-motion.html?ground=watch&theme=dark&pad=0.1" title="The clock as an Apple Watch face" loading="lazy" tabindex="-1" aria-hidden="true"></iframe></div></div></div></figure></div>`}]},
  {k:"Small details",h:"Things I kept fixing",b:"Most of the work was in small things that felt slightly off. Each one was a short back and forth with Claude, where I described what I saw and we fixed it together.",
   blocks:[{t:"table",head:["What felt off","What I changed"],rows:[
     ["The current hour sat a little to the side of the minutes and seconds","Each ring now snaps to whole numbers, so the present always lines up in one line"],
