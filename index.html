@@ -1894,7 +1894,7 @@ const THUMB={"unsecured-loan":"unsecured-loan-3"};
 const pic=s=>LIFE.has(s)?`shots/${s}.jpg`:`mock/${THUMB[s]||s}.jpg`;
 /* mockups have a dark-card twin; photos keep their own light */
 const DARKMOCK=new Set(["atmos","clock","grants","unsecured-loan","pf-design-system","video-conferencing"]);
-const DARKSHOT=new Set(["clock"]);
+const DARKSHOT=new Set([]);
 const picD=s=>DARKSHOT.has(s)?`shots-dark/${s}.jpg`:DARKMOCK.has(s)&&!LIFE.has(s)?`mock-dark/${THUMB[s]||s}.jpg`:pic(s);
 /* live frames only run while they're on screen.
    Each animated iframe starts with data-src; when it comes near the viewport it gets its src,
