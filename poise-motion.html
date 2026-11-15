@@ -22,7 +22,7 @@ canvas{display:block;width:100%;height:100%}
   at a desk: the head slides forward, the whole body comes close to the screen, it straightens up,
   leans back, tips to one side. The ground takes on the app's posture colour for each pose
   (gray when aligned, yellow for a drift, red when too close, green when it is fixed),
-  and a chip above the head says what is happening right now (Slouching, Leaning back...),
+  and a chip above the head says what is happening right now in the app's own words (Slouching, Too close, Tilting...),
   the same way the light bar changes colour.
   ?ground=pn matches the case page panel. ?still=1 draws one aligned frame (for the static image).
 */
@@ -87,13 +87,13 @@ const Z = { fwd: 0, zoom: 1, tipBack: 0, bend: 0, head: 0, hx: 0, drop: 0 };
 const POSES = [
   { p: {}, c: null, label: 'Aligned', hold: 2.2 },
   { p: { fwd: 1, drop: 14, head: .1 }, c: 'amber', label: 'Slouching', hold: 1.9 },
-  { p: { fwd: .8, zoom: 1.16, drop: 6, head: .06 }, c: 'red', label: 'Too close to the screen', hold: 1.9 },
-  { p: {}, c: 'green', label: 'Back in line', hold: 1.2 },
+  { p: { fwd: .8, zoom: 1.16, drop: 6, head: .06 }, c: 'red', label: 'Too close', hold: 1.9 },
+  { p: {}, c: 'green', label: 'Back in balance', hold: 1.2 },
   { p: {}, c: null, label: 'Aligned', hold: 1.4 },
-  { p: { tipBack: 1 }, c: 'amber', label: 'Leaning back', hold: 1.9 },
+  { p: { tipBack: 1 }, c: 'amber', label: 'Too far', hold: 1.9 },
   { p: {}, c: null, label: 'Aligned', hold: 1.4 },
-  { p: { bend: .2, head: -.12, hx: -6 }, c: 'amber', label: 'Leaning to one side', hold: 1.9 },
-  { p: {}, c: 'green', label: 'Back in line', hold: 1.2 },
+  { p: { bend: .2, head: -.12, hx: -6 }, c: 'amber', label: 'Tilting', hold: 1.9 },
+  { p: {}, c: 'green', label: 'Back in balance', hold: 1.2 },
 ];
 const MOVE = 1.15;   // seconds to move between poses
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
