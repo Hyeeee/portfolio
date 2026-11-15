@@ -75,8 +75,7 @@ function drawFigure(ctx, P, { j = () => 0, ink, paper }) {
   ctx.restore();
   }
   // arms resting on the desk
-  // arms hang from just below the shoulder line, so the top of the arm sits flush with the tee
-  for (const [s0, e, w] of [[[SR[0], SR[1] + 7], P.eR, P.wR], [[SL[0], SL[1] + 7], P.eL, P.wL]]) {
+  for (const [s0, e, w] of [[SR, P.eR, P.wR], [SL, P.eL, P.wL]]) {
     const el = [e[0], e[1] + drop], wr = [w[0], w[1] + drop];
     limb(s0, el, 11); limb(el, wr, 9);
     ctx.fillStyle = paper; ctx.strokeStyle = ink; ctx.lineWidth = 2.4;
@@ -174,15 +173,14 @@ function frame(now) {
   ctx.beginPath();
   // traced around the aligned figure, about 3 units outside it: neck, over the shoulder joint,
   // down the upper arm, around the elbow and along the forearm to the desk
-  // a calm, flat outline: straight across the shoulders, a soft corner, then down the arms
   for (const m of [-1, 1]) {
-    ctx.moveTo(10.5 * m, -136); ctx.lineTo(10.5 * m, -124);
-    ctx.quadraticCurveTo(12 * m, -119, 22 * m, -119);
-    ctx.lineTo(42 * m, -119);
-    ctx.quadraticCurveTo(52 * m, -119, 54 * m, -110);
-    ctx.lineTo(70 * m, -74);
-    ctx.quadraticCurveTo(73 * m, -66, 68 * m, -58);
-    ctx.lineTo(42 * m, -14);
+    const A = a => m > 0 ? a * Math.PI / 180 : (180 - a) * Math.PI / 180, ccw = m < 0;   // mirror angles for the left side
+    ctx.moveTo(10.75 * m, -136); ctx.lineTo(10.75 * m, -125);
+    ctx.quadraticCurveTo(12 * m, -118, 30.4 * m, -117.7);
+    ctx.arc(40 * m, -116, 9.75, A(-170), A(-23.5), ccw);          // over the shoulder joint
+    ctx.lineTo(68.9 * m, -73.9);                                  // down the upper arm
+    ctx.arc(60 * m, -70, 9.75, A(-23.5), A(28.4), ccw);           // around the elbow
+    ctx.lineTo(41.7 * m, -17.8);                                  // along the forearm to the desk
   }
   ctx.stroke(); ctx.setLineDash([]);
   ctx.restore();
