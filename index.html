@@ -1622,6 +1622,16 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-hyp{padding:clamp(20px,2.4vw,36px)}.po-hyp span{font-size:13px;color:var(--muted)}
 .po-hyp p{margin:10px 0 0;font-size:clamp(20px,1.9vw,28px);line-height:1.3;letter-spacing:-.02em;max-width:36ch}
 .po-ph{aspect-ratio:4/5;object-fit:cover;width:100%}
+.po-deck{position:relative;overflow:hidden;padding:0!important;aspect-ratio:1600/var(--h)}
+.po-deck iframe{position:absolute;left:0;top:0;width:1600px;height:900px;border:0;transform-origin:0 0;transform:scale(var(--k,.5)) translateY(calc(var(--t) * -1px))}
+.po-cap{margin:10px 0 0;font-size:13px;color:var(--muted)}
+.po-who span{display:flex;flex-direction:column}
+.po-close{display:grid;grid-template-columns:1fr 1fr;column-gap:var(--gutter,40px)}
+.po-close .po-lh{font-size:15px;font-weight:500;padding-bottom:16px;border-bottom:1px solid var(--fg)}
+.po-close>div{padding:24px 0;border-bottom:1px solid var(--line,rgba(0,0,0,.1))}
+.po-close h3{margin:0;font-size:18px;font-weight:500;letter-spacing:-.01em}
+.po-close p{margin:10px 0 0;font-size:15px;line-height:1.5;color:var(--muted)}
+@media (max-width:700px){.po-close{grid-template-columns:1fr}.po-close .n{order:2}.po-close .po-lh.n{margin-top:40px}}
 .po-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
 .po-flow .card p b{font-weight:500;color:var(--fg)}
 @media (max-width:1100px){.po-flow{--c:3!important}}@media (max-width:700px){.po-flow{--c:1!important}}
@@ -1923,7 +1933,9 @@ const lfIO=new IntersectionObserver(es=>es.forEach(e=>{const f=e.target;clearTim
 }),{rootMargin:"60% 0px"});
 /* swap in a fresh, empty iframe so the old page (and its canvas) is really thrown away */
 function lfOff(f,watch){clearTimeout(f._lfT);lfIO.unobserve(f);if(!f._lfOn){if(watch)lfIO.observe(f);return}const n=f.cloneNode(false);n.removeAttribute("src");f.replaceWith(n);if(watch)lfIO.observe(n)}
-function lazyFrames(scope){scope.querySelectorAll("iframe[data-src]").forEach(f=>lfIO.observe(f))}
+function lazyFrames(scope){scope.querySelectorAll("iframe[data-src]").forEach(f=>lfIO.observe(f));scope.querySelectorAll(".po-deck").forEach(el=>poRO.observe(el))}
+/* Poise deck slides: each frame is drawn at 1600 x 900 and scaled to the panel, showing only the band that holds the slide's graphic */
+const poRO=new ResizeObserver(es=>es.forEach(e=>e.target.style.setProperty("--k",e.contentRect.width/1600)));
 function feedFrames(on){$$("#feed iframe[data-src]").forEach(f=>{if(on){lfIO.unobserve(f);lfIO.observe(f)}else lfOff(f,false)})}
 /* live motion thumbnails (iframes over the still image) */
 const MOTION={"atmos":"atmos-motion.html","clock":"clock-motion.html","poise":"poise-motion.html"};
@@ -2321,95 +2333,27 @@ const PFC={
 const CASES={
 poise:{sec:[
  {k:"Problem",h:"We drift without noticing",b:["Most of us sit at a computer for hours, and our posture slowly changes while we focus. We usually notice only once it hurts, and by then fixing it takes a lot of time and money.","So I wanted to find out when people drift, why their fixes don’t last, and how I could help them notice early."],
-  blocks:[{t:"stats",items:[
-   ["6 hrs","Sitting every day","The average US adult still sits about six hours a day. Li et al., JAMA, 2025."],
-   ["63%","Office workers with neck pain","Up to 63% of office workers get neck pain in a single year. Chen et al., Physical Therapy, 2018."],
-   ["$134.5B","The biggest health cost in the US","Back and neck pain cost more than any other condition. Dieleman et al., JAMA, 2020."]]},
-   {t:"table",h:"What it costs once it hurts, and what people try",head:["","What it is","U.S. price"],rows:[
-    ["MRI","One scan","$300–3,000"],
-    ["Physical therapy","2× a week, 12 weeks","$1,200–8,400"],
-    ["Ergonomic chair","Herman Miller Aeron","$2,305–2,730"],
-    ["Reformer Pilates","2× a week, 12 weeks","$840–1,440"]]}]},
+  blocks:[{t:"html",html:`<figure class="pn po-deck" style="--t:100;--h:740"><iframe data-src="https://poise-lightbar.netlify.app/deck/index.html?embed#3" title="How we drift at a desk, step by step" loading="lazy" tabindex="-1"></iframe></figure>`},
+   {t:"html",html:`<figure class="pn po-deck" style="--t:210;--h:500"><iframe data-src="https://poise-lightbar.netlify.app/deck/index.html?embed#4" title="Hours at a computer, neck pain and the cost of back and neck pain" loading="lazy" tabindex="-1"></iframe></figure>`}]},
  {k:"Research",h:"When it drifts, where it hurts, what people try",b:"I ran a survey, then interviewed three people to go deeper, and looked at the posture tools that are already out there.",
-  blocks:[{t:"html",html:`<h3 class="po-sub">Survey · 15 people · Oct 20 to 23</h3>`},
-   {t:"stats",items:[
-    ["9 of 15","Rarely notice, or only once it hurts","6 people said they notice their posture changed only when it starts to hurt."],
-    ["14 of 15","Feel pain somewhere","Neck and lower back came up the most, 7 people each."],
-    ["2 of 15","Use reminders or timers","Most people stretch or get a better chair, so they fix it later instead of catching it early."]]},
-   {t:"html",html:`<h3 class="po-sub">Interviews · 3 people · Oct 25 to 27</h3>`},
-   {t:"people",cols:3,items:[
-    {h:"Notices only once it hurts",d:"Help him notice early, while it’s still a small slouch and not yet back pain.",q:"I only notice I’m slouching when my lower back starts to hurt.",n:"Paul",r:"Engineer",img:"case/poise/paul.webp"},
-    {h:"Sitting straight is hard",d:"Give him short breaks to reset, so he can come back and sit well again.",q:"A Herman Miller helped at first, then sitting straight got too hard.",n:"Hyunjoo",r:"Designer",img:"case/poise/joo.webp"},
-    {h:"Leans in when he focuses",d:"A signal with no interruptions, quiet enough for any room he works in.",q:"Depends where I am. If it has to be quiet, a silent reminder beats sound.",n:"Peter",r:"Lawyer",img:"case/poise/peter.webp"}]},
-   {t:"html",html:`<h3 class="po-sub">Market research</h3>`},
-   {t:"table",h:"Posture tools and fixes",s:"They either interrupt you, or come after it already hurts.",head:["","Notice early","A clear cue","No interruptions"],rows:[
-    ["Upright Go","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-n' aria-label='no'>✕</span>"],
-    ["Nekoze","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-n' aria-label='no'>✕</span>"],
-    ["Posture Pal","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-n' aria-label='no'>✕</span>"],
-    ["Apple Screen Distance","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-n' aria-label='no'>✕</span>"],
-    ["Ergonomic chair","<span class='po-n' aria-label='no'>✕</span>","<span class='po-n' aria-label='no'>✕</span>","<span class='po-y' aria-label='yes'>✓</span>"],
-    ["PT, Pilates, exercise","<span class='po-n' aria-label='no'>✕</span>","<span class='po-n' aria-label='no'>✕</span>","<span class='po-y' aria-label='yes'>✓</span>"]]},
-   {t:"cards",cols:4,items:[
-    {h:"DoorDash",d:"Order status on the lock screen. Status without opening the app."},
-    {h:"Uber",d:"Your ride’s ETA on the lock screen. Updates that wait for your glance."},
-    {h:"Starbucks",d:"A Live Activity when your order is ready. Only speaks when something changes."},
-    {h:"Nike Run Club",d:"Distance and pace on the lock screen. Glance mid-run, keep running."}]},
-   {t:"tx",items:[["Ideas I can bring in from other services","These apps show live status on the lock screen, without opening the app. I could show people their posture live in the same way."]]},
-   {t:"html",html:`<h3 class="po-sub">Hypothesis</h3>`},
-   {t:"cards",cols:3,items:[
-    {h:"Notice early",d:"From the survey. People notice only once it hurts. By then, they’ve been drifting for a while."},
-    {h:"A clear cue",d:"From the interviews. Fixes only last while they remember. Once work gets busy, they forget and drift back."},
-    {h:"No interruptions",d:"From market research. Every cue out there interrupts. Apps pop up, and chairs or Pilates come after it hurts."}]},
-   {t:"html",html:`<div class="pn po-hyp"><span>Hypothesis</span><p>If people get a clear cue that helps them notice early with no interruptions, they’ll catch the drift sooner and stay aligned longer.</p></div>`}]},
+  blocks:[{t:"html",html:`<h3 class="po-sub">Survey · 15 people · Oct 20 to 23</h3>`},{t:"html",html:`<figure class="pn po-deck" style="--t:280;--h:340"><iframe data-src="https://poise-lightbar.netlify.app/deck/index.html?embed#5" title="Survey answers" loading="lazy" tabindex="-1"></iframe></figure>`},
+   {t:"html",html:`<h3 class="po-sub">Interviews · 3 people · Oct 25 to 27</h3>`},{t:"html",html:`<div class="cz-g" style="--c:3"><figure class="pn person"><b class="ph">Notices only once it hurts</b><p class="pd">Help him notice early, while it’s still a small slouch and not yet back pain.</p><blockquote>“I only notice I’m slouching when my lower back starts to hurt.”</blockquote><figcaption class="who po-who"><span><b>Paul</b><i>Engineer</i></span></figcaption></figure><figure class="pn person"><b class="ph">Sitting straight is hard</b><p class="pd">Give him short breaks to reset, so he can come back and sit well again.</p><blockquote>“A Herman Miller helped at first, then sitting straight got too hard.”</blockquote><figcaption class="who po-who"><span><b>Hyunjoo</b><i>Designer</i></span></figcaption></figure><figure class="pn person"><b class="ph">Leans in when he focuses</b><p class="pd">A signal with no interruptions, quiet enough for any room he works in.</p><blockquote>“Depends where I am. If it has to be quiet, a silent reminder beats sound.”</blockquote><figcaption class="who po-who"><span><b>Peter</b><i>Lawyer</i></span></figcaption></figure></div>`},
+   {t:"html",html:`<h3 class="po-sub">Market research</h3>`},{t:"html",html:`<figure class="pn po-deck" style="--t:205;--h:500"><iframe data-src="https://poise-lightbar.netlify.app/deck/index.html?embed#7" title="Competitors and comparators" loading="lazy" tabindex="-1"></iframe></figure>`},
+   {t:"html",html:`<h3 class="po-sub">Hypothesis</h3>`},{t:"html",html:`<figure class="pn po-deck" style="--t:165;--h:600"><iframe data-src="https://poise-lightbar.netlify.app/deck/index.html?embed#8" title="From survey, interviews and market research to one hypothesis" loading="lazy" tabindex="-1"></iframe></figure>`}]},
  {k:"User flow",h:"What the app and the light bar do at each step",b:["Poise has two parts. The web app watches your posture through the camera or a sensor, and the light bar on top of your screen changes color as you move, so you notice without stopping your work.","For the business, I keep the app free to try, then offer the light bar. It could grow into a posture health service, where people share their data with physical therapists to get help."],
-  blocks:[{t:"cards",cols:5,cls:"po-flow",items:[
-    {h:"Set up",d:"<b>The app</b> questions, then camera or sensor.<br><b>The light bar</b> connects over USB."},
-    {h:"Focus",d:"<b>The app</b> watches your posture.<br><b>The light bar</b> stays white."},
-    {h:"Drift",d:"<b>The app</b> tells you how you moved.<br><b>The light bar</b> yellow, red, green, white."},
-    {h:"Report",d:"<b>The app</b> how long you stayed aligned.<br><b>The light bar</b> stays white."},
-    {h:"Break",d:"<b>The app</b> guides stretches or a game.<br><b>The light bar</b> glows with the game."}]},
+  blocks:[{t:"html",html:`<figure class="pn po-deck" style="--t:330;--h:230"><iframe data-src="https://poise-lightbar.netlify.app/deck/index.html?embed#9" title="The user flow" loading="lazy" tabindex="-1"></iframe></figure>`},
    {t:"img",src:"case/poise/lightbar-photo.webp",cap:"The light bar: a strip of LEDs and distance sensors on an Arduino, sitting on top of the screen."}]},
- {k:"Version one",h:"A light bar and a web app, from setup to breaks",b:"I designed the flow and built a working first version with Claude, so I could put it in front of people within days.",
-  blocks:[{t:"cards",cols:2,items:[
-    {h:"Onboarding",d:"I added questions, like how long you focus and how you like to rest, because I learned from the interviews that everyone works differently and wants to set it up their own way."},
-    {h:"Focus mode",d:"I made a bar that fills as you drift and a light that turns yellow, then red, because I wanted people to notice before it hurts. At the end, a report shows how long they sat well."},
-    {h:"Break mode",d:"I made a figure you can stretch along with, and the camera scores how closely you match it, because I thought a short reset helps people sit well again."},
-    {h:"Settings",d:"I added settings for focus time, tracking sensitivity and alert timing, because everyone has their own preferences."}]}]},
- {k:"Iteration",h:"Watching people use it changed what I thought mattered",b:"I put it in front of 10 classmates in a three hour playtest in class on Oct 29, about 10 minutes each.",
-  blocks:[{t:"grid",cols:2,items:[{src:"case/poise/pt-screen-top.webp",alt:"The light bar on top of the screen at the playtest",cls:"po-ph"},{src:"case/poise/pt-extra.webp",alt:"The light bar glowing red",cls:"po-ph"}]},
-   {t:"cards",cols:3,items:[
-    {h:"Positive",d:"Caught drift early, and gave control.",list:["It caught me slouching before I even noticed","I loved having the options for a break","The light felt calm, not like an alarm","Being able to shut off the camera was great"]},
-    {h:"Negative",d:"Slow setup, unclear light, risky camera.",list:["From the light alone, I couldn’t tell how I moved","Twelve guide steps before I could even start","I couldn’t find where to change my settings","Helpful, but I worry what the camera collects"]},
-    {h:"New ideas",d:"Their own way, and always in view.",list:["I wish I could just type the mode I want","I’d like a small window while I work","The light is nice, but tell me what to fix","I’d love to see how my week went"]}]},
-   {t:"table",h:"So I planned the next version around three changes",head:["Change","Priority","What I’ll do","Trade-off"],rows:[
-    ["Clearer privacy","High","Show how privacy is protected and the sensor option in the modal, so people feel safe","The sensor can miss small posture changes"],
-    ["Clearer cues","Medium","Add a voice and a figure that moves with you, so you know how to fix it","A voice can interrupt you"],
-    ["Simpler and more personal","Low","Add a text bar for settings and a mini window, so it’s quicker and always in view","More features can make it harder to learn"]]}]},
+ {k:"Version one",h:"A light bar and a web app, from setup to breaks",b:"I designed the flow and built a working first version with Claude, so I could put it in front of people within days. Each part plays its screen recording, and the light bar on top changes color with it.",
+  blocks:[{t:"html",html:`<figure class="pn po-deck" style="--t:0;--h:900"><iframe data-src="https://poise-lightbar.netlify.app/deck/index.html?embed#10" title="Version one, part by part" loading="lazy" tabindex="-1"></iframe></figure><p class="po-cap">Click to skip to the next part.</p>`}]},
+ {k:"Iteration",h:"Watching people use it changed what I thought mattered",b:"I put it in front of 10 classmates in a three hour playtest in class on Oct 29, about 10 minutes each. Then I planned the next version around what they said.",
+  blocks:[{t:"html",html:`<figure class="pn po-deck" style="--t:40;--h:820"><iframe data-src="https://poise-lightbar.netlify.app/deck/index.html?embed#11" title="The playtest in class" loading="lazy" tabindex="-1"></iframe></figure>`},
+   {t:"html",html:`<figure class="pn po-deck" style="--t:245;--h:420"><iframe data-src="https://poise-lightbar.netlify.app/deck/index.html?embed#12" title="What the playtest showed" loading="lazy" tabindex="-1"></iframe></figure>`},
+   {t:"html",html:`<figure class="pn po-deck" style="--t:320;--h:260"><iframe data-src="https://poise-lightbar.netlify.app/deck/index.html?embed#13" title="The plan for version two" loading="lazy" tabindex="-1"></iframe></figure>`}]},
  {k:"Version two",h:"Six changes, and how they measured",b:"I rebuilt the app around the plan. Then I tested both versions with the same three people, one hour each, on Nov 8. Version two did better on all three things I measured.",
-  blocks:[{t:"cards",cols:2,items:[
-    {h:"Clearer privacy",d:"I showed that the camera never records you and the sensor works but is less accurate, because in version one this note was small at the bottom, and I wanted people to feel safe."},
-    {h:"Simpler steps",d:"I grouped similar steps together, so the guide went from twelve steps to four, because people felt it was a bit too long."},
-    {h:"Easier to notice",d:"I added a figure that moves with you and a voice that tells you how to fix it, because in version one, people didn’t understand what the bar and the number meant."},
-    {h:"Mini window",d:"I added a small window in the corner of your screen, because people wanted to keep tracking their posture while working on other tabs."},
-    {h:"Ask Poise",d:"I added a text field to type what you want instead of opening settings, because people had a hard time finding settings, so I wanted an easier way to change them."},
-    {h:"One look and feel",d:"I made a design system and changed the look, because I built version one with AI and the screens didn’t match. So I thought without clear rules, AI can’t make things consistent."}]},
-   {t:"stats",items:[
-    ["85% → 90%","How long they sat well","Out of a one hour work session, up 5 points on average."],
-    ["1:25 → 0:52","How long setup took","From opening the app to finishing the guide, about 38% faster."],
-    ["0:21 → 0:15","How long switching modes took","From one mode to another, about 28% faster."]]},
-   {t:"table",head:["","Sat well","Setup","Switching modes"],rows:[
-    ["Paul","80% → 85%","1:20 → 0:50","0:25 → 0:20"],
-    ["Hyunjoo","90% → 93%","1:23 → 0:53","0:20 → 0:16"],
-    ["Peter","84% → 92%","1:31 → 0:54","0:19 → 0:10"]]},
-   {t:"html",html:`<div class="po-links">${[["https://poise-lightbar.netlify.app/","Try Poise"],["https://poise-lightbar.netlify.app/deck/index.html#1","See the deck"]].map(([u,l])=>`<a class="pill on" href="${u}" target="_blank" rel="noopener">${l} <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ic"><path d="M2 8 8 2M3.2 2H8v4.8"/></svg></a>`).join("")}</div>`}]},
- {k:"What I learned",h:"Using AI in research, building and testing",blocks:[{t:"close",lh:"What I learned",nh:"What’s next",
-  learned:[
-   ["AI gives me a quick start, but real stories come from people","I had one month and wanted to spend it hearing people’s stories, so AI found papers and drafted my questions. I read each paper myself to check if the information was right."],
-   ["AI lets me build real things, but only users know if it helps them","I wanted a real app to test within days, so AI coded the app and the Arduino from my flow. I tested each build with people to see if it worked well."],
-   ["AI can read the data, but only I can see how people really use it","AI read and compared the posture data, so I could focus on watching people use the app. I checked the data myself to make sure AI was right."]],
-  next:[
-   ["Show how the week went","People in the playtest wanted to see their week, so a weekly view would turn single sessions into a habit."],
-   ["Connect with physical therapists","With people’s permission, sharing posture data with physical therapists could grow Poise into a posture health service."]]}]}]},
+  blocks:[{t:"html",html:`<figure class="pn po-deck" style="--t:0;--h:900"><iframe data-src="https://poise-lightbar.netlify.app/deck/index.html?embed#14" title="Version two, change by change" loading="lazy" tabindex="-1"></iframe></figure><p class="po-cap">Click to skip to the next change.</p>`},
+   {t:"html",html:`<figure class="pn po-deck" style="--t:175;--h:550"><iframe data-src="https://poise-lightbar.netlify.app/deck/index.html?embed#15" title="Version one and two compared" loading="lazy" tabindex="-1"></iframe></figure>`},
+   {t:"link",u:"https://poise-lightbar.netlify.app/",l:"Try Poise"}]},
+ {k:"What I learned",h:"Using AI in research, building and testing",blocks:[{t:"html",html:`<div class="po-close"><b class="po-lh l">What I learned</b><b class="po-lh n">What’s next</b><div class="l"><h3>AI gives me a quick start, but real stories come from people</h3><p>I had one month and wanted to spend it hearing people’s stories, so AI found papers and drafted my questions. I read each paper myself to check if the information was right.</p></div><div class="n"><h3>Show how the week went</h3><p>People in the playtest wanted to see their week, so a weekly view would turn single sessions into a habit.</p></div><div class="l"><h3>AI lets me build real things, but only users know if it helps them</h3><p>I wanted a real app to test within days, so AI coded the app and the Arduino from my flow. I tested each build with people to see if it worked well.</p></div><div class="n"><h3>Make the sensor as good as the camera</h3><p>In version two the sensor works but is less accurate, and I want people who skip the camera to get the same care.</p></div><div class="l"><h3>AI can read the data, but only I can see how people really use it</h3><p>AI read and compared the posture data, so I could focus on watching people use the app. I checked the data myself to make sure AI was right.</p></div><div class="n"><h3>Connect with physical therapists</h3><p>With people’s permission, sharing posture data with physical therapists could grow Poise into a posture health service.</p></div></div>`}]}]},
 atmos:{sec:[
  {k:"Initial idea",h:"100 users in one week",b:["It all started with a vibe coding assignment at SVA. We had one week to build something and get 100 people to actually use it. That felt like a lot, so I figured the easiest way was to make something people already open every day.","Checking the weather is one of those habits for me. And honestly the weather changes my mood more than I’d like to admit, so I thought, why not put the two together? That’s how the question came about. What’s the weather inside you today?"],
   blocks:[{t:"cards",cols:3,items:[
