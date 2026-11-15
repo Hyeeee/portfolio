@@ -1894,7 +1894,7 @@ const THUMB={"unsecured-loan":"unsecured-loan-3"};
 const pic=s=>LIFE.has(s)?`shots/${s}.jpg`:`mock/${THUMB[s]||s}.jpg`;
 /* mockups have a dark-card twin; photos keep their own light */
 const DARKMOCK=new Set(["atmos","clock","grants","unsecured-loan","pf-design-system","video-conferencing"]);
-const DARKSHOT=new Set(["clock"]);
+const DARKSHOT=new Set([]);
 const picD=s=>DARKSHOT.has(s)?`shots-dark/${s}.jpg`:DARKMOCK.has(s)&&!LIFE.has(s)?`mock-dark/${THUMB[s]||s}.jpg`:pic(s);
 /* live frames only run while they're on screen.
    Each animated iframe starts with data-src; when it comes near the viewport it gets its src,
@@ -1909,7 +1909,9 @@ function lfOff(f,watch){clearTimeout(f._lfT);lfIO.unobserve(f);if(!f._lfOn){if(w
 function lazyFrames(scope){scope.querySelectorAll("iframe[data-src]").forEach(f=>lfIO.observe(f))}
 function feedFrames(on){$$("#feed iframe[data-src]").forEach(f=>{if(on){lfIO.unobserve(f);lfIO.observe(f)}else lfOff(f,false)})}
 /* live motion thumbnails (iframes over the still image) */
-const MOTION={"atmos":"atmos-motion.html","clock":"clock-motion.html?ground=wrist&pad=0.07"};
+const MOTION={"atmos":"atmos-motion.html","clock":"clock-motion.html"};
+// the home feed can use a different motion than the case page cover
+const FEED_MOTION={"clock":"clock-motion.html?ground=wrist&pad=0.16"};
 /* where to keep the subject when a photo is cropped to a landscape card on phones */
 const FOCUS={"homepage":"55% 46%","mortgage":"52% 40%","stock-trading":"45% 32%","tech-conference":"60% 50%"};
 $("#feed").innerHTML=ITEMS.map((it,i)=>{
@@ -1917,7 +1919,7 @@ $("#feed").innerHTML=ITEMS.map((it,i)=>{
       <div class="media" data-label="Lof Archive"><img class="art" src="${A.img}" alt="">${veil(`<span>Lof</span><span>2019</span>`,"Before screens, leather. Twelve cases, purses and ink-on-leather pieces, cut, dyed and stitched by hand.",null,A.fog,["2019","Handmade leather","12 objects"])}</div>
       <span class="cap"><span class="t">Lof Archive</span><span class="y num">${ARCHIVE.length} objects · 2019</span></span></button></li>`}
   const p=it.p, A=art(i);return `<li class="${FULL.has(p.slug)?'full ':WIDE.has(p.slug)?'wide ':''}${LIFE.has(p.slug)?'ph':'mk'}" style="--fp:${FOCUS[p.slug]||'50% 50%'}"><a class="tile" href="#${p.slug}" data-case="${p.slug}">
-      <div class="media" data-label="${esc(p.title)}"><img class="art" src="${pic(p.slug)}" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}" data-fb="${i}" alt="">${MOTION[p.slug]&&!reduce?`<iframe class="am" data-src="${MOTION[p.slug]}" title="${esc(p.title)} motion preview" tabindex="-1" aria-hidden="true"></iframe>`:''}${veilCase(p,pic(p.slug)).replace('<img class="fog"',`<img class="fog" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}"`)}</div>
+      <div class="media" data-label="${esc(p.title)}"><img class="art" src="${pic(p.slug)}" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}" data-fb="${i}" alt="">${MOTION[p.slug]&&!reduce?`<iframe class="am" data-src="${FEED_MOTION[p.slug]||MOTION[p.slug]}" title="${esc(p.title)} motion preview" tabindex="-1" aria-hidden="true"></iframe>`:''}${veilCase(p,pic(p.slug)).replace('<img class="fog"',`<img class="fog" data-l="${pic(p.slug)}" data-d="${picD(p.slug)}"`)}</div>
       <span class="cap"><span class="t">${p.title}</span><span class="y num">${p.client} · ${p.year}</span><span class="l">${LINE[p.slug]||p.sum}</span></span></a></li>`}).join("");
 
 lazyFrames($("#feed"));

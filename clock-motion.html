@@ -9,7 +9,7 @@
 html,body{margin:0;height:100%;overflow:hidden;background:#EAEAEA}
 :root[data-theme="dark"] body,:root[data-theme="dark"]{background:#2A2A2A}
 canvas{display:block}
-html.watch,html.watch body{background:#000!important}html.pn,html.pn body{background:#F2F2F2}html.pn[data-theme="dark"],html.pn[data-theme="dark"] body{background:#161616}
+html.watch,html.watch body{background:#000!important}html.wrist,html.wrist body{background:#EAEAEA url(case/clock/wrist.jpg) center/cover no-repeat!important}html.wrist body{background:none!important}html.pn,html.pn body{background:#F2F2F2}html.pn[data-theme="dark"],html.pn[data-theme="dark"] body{background:#161616}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/p5.min.js"></script>
 </head>
@@ -25,10 +25,12 @@ html.watch,html.watch body{background:#000!important}html.pn,html.pn body{backgr
 // ?ground=pn matches the case-study panel color instead of the feed's
 const GQ = new URLSearchParams(location.search).get('ground');
 // ?ground=watch is pure black, like a watch face
-// ?ground=wrist: the feed thumbnail. A photo of the watch on a wrist, with the clock running on its screen
+// ?ground=wrist: the feed thumbnail. A photo of a watch on a wrist (page background, like object-fit: cover)
+// with the clock canvas warped onto the tilted watch glass using a CSS perspective transform
 const WRIST = GQ === 'wrist';
-const WIMG = { w: 1400, h: 2100 }, WSCR = { x: 562, y: 809, w: 345, h: 419, r: 63 };   // screen area inside the photo
-let wristImg = { light: null, dark: null }, BOX = null;
+const WIMG = { w: 2000, h: 1333 }, WQUAD = [[834.2, 491.1], [1263.8, 362.5], [1426.8, 843.6], [1004.5, 983.1]];   // glass corners in the photo: TL, TR, BR, BL
+const WCAN = { w: 448, h: 520 };
+let BOX = null;
 const GROUND = GQ === 'watch' ? { light: [0, 0, 0], dark: [0, 0, 0] }
   : GQ === 'pn' ? { light: [242, 242, 242], dark: [22, 22, 22] }
   : { light: [234, 234, 234], dark: [42, 42, 42] };
@@ -76,7 +78,7 @@ class Ring {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   pixelDensity(min(displayDensity(), 2));
-  if (WRIST) { wristImg.light = loadImage('case/clock/wrist-l.jpg'); wristImg.dark = loadImage('case/clock/wrist-d.jpg'); }   // 2x is sharp enough here and uses far less memory than 3x
+  if (WRIST) { resizeCanvas(WCAN.w, WCAN.h); placeOnGlass(); }   // 2x is sharp enough here and uses far less memory than 3x
   rings = [
     new Ring({ count: 12, unit: 'h', labelEvery: 1, labelFn: i => (i === 0 ? '12' : String(i)), textSize: 34, drumY: -165, drumR: 215, dialR: 270 }),
     new Ring({ count: 12, unit: 'h', tick: 14, drumY: -74, drumR: 195, dialR: 215 }),
@@ -89,7 +91,7 @@ function setup() {
 
 function draw() {
   const g = dark ? GROUND.dark : GROUND.light;
-  background(g[0], g[1], g[2]);
+  if (WRIST) clear(); else background(g[0], g[1], g[2]);
 
   // drum for a while, flatten into the dial, hold, then lift back up
   const t = (millis() % CYCLE) / CYCLE;
@@ -112,18 +114,7 @@ function draw() {
   const vals = FIXED.length === 3 && !isNaN(FIXED[0])
     ? { h: FIXED[0] % 12, m: FIXED[1], s: FIXED[2] }
     : { h: now.getHours() % 12, m: now.getMinutes(), s: now.getSeconds() };
-  if (WRIST) {
-    // the photo fills the card like object-fit: cover; the clock is clipped to the watch screen
-    const img = dark ? wristImg.dark : wristImg.light;
-    const k = max(width / WIMG.w, height / WIMG.h), ox = (width - WIMG.w * k) / 2, oy = (height - WIMG.h * k) / 2;
-    if (img && img.width) image(img, ox, oy, WIMG.w * k, WIMG.h * k);
-    BOX = { x: ox + WSCR.x * k, y: oy + WSCR.y * k, w: WSCR.w * k, h: WSCR.h * k };
-    fit();
-    drawingContext.save(); drawingContext.beginPath(); drawingContext.roundRect(BOX.x, BOX.y, BOX.w, BOX.h, WSCR.r * k); drawingContext.clip();
-    noStroke(); fill(0); rect(BOX.x, BOX.y, BOX.w, BOX.h);
-  }
   for (const r of rings) { r.update(vals[r.unit]); r.display(vals[r.unit]); }
-  if (WRIST) drawingContext.restore();
   if (PARTS) drawPartLabels();
 }
 
@@ -190,7 +181,35 @@ function theme() {
   if (d !== dark) { dark = d; document.documentElement.dataset.theme = d ? 'dark' : 'light'; }
 }
 
-function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+function windowResized() { if (WRIST) placeOnGlass(); else resizeCanvas(windowWidth, windowHeight); }
+
+// map the canvas rectangle onto the glass quad: solve the 3x3 homography and hand it to CSS as matrix3d
+function placeOnGlass() {
+  const el = document.querySelector('canvas'); if (!el) return;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const k = Math.max(vw / WIMG.w, vh / WIMG.h), ox = (vw - WIMG.w * k) / 2, oy = (vh - WIMG.h * k) / 2;
+  const q = WQUAD.map(([x, y]) => [ox + x * k, oy + y * k]);
+  const w = WCAN.w, h = WCAN.h, src = [[0, 0], [w, 0], [w, h], [0, h]];
+  const A = [], B = [];
+  for (let i = 0; i < 4; i++) {
+    const [x, y] = src[i], [u, v] = q[i];
+    A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]); B.push(u);
+    A.push([0, 0, 0, x, y, 1, -v * x, -v * y]); B.push(v);
+  }
+  const m = solve8(A, B);   // a b c d e f g h  (i = 1)
+  el.style.position = 'absolute'; el.style.left = '0'; el.style.top = '0';
+  el.style.transformOrigin = '0 0'; el.style.borderRadius = '19% / 16%';
+  el.style.transform = `matrix3d(${m[0]},${m[3]},0,${m[6]},${m[1]},${m[4]},0,${m[7]},0,0,1,0,${m[2]},${m[5]},0,1)`;
+}
+function solve8(A, B) {   // small Gaussian elimination
+  const n = 8, M = A.map((r, i) => [...r, B[i]]);
+  for (let c = 0; c < n; c++) {
+    let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+    [M[c], M[p]] = [M[p], M[c]];
+    for (let r = 0; r < n; r++) if (r !== c) { const f = M[r][c] / M[c][c]; for (let k = c; k <= n; k++) M[r][k] -= f * M[c][k]; }
+  }
+  return M.map((r, i) => r[n] / r[i]);
+}
 </script>
 </body>
 </html>
