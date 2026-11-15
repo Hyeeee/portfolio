@@ -1894,7 +1894,7 @@ const THUMB={"unsecured-loan":"unsecured-loan-3"};
 const pic=s=>LIFE.has(s)?`shots/${s}.jpg`:`mock/${THUMB[s]||s}.jpg`;
 /* mockups have a dark-card twin; photos keep their own light */
 const DARKMOCK=new Set(["atmos","clock","grants","unsecured-loan","pf-design-system","video-conferencing"]);
-const DARKSHOT=new Set([]);
+const DARKSHOT=new Set(["clock"]);
 const picD=s=>DARKSHOT.has(s)?`shots-dark/${s}.jpg`:DARKMOCK.has(s)&&!LIFE.has(s)?`mock-dark/${THUMB[s]||s}.jpg`:pic(s);
 /* live frames only run while they're on screen.
    Each animated iframe starts with data-src; when it comes near the viewport it gets its src,
@@ -1911,7 +1911,7 @@ function feedFrames(on){$$("#feed iframe[data-src]").forEach(f=>{if(on){lfIO.uno
 /* live motion thumbnails (iframes over the still image) */
 const MOTION={"atmos":"atmos-motion.html","clock":"clock-motion.html"};
 // the home feed can use a different motion than the case page cover
-const FEED_MOTION={"clock":"clock-motion.html?ground=wrist&pad=0.16"};
+const FEED_MOTION={"clock":"clock-motion.html?ground=wrist&pad=0.07"};
 /* where to keep the subject when a photo is cropped to a landscape card on phones */
 const FOCUS={"homepage":"55% 46%","mortgage":"52% 40%","stock-trading":"45% 32%","tech-conference":"60% 50%"};
 $("#feed").innerHTML=ITEMS.map((it,i)=>{
