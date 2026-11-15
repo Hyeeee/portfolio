@@ -50,7 +50,8 @@ function drawFigure(ctx, P, { j = () => 0, ink, paper }) {
   const SL = [-40 * sw, -116 + drop + sd], SR = [40 * sw, -116 + drop + sd];
   const NECK = [hx * .35, -124 + drop + sd];
   ctx.save(); ctx.translate(0, -10); ctx.rotate(P.bend || 0); ctx.translate(0, 10);
-  if (!P.armsOnly) {
+  if (P.armsOnly) n = 23;   // skip the jitter the tee and head would have used, so redrawn arms land exactly on the first ones
+  else {
   // tee
   ctx.fillStyle = ink;
   poly([[SL[0] - 2, SL[1] + 1], [NECK[0] - 11, NECK[1] + 7], [NECK[0] + 11, NECK[1] + 7], [SR[0] + 2, SR[1] + 1], [37 * (1 - .07 * tb), SR[1] + 22], [34, 60], [-34, 60], [-37 * (1 - .07 * tb), SL[1] + 22]]);
@@ -180,24 +181,25 @@ function frame(now) {
   drawFigure(ctx, { ...ARMS, ...S, breath }, { j: jit, ink, paper });
   ctx.restore();
 
-  // the desk in front: covers the lower body, with a simple keyboard the hands rest on
-  const deskY = ay - s * 62, kw = s * 132, kTop = deskY + s * 9, kH = s * 24;
-  const dInk = dark ? '#D8D8D6' : ink;
-  ctx.fillStyle = dark ? '#3A3A3B' : paper; ctx.fillRect(0, deskY, W, H - deskY);
-  ctx.strokeStyle = dInk; ctx.lineWidth = Math.max(1.5, s * 1.2); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  // the desk in front: the same gray as the ground, told apart only by its edge line.
+  // Every line here uses the figure's own stroke (2.4 units), so the whole drawing has one weight.
+  const lw = 2.4 * s, deskY = ay - s * 62, dInk = dark ? '#D8D8D6' : ink;
+  ctx.fillStyle = rgb(base); ctx.fillRect(0, deskY, W, H - deskY);
+  ctx.strokeStyle = dInk; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ctx.beginPath(); ctx.moveTo(0, deskY); ctx.lineTo(W, deskY); ctx.stroke();
-  // keyboard in perspective: narrower at the back, wider at the front
-  const kx = ax - kw / 2, inset = s * 6;
-  ctx.fillStyle = dark ? '#4A4A4C' : '#F1F0EB';
-  ctx.beginPath(); ctx.moveTo(kx + inset, kTop); ctx.lineTo(kx + kw - inset, kTop); ctx.lineTo(kx + kw, kTop + kH); ctx.lineTo(kx, kTop + kH); ctx.closePath(); ctx.fill(); ctx.stroke();
-  ctx.lineWidth = Math.max(1, s * .7);
-  for (let r = 1; r < 4; r++) {   // key rows
-    const y = kTop + kH * r / 4, k = r / 4, l = kx + inset * (1 - k) + s * 5, rr = kx + kw - inset * (1 - k) - s * 5;
-    ctx.beginPath(); ctx.moveTo(l, y); ctx.lineTo(rr, y); ctx.stroke();
-  }
-  ctx.beginPath(); ctx.moveTo(ax - s * 26, kTop + kH * .88); ctx.lineTo(ax + s * 26, kTop + kH * .88); ctx.stroke();   // space bar
-  // the forearms and hands come back on top of the desk, resting on the keyboard
-  ctx.save(); ctx.beginPath(); ctx.rect(0, deskY, W, H - deskY); ctx.clip();
+  // keyboard: a flat rounded slab with short rounded keys, clean like a Notion illustration
+  const kw = s * 128, kh = s * 32, kx = ax - kw / 2, ky = deskY + s * 8;
+  ctx.fillStyle = dark ? '#2F2F31' : paper;
+  ctx.beginPath(); ctx.roundRect(kx, ky, kw, kh, s * 6); ctx.fill(); ctx.stroke();
+  const rows = [[8], [7]], key = s * 7, step = s * 13;
+  rows.forEach(([n, off], r) => {
+    const y = ky + s * (9.5 + r * 7.5), x0 = ax - ((n - 1) * step) / 2;
+    for (let i = 0; i < n; i++) { const x = x0 + i * step; ctx.beginPath(); ctx.moveTo(x - key / 2, y); ctx.lineTo(x + key / 2, y); ctx.stroke(); }
+  });
+  ctx.beginPath(); ctx.moveTo(ax - s * 24, ky + s * 24.5); ctx.lineTo(ax + s * 24, ky + s * 24.5); ctx.stroke();   // space bar
+  // the forearms and hands come back on top of the desk (a little above its edge, so the edge line
+  // never shows through the arms), resting on the keyboard
+  ctx.save(); ctx.beginPath(); ctx.rect(0, deskY - lw, W, H - deskY + lw); ctx.clip();
   ctx.translate(ax, ay + s * -130 * (1 - zoom)); ctx.scale(s * zoom, s * zoom); ctx.translate(0, -30);
   drawFigure(ctx, { ...ARMS, ...S, breath, armsOnly: true }, { j: jit, ink, paper });
   ctx.restore();
