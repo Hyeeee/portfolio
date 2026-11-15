@@ -200,12 +200,12 @@ function frame(now) {
   const kw = s * 128, kh = s * 32, kx = ax - kw / 2, ky = deskY + s * 8;
   ctx.fillStyle = dark ? '#2F2F31' : paper;
   ctx.beginPath(); ctx.roundRect(kx, ky, kw, kh, s * 6); ctx.fill(); ctx.stroke();
-  const rows = [[8], [7]], key = s * 7, step = s * 13;
+  const rows = [[7], [8]], key = s * 7, step = s * 13;   // seen from across the desk: the person's space bar is nearest them, so it sits at the top
   rows.forEach(([n, off], r) => {
-    const y = ky + s * (9.5 + r * 7.5), x0 = ax - ((n - 1) * step) / 2;
+    const y = ky + s * (16 + r * 7.5), x0 = ax - ((n - 1) * step) / 2;
     for (let i = 0; i < n; i++) { const x = x0 + i * step; ctx.beginPath(); ctx.moveTo(x - key / 2, y); ctx.lineTo(x + key / 2, y); ctx.stroke(); }
   });
-  ctx.beginPath(); ctx.moveTo(ax - s * 24, ky + s * 24.5); ctx.lineTo(ax + s * 24, ky + s * 24.5); ctx.stroke();   // space bar
+  ctx.beginPath(); ctx.moveTo(ax - s * 24, ky + s * 8.5); ctx.lineTo(ax + s * 24, ky + s * 8.5); ctx.stroke();   // space bar
   // the forearms and hands come back on top of the desk (a little above its edge, so the edge line
   // never shows through the arms), resting on the keyboard
   ctx.save(); ctx.beginPath(); ctx.rect(0, deskY - lw, W, H - deskY + lw); ctx.clip();
