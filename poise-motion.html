@@ -174,12 +174,13 @@ function frame(now) {
   // traced around the aligned figure, about 3 units outside it: neck, over the shoulder joint,
   // down the upper arm, around the elbow and along the forearm to the desk
   for (const m of [-1, 1]) {
-    ctx.moveTo(10 * m, -136); ctx.lineTo(10 * m, -129);
-    ctx.quadraticCurveTo(13 * m, -126.5, 30 * m, -126.75);
-    ctx.quadraticCurveTo(47.1 * m, -126.75, 49.9 * m, -120.3);
-    ctx.lineTo(69.9 * m, -74.3);
-    ctx.quadraticCurveTo(72 * m, -69.5, 69.5 * m, -64.9);
-    ctx.lineTo(43.5 * m, -16.9);
+    const A = a => m > 0 ? a * Math.PI / 180 : (180 - a) * Math.PI / 180, ccw = m < 0;   // mirror angles for the left side
+    ctx.moveTo(10.75 * m, -136); ctx.lineTo(10.75 * m, -125);
+    ctx.quadraticCurveTo(12 * m, -118, 30.4 * m, -117.7);
+    ctx.arc(40 * m, -116, 9.75, A(-170), A(-23.5), ccw);          // over the shoulder joint
+    ctx.lineTo(68.9 * m, -73.9);                                  // down the upper arm
+    ctx.arc(60 * m, -70, 9.75, A(-23.5), A(28.4), ccw);           // around the elbow
+    ctx.lineTo(41.7 * m, -17.8);                                  // along the forearm to the desk
   }
   ctx.stroke(); ctx.setLineDash([]);
   ctx.restore();
