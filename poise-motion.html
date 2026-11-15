@@ -193,7 +193,8 @@ function frame(now) {
 
   // the desk in front: the same gray as the ground, told apart only by its edge line.
   // Every line here uses the figure's own stroke (2.4 units), so the whole drawing has one weight.
-  const lw = 2.4 * s, deskY = ay - s * 62, dInk = dark ? '#D8D8D6' : ink;
+  const lw = 2.4 * s, deskY = Math.round(ay - s * 62),   // whole pixels, so no hairline seam shows through the arms
+        dInk = dark ? '#D8D8D6' : ink;
   ctx.fillStyle = rgb(base); ctx.fillRect(0, deskY, W, H - deskY);
   ctx.strokeStyle = dInk; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ctx.beginPath(); ctx.moveTo(0, deskY); ctx.lineTo(W, deskY); ctx.stroke();
@@ -209,7 +210,7 @@ function frame(now) {
   ctx.beginPath(); ctx.moveTo(ax - s * 24, ky + s * 8.5); ctx.lineTo(ax + s * 24, ky + s * 8.5); ctx.stroke();   // space bar
   // the forearms and hands come back on top of the desk (a little above its edge, so the edge line
   // never shows through the arms), resting on the keyboard
-  ctx.save(); ctx.beginPath(); ctx.rect(0, deskY - lw, W, H - deskY + lw); ctx.clip();
+  ctx.save(); ctx.beginPath(); const cy0 = Math.floor(deskY - lw * 2); ctx.rect(0, cy0, W, H - cy0); ctx.clip();
   ctx.translate(ax, ay + s * -130 * (1 - zoom)); ctx.scale(s * zoom, s * zoom); ctx.translate(0, -30);
   drawFigure(ctx, { ...ARMS, ...S, breath, armsOnly: true }, { j: jit, ink, paper });
   ctx.restore();
