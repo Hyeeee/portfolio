@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Poise motion</title>
 <meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500&display=swap">
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#EAEAEA}
 :root[data-theme="dark"],:root[data-theme="dark"] body{background:#2A2A2A}
@@ -20,7 +21,8 @@ canvas{display:block;width:100%;height:100%}
   The same ink figure the app draws for you while you work. It sits, then drifts the way people do
   at a desk: the head slides forward, the whole body comes close to the screen, it straightens up,
   leans back, tips to one side. The ground takes on the app's posture colour for each pose
-  (gray when aligned, amber for a drift, soft red when too close, green when it is fixed, blue-gray when leaning back),
+  (gray when aligned, yellow for a drift, red when too close, green when it is fixed),
+  and a chip above the head says what is happening right now (Slouching, Leaning back...),
   the same way the light bar changes colour.
   ?ground=pn matches the case page panel. ?still=1 draws one aligned frame (for the static image).
 */
@@ -29,7 +31,7 @@ const GQ = Q.get('ground'), STILL = Q.get('still');
 if (GQ === 'pn') document.documentElement.classList.add('pn');
 const GROUND = GQ === 'pn' ? { light: [242, 242, 242], dark: [22, 22, 22] } : { light: [234, 234, 234], dark: [42, 42, 42] };
 // Poise's posture colours (app.js)
-const C = { idle: [179, 194, 216], amber: [240, 160, 32], red: [229, 72, 61], green: [79, 191, 115] };
+const C = { amber: [240, 160, 32], red: [229, 72, 61], green: [79, 191, 115] };   // only yellow, red and green
 
 /* ---------- the figure (from Poise figure.js, upper body only) ---------- */
 function drawFigure(ctx, P, { j = () => 0, ink, paper }) {
@@ -83,15 +85,15 @@ function drawFigure(ctx, P, { j = () => 0, ink, paper }) {
 const ARMS = { eL: [-58, -66], wL: [-40, -14], eR: [58, -66], wR: [40, -14] };
 const Z = { fwd: 0, zoom: 1, tipBack: 0, bend: 0, head: 0, hx: 0, drop: 0 };
 const POSES = [
-  { p: {}, c: null, hold: 2.2 },                                             // aligned, gray
-  { p: { fwd: 1, drop: 8, head: .1 }, c: 'amber', hold: 1.8 },              // head slides forward
-  { p: { fwd: .8, zoom: 1.16, drop: 6, head: .06 }, c: 'red', hold: 1.8 },  // whole body close to the screen
-  { p: {}, c: 'green', hold: 1.1 },                                          // straightens up
-  { p: {}, c: null, hold: 1.4 },
-  { p: { tipBack: 1 }, c: 'idle', hold: 1.9 },                               // leans back
-  { p: {}, c: null, hold: 1.4 },
-  { p: { bend: .2, head: -.12, hx: -6 }, c: 'amber', hold: 1.8 },           // tips to one side
-  { p: {}, c: 'green', hold: 1.1 },
+  { p: {}, c: null, label: 'Aligned', hold: 2.2 },
+  { p: { fwd: 1, drop: 14, head: .1 }, c: 'amber', label: 'Slouching', hold: 1.9 },
+  { p: { fwd: .8, zoom: 1.16, drop: 6, head: .06 }, c: 'red', label: 'Too close to the screen', hold: 1.9 },
+  { p: {}, c: 'green', label: 'Back in line', hold: 1.2 },
+  { p: {}, c: null, label: 'Aligned', hold: 1.4 },
+  { p: { tipBack: 1 }, c: 'amber', label: 'Leaning back', hold: 1.9 },
+  { p: {}, c: null, label: 'Aligned', hold: 1.4 },
+  { p: { bend: .2, head: -.12, hx: -6 }, c: 'amber', label: 'Leaning to one side', hold: 1.9 },
+  { p: {}, c: 'green', label: 'Back in line', hold: 1.2 },
 ];
 const MOVE = 1.15;   // seconds to move between poses
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -114,8 +116,12 @@ function mix(A, B, k) {
   for (const key in Z) out[key] = lerp(pa[key], pb[key], k);
   // colour strength: 0 for gray, 1 for a posture colour; the hue moves with it
   const ca = A.c ? C[A.c] : null, cb = B.c ? C[B.c] : null;
-  const col = ca && cb ? ca.map((v, i) => lerp(v, cb[i], k)) : (ca || cb || C.idle);
+  const col = ca && cb ? ca.map((v, i) => lerp(v, cb[i], k)) : (ca || cb || C.green);
   out.col = col; out.amt = lerp(A.c ? 1 : 0, B.c ? 1 : 0, k);
+  // the chip shows the nearer pose, fading out and back in as the label changes
+  const near = k < .5 ? A : B;
+  out.label = near.label; out.dot = near.c ? C[near.c] : null;
+  out.chipA = A.label === B.label ? 1 : Math.min(1, Math.abs(k - .5) * 2.5);
   return out;
 }
 
@@ -153,7 +159,7 @@ function frame(now) {
 
   // framing: upper body, cut at the waist by the bottom edge, like the camera view in the app
   const fitW = 205, fitH = GQ === 'pn' || W / H > 1.6 ? 290 : 236, s = Math.min(W / fitW, H / fitH);
-  const ax = W / 2, ay = H + s * 6;
+  const ax = W / 2, ay = H + s * 34;   // figure sits low, leaving room for the chip above
   const ink = '#141412', paper = '#FBFAF6';   // the app's ink figure, in both themes
 
   // where you sat when you saved your reference: a faint dashed outline
@@ -171,6 +177,22 @@ function frame(now) {
   ctx.save(); ctx.translate(ax, ay + s * -130 * (1 - zoom)); ctx.scale(s * zoom, s * zoom); ctx.translate(0, -30);
   drawFigure(ctx, { ...ARMS, ...S, breath }, { j: jit, ink, paper });
   ctx.restore();
+
+  // live status chip above the head: a dot in the posture colour and what is happening right now
+  const fs = Math.max(11, Math.min(22, s * 8.2)), headTop = ay - s * 222;
+  const cy = Math.max(fs * 1.9, headTop - s * 34);
+  ctx.font = `500 ${fs}px Geist, 'Helvetica Neue', Arial, sans-serif`;
+  const tw = ctx.measureText(S.label).width, dotR = fs * .3, padX = fs * .9, gap = fs * .55;
+  const cw = padX * 2 + dotR * 2 + gap + tw, ch = fs * 2.1, cx = ax - cw / 2;
+  ctx.globalAlpha = S.chipA;
+  ctx.fillStyle = dark ? 'rgba(24,24,26,.82)' : 'rgba(255,255,255,.88)';
+  ctx.beginPath(); ctx.roundRect(cx, cy - ch / 2, cw, ch, ch / 2); ctx.fill();
+  const pulse = STILL ? 1 : .75 + .25 * Math.sin(time * 4);
+  ctx.fillStyle = S.dot ? rgb(S.dot) : (dark ? '#8C8D92' : '#9A9A9A');
+  ctx.beginPath(); ctx.arc(cx + padX + dotR, cy, dotR * pulse, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = dark ? '#EDEDED' : '#141412'; ctx.textBaseline = 'middle';
+  ctx.fillText(S.label, cx + padX + dotR * 2 + gap, cy + fs * .04);
+  ctx.globalAlpha = 1;
 }
 
 // follow the portfolio's theme (same rule as the other thumbnails)
@@ -182,6 +204,7 @@ function theme() {
   if (d !== dark) { dark = d; document.documentElement.dataset.theme = d ? 'dark' : 'light'; if (STILL) frame(performance.now()); }
 }
 theme(); setInterval(theme, 500);
+if (document.fonts) document.fonts.load('500 16px Geist').then(() => { if (STILL) frame(performance.now()); });
 requestAnimationFrame(frame);
 </script>
 </body>
