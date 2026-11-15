@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Poise motion</title>
+<meta name="robots" content="noindex">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#EAEAEA}
+:root[data-theme="dark"],:root[data-theme="dark"] body{background:#2A2A2A}
+html.pn,html.pn body{background:#F2F2F2}html.pn[data-theme="dark"],html.pn[data-theme="dark"] body{background:#161616}
+canvas{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+<canvas id="c" aria-hidden="true"></canvas>
+<script>
+/*
+  Feed thumbnail for Poise.
+  The same ink figure the app draws for you while you work. It sits, then drifts the way people do
+  at a desk: the head slides forward, the whole body comes close to the screen, it straightens up,
+  leans back, tips to one side. The ground takes on the app's posture colour for each pose
+  (gray when aligned, amber for a drift, soft red when too close, green when it is fixed, blue-gray when leaning back),
+  the same way the light bar changes colour.
+  ?ground=pn matches the case page panel. ?still=1 draws one aligned frame (for the static image).
+*/
+const Q = new URLSearchParams(location.search);
+const GQ = Q.get('ground'), STILL = Q.get('still');
+if (GQ === 'pn') document.documentElement.classList.add('pn');
+const GROUND = GQ === 'pn' ? { light: [242, 242, 242], dark: [22, 22, 22] } : { light: [234, 234, 234], dark: [42, 42, 42] };
+// Poise's posture colours (app.js)
+const C = { idle: [179, 194, 216], amber: [240, 160, 32], red: [229, 72, 61], green: [79, 191, 115] };
+
+/* ---------- the figure (from Poise figure.js, upper body only) ---------- */
+function drawFigure(ctx, P, { j = () => 0, ink, paper }) {
+  let n = 0;
+  const jp = p => [p[0] + j(n++), p[1] + j(n++)];
+  const poly = pts => { ctx.beginPath(); pts.map(jp).forEach((p, i) => i ? ctx.lineTo(...p) : ctx.moveTo(...p)); ctx.closePath(); ctx.lineJoin = 'round'; ctx.fill(); };
+  const limb = (a, b, width) => {
+    const A = jp(a), B = jp(b);
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = ink; ctx.lineWidth = width + 4.5; ctx.beginPath(); ctx.moveTo(...A); ctx.lineTo(...B); ctx.stroke();
+    ctx.strokeStyle = paper; ctx.lineWidth = width; ctx.beginPath(); ctx.moveTo(...A); ctx.lineTo(...B); ctx.stroke();
+    ctx.strokeStyle = ink;
+  };
+  const drop = (P.drop || 0) + (P.breath || 0), hx = P.hx || 0, fwd = P.fwd || 0;
+  const tb = P.tipBack || 0, sw = 1 - .12 * tb, sd = 9 * tb;
+  const SL = [-40 * sw, -116 + drop + sd], SR = [40 * sw, -116 + drop + sd];
+  const NECK = [hx * .35, -124 + drop + sd];
+  ctx.save(); ctx.translate(0, -10); ctx.rotate(P.bend || 0); ctx.translate(0, 10);
+  // tee
+  ctx.fillStyle = ink;
+  poly([[SL[0] - 2, SL[1] + 1], [NECK[0] - 11, NECK[1] + 7], [NECK[0] + 11, NECK[1] + 7], [SR[0] + 2, SR[1] + 1], [37 * (1 - .07 * tb), SR[1] + 22], [34, 40], [-34, 40], [-37 * (1 - .07 * tb), SL[1] + 22]]);
+  // head
+  const tilt = P.head || 0, neckLen = (38 - fwd * 14) * (1 - .3 * tb), hs = (1 + fwd * .14) * (1 - .12 * tb);
+  const hX = NECK[0] + hx * .65 + Math.sin(tilt) * neckLen, hY = NECK[1] - Math.cos(tilt) * neckLen;
+  limb(NECK, [NECK[0] + (hX - NECK[0]) * .42, NECK[1] + (hY - NECK[1]) * .42], 13);
+  ctx.save();
+  ctx.translate(hX, hY); ctx.rotate(tilt); ctx.scale(hs, hs);
+  ctx.fillStyle = paper; ctx.strokeStyle = ink; ctx.lineWidth = 2.4;
+  ctx.beginPath(); ctx.ellipse(j(n++, .5), j(n++, .5), 19, 23, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = ink;
+  ctx.beginPath(); ctx.ellipse(0, 0, 20.5, 24.5, 0, Math.PI * 1.02, Math.PI * 1.98);
+  ctx.quadraticCurveTo(14, -10 - 7 * tb + j(n++, .6), 4, -11 - 7 * tb); ctx.quadraticCurveTo(-8, -9 - 7 * tb, -20, -3 - 4 * tb); ctx.fill();
+  ctx.lineWidth = 1.8;
+  if (tb) ctx.translate(0, -5 * tb);
+  ctx.beginPath();
+  ctx.moveTo(-11, 0); ctx.quadraticCurveTo(-7, 3, -3, 0);
+  ctx.moveTo(4, 0); ctx.quadraticCurveTo(8, 3, 12, 0);
+  ctx.moveTo(1, 4); ctx.lineTo(0, 9); ctx.stroke();
+  ctx.restore();
+  // arms resting on the desk
+  for (const [s0, e, w] of [[SR, P.eR, P.wR], [SL, P.eL, P.wL]]) {
+    const el = [e[0], e[1] + drop], wr = [w[0], w[1] + drop];
+    limb(s0, el, 11); limb(el, wr, 9);
+    ctx.fillStyle = paper; ctx.strokeStyle = ink; ctx.lineWidth = 2.4;
+    ctx.beginPath(); ctx.ellipse(wr[0] + j(n++, .6), wr[1] + j(n++, .6), 5.5, 7.5, Math.atan2(wr[1] - el[1], wr[0] - el[0]) - Math.PI / 2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+/* ---------- the loop: poses, how long each holds, and its colour ---------- */
+const ARMS = { eL: [-58, -66], wL: [-40, -14], eR: [58, -66], wR: [40, -14] };
+const Z = { fwd: 0, zoom: 1, tipBack: 0, bend: 0, head: 0, hx: 0, drop: 0 };
+const POSES = [
+  { p: {}, c: null, hold: 2.2 },                                             // aligned, gray
+  { p: { fwd: 1, drop: 8, head: .1 }, c: 'amber', hold: 1.8 },              // head slides forward
+  { p: { fwd: .8, zoom: 1.16, drop: 6, head: .06 }, c: 'red', hold: 1.8 },  // whole body close to the screen
+  { p: {}, c: 'green', hold: 1.1 },                                          // straightens up
+  { p: {}, c: null, hold: 1.4 },
+  { p: { tipBack: 1 }, c: 'idle', hold: 1.9 },                               // leans back
+  { p: {}, c: null, hold: 1.4 },
+  { p: { bend: .2, head: -.12, hx: -6 }, c: 'amber', hold: 1.8 },           // tips to one side
+  { p: {}, c: 'green', hold: 1.1 },
+];
+const MOVE = 1.15;   // seconds to move between poses
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const lerp = (a, b, t) => a + (b - a) * t;
+const total = POSES.reduce((s, x) => s + x.hold + MOVE, 0);
+
+function stateAt(time) {
+  let t = time % total;
+  for (let i = 0; i < POSES.length; i++) {
+    const A = POSES[i], B = POSES[(i + 1) % POSES.length];
+    if (t < A.hold) return mix(A, A, 0);
+    t -= A.hold;
+    if (t < MOVE) return mix(A, B, ease(t / MOVE));
+    t -= MOVE;
+  }
+  return mix(POSES[0], POSES[0], 0);
+}
+function mix(A, B, k) {
+  const pa = { ...Z, ...A.p }, pb = { ...Z, ...B.p }, out = {};
+  for (const key in Z) out[key] = lerp(pa[key], pb[key], k);
+  // colour strength: 0 for gray, 1 for a posture colour; the hue moves with it
+  const ca = A.c ? C[A.c] : null, cb = B.c ? C[B.c] : null;
+  const col = ca && cb ? ca.map((v, i) => lerp(v, cb[i], k)) : (ca || cb || C.idle);
+  out.col = col; out.amt = lerp(A.c ? 1 : 0, B.c ? 1 : 0, k);
+  return out;
+}
+
+/* ---------- drawing ---------- */
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+let W = 0, H = 0, dark = false, t0 = performance.now();
+function resize() {
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  W = innerWidth; H = innerHeight;
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+addEventListener('resize', resize); resize();
+const rgb = (c, a = 1) => `rgba(${c.map(Math.round).join(',')},${a})`;
+const blend = (a, b, k) => a.map((v, i) => lerp(v, b[i], k));
+let seed = 0;
+const jit = (i, amp = .9) => { const x = Math.sin((i + 1) * 12.9898 + seed * 78.233) * 43758.5453; return (x - Math.floor(x) - .5) * 2 * amp; };
+
+function frame(now) {
+  if (!STILL) requestAnimationFrame(frame);
+  const time = STILL ? (parseFloat(Q.get('t')) || 0) : (now - t0) / 1000;
+  seed = STILL ? 0 : Math.floor(now / 240);
+  const S = stateAt(time), g = dark ? GROUND.dark : GROUND.light;
+
+  // ground: gray, washed with the posture colour, plus a soft glow behind the figure (like the app's card)
+  const base = blend(g, S.col, S.amt * (dark ? .16 : .3));
+  ctx.fillStyle = rgb(base); ctx.fillRect(0, 0, W, H);
+  if (S.amt > .01) {
+    const R = Math.max(W, H) * .62, gx = W / 2, gy = H * .38;
+    const gr = ctx.createRadialGradient(gx, gy, 0, gx, gy, R);
+    const glow = dark ? blend(S.col, [0, 0, 0], .25) : blend(S.col, [255, 255, 255], .35);
+    gr.addColorStop(0, rgb(glow, (dark ? .3 : .55) * S.amt)); gr.addColorStop(1, rgb(glow, 0));
+    ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
+  }
+
+  // framing: upper body, cut at the waist by the bottom edge, like the camera view in the app
+  const fitW = 205, fitH = GQ === 'pn' ? 300 : 236, s = Math.min(W / fitW, H / fitH);
+  const ax = W / 2, ay = H + s * 6;
+  const ink = '#141412', paper = '#FBFAF6';   // the app's ink figure, in both themes
+
+  // where you sat when you saved your reference: a faint dashed outline
+  ctx.save(); ctx.translate(ax, ay); ctx.scale(s, s); ctx.translate(0, -30);
+  ctx.setLineDash([5, 5]); ctx.lineDashOffset = -time * 6;
+  ctx.strokeStyle = dark ? 'rgba(237,237,237,.3)' : 'rgba(13,13,13,.26)'; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.ellipse(0, -162, 22, 26, 0, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath();
+  for (const m of [-1, 1]) { ctx.moveTo(10 * m, -134); ctx.lineTo(10 * m, -126); ctx.quadraticCurveTo(14 * m, -122, 38 * m, -121); ctx.quadraticCurveTo(54 * m, -119, 56 * m, -102); ctx.lineTo(66 * m, -64); ctx.lineTo(56 * m, 40); }
+  ctx.stroke(); ctx.setLineDash([]);
+  ctx.restore();
+
+  // you: closer grows around the chest
+  const zoom = S.zoom, breath = STILL ? 0 : Math.sin(time * 1.4) * 1.2;
+  ctx.save(); ctx.translate(ax, ay + s * -130 * (1 - zoom)); ctx.scale(s * zoom, s * zoom); ctx.translate(0, -30);
+  drawFigure(ctx, { ...ARMS, ...S, breath }, { j: jit, ink, paper });
+  ctx.restore();
+}
+
+// follow the portfolio's theme (same rule as the other thumbnails)
+function theme() {
+  let d = false;
+  try { const r = parent.document.documentElement; d = r.dataset.theme ? r.dataset.theme === 'dark' : parent.matchMedia('(prefers-color-scheme: dark)').matches; }
+  catch (_) { d = matchMedia('(prefers-color-scheme: dark)').matches; }
+  const q = Q.get('theme'); if (q) d = q === 'dark';
+  if (d !== dark) { dark = d; document.documentElement.dataset.theme = d ? 'dark' : 'light'; if (STILL) frame(performance.now()); }
+}
+theme(); setInterval(theme, 500);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

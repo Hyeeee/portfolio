@@ -1613,6 +1613,18 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .dev-watch .aw{position:absolute;inset:0;width:100%;height:100%;display:block}
 .dev-watch .scr{position:absolute;left:23%;top:31.43%;width:54%;height:37.14%;border-radius:23.1%/19.2%;overflow:hidden;background:#000}
 .dev-watch .scr iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+
+/* Poise case */
+.po-sub{margin:28px 0 4px;font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0}
+.lc .cz-body>.po-sub:first-child{margin-top:0}
+.po-y,.po-n{font-weight:600}.po-y{color:var(--fg)}.po-n{color:var(--muted);opacity:.6}
+.cz-tbl small{font-size:12px;color:var(--muted);font-weight:400}
+.po-hyp{padding:clamp(20px,2.4vw,36px)}.po-hyp span{font-size:13px;color:var(--muted)}
+.po-hyp p{margin:10px 0 0;font-size:clamp(20px,1.9vw,28px);line-height:1.3;letter-spacing:-.02em;max-width:36ch}
+.po-ph{aspect-ratio:4/5;object-fit:cover;width:100%}
+.po-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.po-flow .card p b{font-weight:500;color:var(--fg)}
+@media (max-width:1100px){.po-flow{--c:3!important}}@media (max-width:700px){.po-flow{--c:1!important}}
 </style>
 
 <script>
@@ -1687,6 +1699,11 @@ const IMGMAP={"0to0lkf65HLCACu9FwIbt7NDgY.png":"0to0lkf65HLCACu9FwIbt7NDgY.jpg",
 const IMG = (id,s=1600) => IMGMAP[id]?`img/${IMGMAP[id]}`:`https://framerusercontent.com/images/${id}?scale-down-to=${s}`;
 const SRC = "https://hyendof.framer.website/";
 const PROJECTS = [
+ {slug:"poise",title:"Poise",client:"Side project",group:"side",disc:"Product Design",year:"2026",time:"Oct – Nov 2026",role:"Product Designer",methods:"Vibe coding, UX Research, Prototyping, Testing",
+  sum:"A light bar and a web app that notice when your posture drifts.",
+  vsum:"We drift at a desk without noticing, and only find out once it hurts. I designed Poise, a web app and a light bar that catch the drift early without stopping your work, and built it with Claude in one month.",
+  intro:"Poise is a web app and a light bar that notice when your posture drifts, without stopping your work. I did everything from research and design to the hardware, and built it with Claude in one month. Then I tested it, changed it based on what people said, and tested it again.",
+  problem:"",hl:[],stats:null,imgs:[]},
  {slug:"atmos",title:"Atmos",client:"Side project",group:"side",disc:"Product Design",year:"2026",time:"Sep 2026",role:"Product Designer",methods:"Vibe coding, UX Research, Prototyping",
   sum:"A weather journal connecting your surroundings and your mood.",
   vsum:"What if checking the weather could also be a little moment to check in with yourself? I designed Atmos and built it with Claude, so you can see the weather and leave a short mood on a globe everyone shares.",
@@ -1853,7 +1870,7 @@ const RATIO=["4/5","1/1","4/5","3/4","4/3","2/3","1/1","4/5","3/4","4/3","1/1","
 const HIDDEN=["referral-flow","scooter-sharing","recipe-wellness","collections","the-vc-design-system","kyc-verification"];
 const SHOWN=PROJECTS.filter(p=>!HIDDEN.includes(p.slug));
 /* feed rows: M+P · P+M · M+P · P+M — real photos mixed with clean mockups */
-const ORDER=["atmos","clock","homepage","grants","unsecured-loan","mortgage","pf-design-system","tech-conference","video-conferencing","stock-trading"];
+const ORDER=["poise","atmos","clock","homepage","grants","unsecured-loan","mortgage","pf-design-system","tech-conference","video-conferencing","stock-trading"];
 const FULL=new Set([]);
 const WIDE=new Set(["atmos","grants","unsecured-loan","tech-conference","video-conferencing"]);
 const LIFE=new Set(["homepage","mortgage","tech-conference","stock-trading","clock"]);
@@ -1889,11 +1906,11 @@ const veil=(k,d,go,fog,ch)=>`<div class="veil" aria-hidden="true"><img class="fo
 const vchips=p=>{let C={};try{C=CASES[p.slug]||{}}catch(_){}const m=String(C.methods||p.methods||"").split(",").map(x=>x.trim()).filter(Boolean);return `<span class="vch">${[C.time||p.time,C.role||p.role,...m].filter(Boolean).map(x=>`<i>${x}</i>`).join("")}</span>`};
 const veilCase=(p,fog)=>`<div class="veil" aria-hidden="true"><img class="fog" src="${fog}" alt=""><p class="vd">${p.vsum||p.intro||p.sum}</p>${vchips(p)}</div>`;
 /* one short line under each card */
-const LINE={"atmos":"A weather journal connecting your surroundings and your mood.","clock":"A clock taken apart into rings.","homepage":"A homepage that recommends by interest.","grants":"Scattered government funding, made browsable.","collections":"Thematic lists for tracking startup signals.","the-vc-design-system":"One shared language for The VC’s product.","unsecured-loan":"Spreading risk across many small loans.","tech-conference":"A conference site that speaks to developers.","mortgage":"A mortgage without paperwork or branch visits.","pf-design-system":"One component library for web, iOS and Android.","kyc-verification":"Identity checks with fewer steps.","stock-trading":"A friendlier first step into investing.","video-conferencing":"WECO — video calls everyone can join. Final Winner.","recipe-wellness":"Recipes and habits for everyday wellness."};
+const LINE={"poise":"A light bar that notices when your posture drifts.","atmos":"A weather journal connecting your surroundings and your mood.","clock":"A clock taken apart into rings.","homepage":"A homepage that recommends by interest.","grants":"Scattered government funding, made browsable.","collections":"Thematic lists for tracking startup signals.","the-vc-design-system":"One shared language for The VC’s product.","unsecured-loan":"Spreading risk across many small loans.","tech-conference":"A conference site that speaks to developers.","mortgage":"A mortgage without paperwork or branch visits.","pf-design-system":"One component library for web, iOS and Android.","kyc-verification":"Identity checks with fewer steps.","stock-trading":"A friendlier first step into investing.","video-conferencing":"WECO — video calls everyone can join. Final Winner.","recipe-wellness":"Recipes and habits for everyday wellness."};
 const THUMB={"unsecured-loan":"unsecured-loan-3"};
 const pic=s=>LIFE.has(s)?`shots/${s}.jpg`:`mock/${THUMB[s]||s}.jpg`;
 /* mockups have a dark-card twin; photos keep their own light */
-const DARKMOCK=new Set(["atmos","clock","grants","unsecured-loan","pf-design-system","video-conferencing"]);
+const DARKMOCK=new Set(["poise","atmos","clock","grants","unsecured-loan","pf-design-system","video-conferencing"]);
 const DARKSHOT=new Set([]);
 const picD=s=>DARKSHOT.has(s)?`shots-dark/${s}.jpg`:DARKMOCK.has(s)&&!LIFE.has(s)?`mock-dark/${THUMB[s]||s}.jpg`:pic(s);
 /* live frames only run while they're on screen.
@@ -1909,7 +1926,7 @@ function lfOff(f,watch){clearTimeout(f._lfT);lfIO.unobserve(f);if(!f._lfOn){if(w
 function lazyFrames(scope){scope.querySelectorAll("iframe[data-src]").forEach(f=>lfIO.observe(f))}
 function feedFrames(on){$$("#feed iframe[data-src]").forEach(f=>{if(on){lfIO.unobserve(f);lfIO.observe(f)}else lfOff(f,false)})}
 /* live motion thumbnails (iframes over the still image) */
-const MOTION={"atmos":"atmos-motion.html","clock":"clock-motion.html"};
+const MOTION={"atmos":"atmos-motion.html","clock":"clock-motion.html","poise":"poise-motion.html"};
 // the home feed can use a different motion than the case page cover
 const FEED_MOTION={"clock":"clock-motion.html?ground=wrist&pad=0.07"};
 /* where to keep the subject when a photo is cropped to a landscape card on phones */
@@ -2302,6 +2319,97 @@ const PFC={
  "Toast message":`<div class="pfc pfc-col"><div class="ts"><svg viewBox="0 0 24 24" width="15"><circle cx="12" cy="12" r="12" fill="#2DB55D"/><path d="M7 12.4l3.2 3.2L17 8.8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Saved</span><em>Button</em></div></div>`,
  "Tooltip":`<div class="pfc pfc-col"><div class="tt">Text</div></div>`};
 const CASES={
+poise:{sec:[
+ {k:"Problem",h:"We drift without noticing",b:["Most of us sit at a computer for hours, and our posture slowly changes while we focus. We usually notice only once it hurts, and by then fixing it takes a lot of time and money.","So I wanted to find out when people drift, why their fixes don’t last, and how I could help them notice early."],
+  blocks:[{t:"stats",items:[
+   ["6 hrs","Sitting every day","The average US adult still sits about six hours a day. Li et al., JAMA, 2025."],
+   ["63%","Office workers with neck pain","Up to 63% of office workers get neck pain in a single year. Chen et al., Physical Therapy, 2018."],
+   ["$134.5B","The biggest health cost in the US","Back and neck pain cost more than any other condition. Dieleman et al., JAMA, 2020."]]},
+   {t:"table",h:"What it costs once it hurts, and what people try",head:["","What it is","U.S. price"],rows:[
+    ["MRI","One scan","$300–3,000"],
+    ["Physical therapy","2× a week, 12 weeks","$1,200–8,400"],
+    ["Ergonomic chair","Herman Miller Aeron","$2,305–2,730"],
+    ["Reformer Pilates","2× a week, 12 weeks","$840–1,440"]]}]},
+ {k:"Research",h:"When it drifts, where it hurts, what people try",b:"I ran a survey, then interviewed three people to go deeper, and looked at the posture tools that are already out there.",
+  blocks:[{t:"html",html:`<h3 class="po-sub">Survey · 15 people · Oct 20 to 23</h3>`},
+   {t:"stats",items:[
+    ["9 of 15","Rarely notice, or only once it hurts","6 people said they notice their posture changed only when it starts to hurt."],
+    ["14 of 15","Feel pain somewhere","Neck and lower back came up the most, 7 people each."],
+    ["2 of 15","Use reminders or timers","Most people stretch or get a better chair, so they fix it later instead of catching it early."]]},
+   {t:"html",html:`<h3 class="po-sub">Interviews · 3 people · Oct 25 to 27</h3>`},
+   {t:"people",cols:3,items:[
+    {h:"Notices only once it hurts",d:"Help him notice early, while it’s still a small slouch and not yet back pain.",q:"I only notice I’m slouching when my lower back starts to hurt.",n:"Paul",r:"Engineer",img:"case/poise/paul.webp"},
+    {h:"Sitting straight is hard",d:"Give him short breaks to reset, so he can come back and sit well again.",q:"A Herman Miller helped at first, then sitting straight got too hard.",n:"Hyunjoo",r:"Designer",img:"case/poise/joo.webp"},
+    {h:"Leans in when he focuses",d:"A signal with no interruptions, quiet enough for any room he works in.",q:"Depends where I am. If it has to be quiet, a silent reminder beats sound.",n:"Peter",r:"Lawyer",img:"case/poise/peter.webp"}]},
+   {t:"html",html:`<h3 class="po-sub">Market research</h3>`},
+   {t:"table",h:"Posture tools and fixes",s:"They either interrupt you, or come after it already hurts.",head:["","Notice early","A clear cue","No interruptions"],rows:[
+    ["Upright Go","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-n' aria-label='no'>✕</span>"],
+    ["Nekoze","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-n' aria-label='no'>✕</span>"],
+    ["Posture Pal","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-n' aria-label='no'>✕</span>"],
+    ["Apple Screen Distance","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-y' aria-label='yes'>✓</span>","<span class='po-n' aria-label='no'>✕</span>"],
+    ["Ergonomic chair","<span class='po-n' aria-label='no'>✕</span>","<span class='po-n' aria-label='no'>✕</span>","<span class='po-y' aria-label='yes'>✓</span>"],
+    ["PT, Pilates, exercise","<span class='po-n' aria-label='no'>✕</span>","<span class='po-n' aria-label='no'>✕</span>","<span class='po-y' aria-label='yes'>✓</span>"]]},
+   {t:"cards",cols:4,items:[
+    {h:"DoorDash",d:"Order status on the lock screen. Status without opening the app."},
+    {h:"Uber",d:"Your ride’s ETA on the lock screen. Updates that wait for your glance."},
+    {h:"Starbucks",d:"A Live Activity when your order is ready. Only speaks when something changes."},
+    {h:"Nike Run Club",d:"Distance and pace on the lock screen. Glance mid-run, keep running."}]},
+   {t:"tx",items:[["Ideas I can bring in from other services","These apps show live status on the lock screen, without opening the app. I could show people their posture live in the same way."]]},
+   {t:"html",html:`<h3 class="po-sub">Hypothesis</h3>`},
+   {t:"cards",cols:3,items:[
+    {h:"Notice early",d:"From the survey. People notice only once it hurts. By then, they’ve been drifting for a while."},
+    {h:"A clear cue",d:"From the interviews. Fixes only last while they remember. Once work gets busy, they forget and drift back."},
+    {h:"No interruptions",d:"From market research. Every cue out there interrupts. Apps pop up, and chairs or Pilates come after it hurts."}]},
+   {t:"html",html:`<div class="pn po-hyp"><span>Hypothesis</span><p>If people get a clear cue that helps them notice early with no interruptions, they’ll catch the drift sooner and stay aligned longer.</p></div>`}]},
+ {k:"User flow",h:"What the app and the light bar do at each step",b:["Poise has two parts. The web app watches your posture through the camera or a sensor, and the light bar on top of your screen changes color as you move, so you notice without stopping your work.","For the business, I keep the app free to try, then offer the light bar. It could grow into a posture health service, where people share their data with physical therapists to get help."],
+  blocks:[{t:"cards",cols:5,cls:"po-flow",items:[
+    {h:"Set up",d:"<b>The app</b> questions, then camera or sensor.<br><b>The light bar</b> connects over USB."},
+    {h:"Focus",d:"<b>The app</b> watches your posture.<br><b>The light bar</b> stays white."},
+    {h:"Drift",d:"<b>The app</b> tells you how you moved.<br><b>The light bar</b> yellow, red, green, white."},
+    {h:"Report",d:"<b>The app</b> how long you stayed aligned.<br><b>The light bar</b> stays white."},
+    {h:"Break",d:"<b>The app</b> guides stretches or a game.<br><b>The light bar</b> glows with the game."}]},
+   {t:"img",src:"case/poise/lightbar-photo.webp",cap:"The light bar: a strip of LEDs and distance sensors on an Arduino, sitting on top of the screen."}]},
+ {k:"Version one",h:"A light bar and a web app, from setup to breaks",b:"I designed the flow and built a working first version with Claude, so I could put it in front of people within days.",
+  blocks:[{t:"cards",cols:2,items:[
+    {h:"Onboarding",d:"I added questions, like how long you focus and how you like to rest, because I learned from the interviews that everyone works differently and wants to set it up their own way."},
+    {h:"Focus mode",d:"I made a bar that fills as you drift and a light that turns yellow, then red, because I wanted people to notice before it hurts. At the end, a report shows how long they sat well."},
+    {h:"Break mode",d:"I made a figure you can stretch along with, and the camera scores how closely you match it, because I thought a short reset helps people sit well again."},
+    {h:"Settings",d:"I added settings for focus time, tracking sensitivity and alert timing, because everyone has their own preferences."}]}]},
+ {k:"Iteration",h:"Watching people use it changed what I thought mattered",b:"I put it in front of 10 classmates in a three hour playtest in class on Oct 29, about 10 minutes each.",
+  blocks:[{t:"grid",cols:2,items:[{src:"case/poise/pt-screen-top.webp",alt:"The light bar on top of the screen at the playtest",cls:"po-ph"},{src:"case/poise/pt-extra.webp",alt:"The light bar glowing red",cls:"po-ph"}]},
+   {t:"cards",cols:3,items:[
+    {h:"Positive",d:"Caught drift early, and gave control.",list:["It caught me slouching before I even noticed","I loved having the options for a break","The light felt calm, not like an alarm","Being able to shut off the camera was great"]},
+    {h:"Negative",d:"Slow setup, unclear light, risky camera.",list:["From the light alone, I couldn’t tell how I moved","Twelve guide steps before I could even start","I couldn’t find where to change my settings","Helpful, but I worry what the camera collects"]},
+    {h:"New ideas",d:"Their own way, and always in view.",list:["I wish I could just type the mode I want","I’d like a small window while I work","The light is nice, but tell me what to fix","I’d love to see how my week went"]}]},
+   {t:"table",h:"So I planned the next version around three changes",head:["Change","Priority","What I’ll do","Trade-off"],rows:[
+    ["Clearer privacy","High","Show how privacy is protected and the sensor option in the modal, so people feel safe","The sensor can miss small posture changes"],
+    ["Clearer cues","Medium","Add a voice and a figure that moves with you, so you know how to fix it","A voice can interrupt you"],
+    ["Simpler and more personal","Low","Add a text bar for settings and a mini window, so it’s quicker and always in view","More features can make it harder to learn"]]}]},
+ {k:"Version two",h:"Six changes, and how they measured",b:"I rebuilt the app around the plan. Then I tested both versions with the same three people, one hour each, on Nov 8. Version two did better on all three things I measured.",
+  blocks:[{t:"cards",cols:2,items:[
+    {h:"Clearer privacy",d:"I showed that the camera never records you and the sensor works but is less accurate, because in version one this note was small at the bottom, and I wanted people to feel safe."},
+    {h:"Simpler steps",d:"I grouped similar steps together, so the guide went from twelve steps to four, because people felt it was a bit too long."},
+    {h:"Easier to notice",d:"I added a figure that moves with you and a voice that tells you how to fix it, because in version one, people didn’t understand what the bar and the number meant."},
+    {h:"Mini window",d:"I added a small window in the corner of your screen, because people wanted to keep tracking their posture while working on other tabs."},
+    {h:"Ask Poise",d:"I added a text field to type what you want instead of opening settings, because people had a hard time finding settings, so I wanted an easier way to change them."},
+    {h:"One look and feel",d:"I made a design system and changed the look, because I built version one with AI and the screens didn’t match. So I thought without clear rules, AI can’t make things consistent."}]},
+   {t:"stats",items:[
+    ["85% → 90%","How long they sat well","Out of a one hour work session, up 5 points on average."],
+    ["1:25 → 0:52","How long setup took","From opening the app to finishing the guide, about 38% faster."],
+    ["0:21 → 0:15","How long switching modes took","From one mode to another, about 28% faster."]]},
+   {t:"table",head:["","Sat well","Setup","Switching modes"],rows:[
+    ["Paul","80% → 85%","1:20 → 0:50","0:25 → 0:20"],
+    ["Hyunjoo","90% → 93%","1:23 → 0:53","0:20 → 0:16"],
+    ["Peter","84% → 92%","1:31 → 0:54","0:19 → 0:10"]]},
+   {t:"html",html:`<div class="po-links">${[["https://poise-lightbar.netlify.app/","Try Poise"],["https://poise-lightbar.netlify.app/deck/index.html#1","See the deck"]].map(([u,l])=>`<a class="pill on" href="${u}" target="_blank" rel="noopener">${l} <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ic"><path d="M2 8 8 2M3.2 2H8v4.8"/></svg></a>`).join("")}</div>`}]},
+ {k:"What I learned",h:"Using AI in research, building and testing",blocks:[{t:"close",lh:"What I learned",nh:"What’s next",
+  learned:[
+   ["AI gives me a quick start, but real stories come from people","I had one month and wanted to spend it hearing people’s stories, so AI found papers and drafted my questions. I read each paper myself to check if the information was right."],
+   ["AI lets me build real things, but only users know if it helps them","I wanted a real app to test within days, so AI coded the app and the Arduino from my flow. I tested each build with people to see if it worked well."],
+   ["AI can read the data, but only I can see how people really use it","AI read and compared the posture data, so I could focus on watching people use the app. I checked the data myself to make sure AI was right."]],
+  next:[
+   ["Show how the week went","People in the playtest wanted to see their week, so a weekly view would turn single sessions into a habit."],
+   ["Connect with physical therapists","With people’s permission, sharing posture data with physical therapists could grow Poise into a posture health service."]]}]}]},
 atmos:{sec:[
  {k:"Initial idea",h:"100 users in one week",b:["It all started with a vibe coding assignment at SVA. We had one week to build something and get 100 people to actually use it. That felt like a lot, so I figured the easiest way was to make something people already open every day.","Checking the weather is one of those habits for me. And honestly the weather changes my mood more than I’d like to admit, so I thought, why not put the two together? That’s how the question came about. What’s the weather inside you today?"],
   blocks:[{t:"cards",cols:3,items:[
@@ -2624,7 +2732,7 @@ mortgage:{sec:[
 /* ---------- generic long-form case renderer (data in CASES) ---------- */
 const lcImg=(s,alt="",cls="",d="")=>d?`<img class="cz-img ${cls}" src="${isDark()?LCI(d):LCI(s)}" data-l="${LCI(s)}" data-d="${LCI(d)}" alt="${esc(alt)}" loading="lazy">`:`<img class="cz-img ${cls}" src="${LCI(s)}" alt="${esc(alt)}" loading="lazy">`;
 const VAR={"nk9NUFFKgElgWlWkkWdMMZcHT8":"744/1618","WR8DmPf7RNs78jPqgFMqo3w88M":"1280/958","3KAE8gx3abt04a7lzUfcJNpBWY":"1280/718","grQeFkc4T2mVyVCNNcvgpC61aI":"738/1604","SD2WmLZhgOUWax2xaEeEEDgU":"742/1618","9Qr8QWAOTOnnIak3lM2h1H5HoE":"710/1544","U1Bzft1HXpcbCR8DOstYPrwy3XU":"726/1578","ZSQ4oe90DusCOP96hTF1nLskZY8":"1280/720","nwxrVnraBrdWNJ4GChcChOF0kgE":"1280/720","o8U8DjQIw6kc921lBgGIpDxAAxk":"1280/720","TvZ7uEGokP2SNmrWSiUcLfs52oM":"744/1618","9Fq4iD4x5nNE6WNP70pPmhjMKWM":"712/1542","OO9Gv1hlvrCAu14Ln21Hqt6Np88":"708/1546","pQ4LoX9VSXzGzKtclmp781CcGk4":"740/1618","z81L90jhi1Yt8F0ehwNl3NdoU":"886/1920","OeJ2E7795vKqU8vaI9LbUGuykFs":"1280/960","1QlWzY73fImBfa0X3FqxSJ6dD0":"1280/910","bRgbIItsDtzwJfhjS8v6GQh5kQ":"738/1614","Zj5D6qZklC51SyKYJEPZC5p9b04":"1280/720"};
-const lcVid=(v,cls="")=>`<video class="cz-img cz-vid ${cls}" style="aspect-ratio:${VAR[v]||"16/9"}" src="vid/${v}.mp4" poster="vid/poster/${v}.jpg" muted loop playsinline autoplay preload="metadata"></video>`;
+const lcVid=(v,cls="")=>{const own=v.includes("/");return `<video class="cz-img cz-vid ${cls}" style="aspect-ratio:${VAR[v]||(own?"1440/787":"16/9")}" src="${own?v:"vid/"+v}.mp4" poster="${own?v:"vid/poster/"+v}.jpg" muted loop playsinline autoplay preload="metadata"></video>`};
 const lcMedia=o=>o.frame==="tab"?`<div class="dev-tab"><i class="cam"></i><div class="scr">${lcVid(o.vid,"")}</div></div>`:o.vid?lcVid(o.vid,o.cls||""):o.src?lcImg(o.src,o.alt||o.cap||"",o.cls||"",o.dsrc||""):"";
 const LCB={
   img:o=>`<figure class="pn ${o.bg==="light"?"pn-lt":""} ${o.flush?"pn-fl":""}">${lcT(o.h,o.s)}${lcMedia({...o,cls:(o.h||o.s?"pad ":"")+(o.cls||"")})}${o.cap?`<figcaption>${o.cap}</figcaption>`:""}</figure>`,
