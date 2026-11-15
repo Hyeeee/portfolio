@@ -152,7 +152,7 @@ function frame(now) {
   }
 
   // framing: upper body, cut at the waist by the bottom edge, like the camera view in the app
-  const fitW = 205, fitH = GQ === 'pn' ? 300 : 236, s = Math.min(W / fitW, H / fitH);
+  const fitW = 205, fitH = GQ === 'pn' || W / H > 1.6 ? 290 : 236, s = Math.min(W / fitW, H / fitH);
   const ax = W / 2, ay = H + s * 6;
   const ink = '#141412', paper = '#FBFAF6';   // the app's ink figure, in both themes
 

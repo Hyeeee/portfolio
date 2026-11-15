@@ -1871,7 +1871,7 @@ const HIDDEN=["referral-flow","scooter-sharing","recipe-wellness","collections",
 const SHOWN=PROJECTS.filter(p=>!HIDDEN.includes(p.slug));
 /* feed rows: M+P · P+M · M+P · P+M — real photos mixed with clean mockups */
 const ORDER=["poise","atmos","clock","homepage","grants","unsecured-loan","mortgage","pf-design-system","tech-conference","video-conferencing","stock-trading"];
-const FULL=new Set([]);
+const FULL=new Set(["poise"]);
 const WIDE=new Set(["atmos","grants","unsecured-loan","tech-conference","video-conferencing"]);
 const LIFE=new Set(["homepage","mortgage","tech-conference","stock-trading","clock"]);
 const SEQ=ORDER.map(s=>SHOWN.find(p=>p.slug===s)).filter(Boolean).concat(SHOWN.filter(p=>!ORDER.includes(p.slug)));
@@ -1907,7 +1907,7 @@ const vchips=p=>{let C={};try{C=CASES[p.slug]||{}}catch(_){}const m=String(C.met
 const veilCase=(p,fog)=>`<div class="veil" aria-hidden="true"><img class="fog" src="${fog}" alt=""><p class="vd">${p.vsum||p.intro||p.sum}</p>${vchips(p)}</div>`;
 /* one short line under each card */
 const LINE={"poise":"A light bar that notices when your posture drifts.","atmos":"A weather journal connecting your surroundings and your mood.","clock":"A clock taken apart into rings.","homepage":"A homepage that recommends by interest.","grants":"Scattered government funding, made browsable.","collections":"Thematic lists for tracking startup signals.","the-vc-design-system":"One shared language for The VC’s product.","unsecured-loan":"Spreading risk across many small loans.","tech-conference":"A conference site that speaks to developers.","mortgage":"A mortgage without paperwork or branch visits.","pf-design-system":"One component library for web, iOS and Android.","kyc-verification":"Identity checks with fewer steps.","stock-trading":"A friendlier first step into investing.","video-conferencing":"WECO — video calls everyone can join. Final Winner.","recipe-wellness":"Recipes and habits for everyday wellness."};
-const THUMB={"unsecured-loan":"unsecured-loan-3"};
+const THUMB={"unsecured-loan":"unsecured-loan-3","poise":"poise-wide"};
 const pic=s=>LIFE.has(s)?`shots/${s}.jpg`:`mock/${THUMB[s]||s}.jpg`;
 /* mockups have a dark-card twin; photos keep their own light */
 const DARKMOCK=new Set(["poise","atmos","clock","grants","unsecured-loan","pf-design-system","video-conferencing"]);
