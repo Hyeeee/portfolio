@@ -1867,6 +1867,18 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-r-c .po-pp em{font-size:14px}
 .po-r-c .po-leg{margin-top:24px}
 @media (max-width:760px){.po-r{grid-template-columns:1fr}.po-r-c .po-pp>div{grid-template-columns:5em 1fr}}
+
+/* carousel controls, tidied: no grey pill, small grey dots, the active one stretches and fills as it plays */
+.po-car .po-ctl{gap:14px;margin-top:clamp(16px,1.8vw,24px)}
+.po-car .po-dots{height:auto;padding:0;background:none;gap:7px}
+.po-car .po-dots button{width:6px;height:6px;background:color-mix(in srgb,var(--fg) 20%,transparent)}
+.po-car .po-dots button:hover{background:color-mix(in srgb,var(--fg) 40%,transparent)}
+.po-car .po-dots button.on{width:32px;background:color-mix(in srgb,var(--fg) 14%,transparent)}
+.po-car .po-dots button i{background:color-mix(in srgb,var(--fg) 55%,transparent)}
+.po-car .po-dots button.on i{transform:scaleX(var(--cp,0))}
+.po-car .po-cpp{width:24px;height:24px;background:none;color:color-mix(in srgb,var(--fg) 45%,transparent);transition:color .2s}
+.po-car .po-cpp:hover{color:var(--fg)}
+.po-car .po-cpp svg{width:14px!important;height:14px!important}
 </style>
 
 <script>
@@ -2175,7 +2187,7 @@ function initCar(c){if(c.dataset.ok)return;c.dataset.ok=1;
   const centerOf=el=>el.offsetLeft-(trk.clientWidth-el.clientWidth)/2;
   function go(i,smooth=true){i=(i+sl.length)%sl.length;trk.scrollTo({left:centerOf(sl[i]),behavior:smooth&&!reduce?"smooth":"auto"});setOn(i)}
   function setOn(i){if(i===cur)return;cur=i;t0=performance.now();
-    sl.forEach((s,k)=>s.classList.toggle("on",k===i));dots.forEach((d,k)=>{d.classList.toggle("on",k===i);d.style.setProperty("--p",0)});
+    sl.forEach((s,k)=>s.classList.toggle("on",k===i));dots.forEach((d,k)=>{d.classList.toggle("on",k===i);d.style.setProperty("--cp",0)});
     // survey bars draw each time their card comes in
     sl.forEach((s,k)=>s.querySelectorAll(".po-hb").forEach(h=>h.classList.toggle("in",k===i)));
     sl.forEach((s,k)=>s.querySelectorAll(".po-mon").forEach(h=>h.classList.toggle("in",k===i)));
@@ -2184,9 +2196,9 @@ function initCar(c){if(c.dataset.ok)return;c.dataset.ok=1;
   dots.forEach((d,k)=>d.addEventListener("click",()=>go(k)));
   sl.forEach((s,k)=>s.addEventListener("click",()=>{if(k!==cur)go(k)}));
   ["pointerdown","wheel","touchstart"].forEach(ev=>trk.addEventListener(ev,()=>{t0=performance.now()},{passive:true}));
-  pp.addEventListener("click",()=>{play=!play;c.classList.toggle("paused",!play);pp.setAttribute("aria-label",play?"Pause":"Play");t0=performance.now()-(parseFloat(dots[cur]?.style.getPropertyValue("--p"))||0)*DUR});
-  new IntersectionObserver(es=>es.forEach(e=>{seen=e.isIntersecting;if(seen){if(cur<0)setOn(0);t0=performance.now()-(parseFloat(dots[cur]?.style.getPropertyValue("--p"))||0)*DUR}}),{threshold:.35}).observe(c);
-  (function tick(now){raf=requestAnimationFrame(tick);if(!play||!seen||cur<0||!c.isConnected)return;const v=sl[cur].querySelector("video"),D=v&&v.duration>2&&isFinite(v.duration)?v.duration*1000:DUR,p=Math.min(1,(now-t0)/D);dots[cur].style.setProperty("--p",p.toFixed(4));if(p>=1)go(cur+1)})(performance.now());
+  pp.addEventListener("click",()=>{play=!play;c.classList.toggle("paused",!play);pp.setAttribute("aria-label",play?"Pause":"Play");t0=performance.now()-(parseFloat(dots[cur]?.style.getPropertyValue("--cp"))||0)*DUR});
+  new IntersectionObserver(es=>es.forEach(e=>{seen=e.isIntersecting;if(seen){if(cur<0)setOn(0);t0=performance.now()-(parseFloat(dots[cur]?.style.getPropertyValue("--cp"))||0)*DUR}}),{threshold:.35}).observe(c);
+  (function tick(now){raf=requestAnimationFrame(tick);if(!play||!seen||cur<0||!c.isConnected)return;const v=sl[cur].querySelector("video"),D=v&&v.duration>2&&isFinite(v.duration)?v.duration*1000:DUR,p=Math.min(1,(now-t0)/D);dots[cur].style.setProperty("--cp",p.toFixed(4));if(p>=1)go(cur+1)})(performance.now());
 }
 /* Poise charts: bars grow in the first time they come into view */
 const poIO=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const t=e.target;poIO.unobserve(t);
