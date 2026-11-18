@@ -2207,6 +2207,12 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-one-d.po-seg button i{display:none}
 .po-one-d.po-seg,.po-fx-t{border-radius:14px}
 .po-one-d.po-seg button,.po-fx-t button{border-radius:10px}
+
+/* segmented switches: one white thumb that slides under the labels */
+.po-one-d.po-seg,.po-fx-t{position:relative;isolation:isolate}
+.po-one-d.po-seg::before,.po-fx-t::before{content:"";position:absolute;z-index:-1;top:4px;bottom:4px;left:4px;width:calc((100% - 16px) / 3);border-radius:10px;background:var(--bg);box-shadow:0 1px 3px rgba(0,0,0,.08);transform:translateX(calc(var(--idx,0) * (100% + 4px)));transition:transform .55s cubic-bezier(.3,.7,.2,1)}
+.po-one-d.po-seg button.on,.po-fx-t button.on{background:none!important;box-shadow:none!important}
+.po-one-d.po-seg button,.po-fx-t button{transition:color .4s}
 </style>
 
 <script>
@@ -2508,7 +2514,7 @@ function lfOff(f,watch){clearTimeout(f._lfT);lfIO.unobserve(f);if(!f._lfOn){if(w
 function lazyFrames(scope){scope.querySelectorAll("iframe[data-src]").forEach(f=>lfIO.observe(f));scope.querySelectorAll(".po-a").forEach(el=>poIO.observe(el));scope.querySelectorAll(".po-car").forEach(initCar);scope.querySelectorAll(".po-uf").forEach(initFlow);scope.querySelectorAll(".po-fx").forEach(initFx)}
 // playtest feedback: tabs swap the panel; it moves on by itself every 7s, and a click restarts that clock
 function initFx(x){if(x.dataset.ok)return;x.dataset.ok=1;const bs=[...x.querySelectorAll(".po-fx-t button")],ps=[...x.querySelectorAll(".po-fx-p")];let cur=0,auto=!matchMedia("(prefers-reduced-motion: reduce)").matches,tm=0;
-  const show=n=>{cur=n%bs.length;bs.forEach((b,k)=>{b.classList.toggle("on",k===cur);b.setAttribute("aria-selected",k===cur)});ps.forEach((p,k)=>p.classList.toggle("on",k===cur))};
+  const show=n=>{cur=n%bs.length;bs.forEach((b,k)=>{b.classList.toggle("on",k===cur);b.setAttribute("aria-selected",k===cur)});bs[0].parentElement.style.setProperty("--idx",cur);ps.forEach((p,k)=>p.classList.toggle("on",k===cur))};
   bs.forEach((b,k)=>b.addEventListener("click",()=>{show(k);if(auto){clearInterval(tm);tm=setInterval(()=>show(cur+1),7000)}}));
   new IntersectionObserver(es=>es.forEach(e=>{clearInterval(tm);if(e.isIntersecting&&auto)tm=setInterval(()=>show(cur+1),7000)}),{threshold:.4}).observe(x);
 }
@@ -2563,7 +2569,7 @@ function initOne(t){const fs=[...t.querySelectorAll(".po-one-s>.po-fig")],ds=[..
   t.querySelectorAll(".po-a").forEach(c=>poIO.unobserve(c));
   function show(i){cur=(i+fs.length)%fs.length;t0=performance.now();
     fs.forEach((f,k)=>{f.classList.toggle("on",k===cur);f.querySelectorAll(".po-a").forEach(c=>c.classList.remove("in"))});
-    ds.forEach((d,k)=>{d.classList.toggle("on",k===cur);d.style.setProperty("--cp",0)});
+    ds.forEach((d,k)=>{d.classList.toggle("on",k===cur);d.style.setProperty("--cp",0)});if(ds[0])ds[0].parentElement.style.setProperty("--idx",cur);
     const f=fs[cur];void f.offsetWidth;setTimeout(()=>{f.querySelectorAll(".po-a").forEach(c=>c.classList.add("in"));const h=f.querySelector("h3");if(h)countUp(h)},250)}
   ds.forEach((d,k)=>d.addEventListener("click",()=>show(k)));
   show(0);if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
