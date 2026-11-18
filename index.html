@@ -2180,6 +2180,16 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 
 /* playtest photo: crop lower so my face stays out of frame */
 .po-ph3 img[src$="pt-try.webp"]{object-position:50% 100%}
+
+/* feedback card: the switch sits full width inside the top of the card, quotes as plain text */
+.po-fx{background:var(--pn);border-radius:clamp(18px,1.8vw,26px);padding:clamp(14px,1.4vw,20px)}
+.po-fx-t{display:grid;grid-template-columns:repeat(3,1fr);width:100%;background:color-mix(in srgb,var(--pnf) 5%,var(--pn))}
+.po-fx-t button{justify-content:center}
+.po-fx-s{margin-top:0}
+.po-fx-p{background:none;border-radius:0;padding:clamp(28px,3.4vw,48px) clamp(14px,2.4vw,34px) clamp(18px,2.4vw,34px)}
+.po-fx-p ul{gap:0}
+.po-fx-p li,.po-fx-p li.k{background:none;border-radius:0;padding:9px 0;font-size:16px}
+.po-fx-p li+li{border-top:1px solid color-mix(in srgb,var(--pnf) 7%,transparent)}
 </style>
 
 <script>
@@ -2479,10 +2489,10 @@ const lfIO=new IntersectionObserver(es=>es.forEach(e=>{const f=e.target;clearTim
 /* swap in a fresh, empty iframe so the old page (and its canvas) is really thrown away */
 function lfOff(f,watch){clearTimeout(f._lfT);lfIO.unobserve(f);if(!f._lfOn){if(watch)lfIO.observe(f);return}const n=f.cloneNode(false);n.removeAttribute("src");f.replaceWith(n);if(watch)lfIO.observe(n)}
 function lazyFrames(scope){scope.querySelectorAll("iframe[data-src]").forEach(f=>lfIO.observe(f));scope.querySelectorAll(".po-a").forEach(el=>poIO.observe(el));scope.querySelectorAll(".po-car").forEach(initCar);scope.querySelectorAll(".po-uf").forEach(initFlow);scope.querySelectorAll(".po-fx").forEach(initFx)}
-// playtest feedback: tabs swap the panel; it also moves on by itself every 7s until someone clicks a tab
+// playtest feedback: tabs swap the panel; it moves on by itself every 7s, and a click restarts that clock
 function initFx(x){if(x.dataset.ok)return;x.dataset.ok=1;const bs=[...x.querySelectorAll(".po-fx-t button")],ps=[...x.querySelectorAll(".po-fx-p")];let cur=0,auto=!matchMedia("(prefers-reduced-motion: reduce)").matches,tm=0;
   const show=n=>{cur=n%bs.length;bs.forEach((b,k)=>{b.classList.toggle("on",k===cur);b.setAttribute("aria-selected",k===cur)});ps.forEach((p,k)=>p.classList.toggle("on",k===cur))};
-  bs.forEach((b,k)=>b.addEventListener("click",()=>{auto=false;clearInterval(tm);show(k)}));
+  bs.forEach((b,k)=>b.addEventListener("click",()=>{show(k);if(auto){clearInterval(tm);tm=setInterval(()=>show(cur+1),7000)}}));
   new IntersectionObserver(es=>es.forEach(e=>{clearInterval(tm);if(e.isIntersecting&&auto)tm=setInterval(()=>show(cur+1),7000)}),{threshold:.4}).observe(x);
 }
 // user flow: every card is always there; one is in focus and the rest sit under a soft white veil, focus moves on every 2.4s
