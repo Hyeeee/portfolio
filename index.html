@@ -2428,6 +2428,10 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 
 /* room after the last slide so it can also stop flush left, clear of the right fade */
 .po-car-v .po-trk,.po-bleed .po-trk{padding-right:calc(var(--cw,900px) * .14)!important}
+
+/* survey: cards 2 and 3 land in the middle of the text column; neighbours fade on both sides */
+.po-bleed .po-trk{scroll-snap-type:none!important;padding-right:calc(var(--cw,900px) * .07)!important}
+.po-bleed:not(.first) .po-trk{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 calc(var(--bl,0px) + var(--cw,900px) * .07),#000 calc(100% - var(--cw,900px) * .07),transparent 100%)!important;mask-image:linear-gradient(90deg,transparent 0,#000 calc(var(--bl,0px) + var(--cw,900px) * .07),#000 calc(100% - var(--cw,900px) * .07),transparent 100%)!important}
 </style>
 
 <script>
@@ -2767,7 +2771,11 @@ function initCar(c){if(c.dataset.ok)return;c.dataset.ok=1;
   const bleed=()=>{if(!lead)return;const r=c.parentElement.getBoundingClientRect();if(!r.width)return;// on desktop the side menu sits on the left, so only the right side runs to the window edge
     const L=Math.min(48,Math.max(0,r.left)),R=0;c.style.setProperty("--bl",L+"px");c.style.setProperty("--br",R+"px");c.style.setProperty("--cw",r.width+"px")};
   bleed();addEventListener("resize",()=>{bleed();if(cur>=0)go(cur,false)});
-  const centerOf=el=>{const c=el.offsetLeft-(trk.clientWidth-el.clientWidth)/2;if(!lead)return c;return el.offsetLeft-(parseFloat(getComputedStyle(trk).paddingLeft)||0)};
+  const mid=c.classList.contains("po-bleed");
+  const centerOf=el=>{const c0=el.offsetLeft-(trk.clientWidth-el.clientWidth)/2;if(!lead)return c0;const pl=parseFloat(getComputedStyle(trk).paddingLeft)||0;
+    // survey: first card flush with the text, later cards centred in the text column
+    if(mid&&el!==sl[0]){const cw=trk.clientWidth-pl;return el.offsetLeft-pl-(cw-el.clientWidth)/2}
+    return el.offsetLeft-pl};
   function go(i,smooth=true){i=(i+sl.length)%sl.length;trk.scrollTo({left:centerOf(sl[i]),behavior:smooth&&!reduce?"smooth":"auto"});setOn(i)}
   function setOn(i){if(i===cur)return;cur=i;t0=performance.now();
     sl.forEach((s,k)=>s.classList.toggle("on",k===i));if(arw){pv.disabled=i===0;nx.disabled=i===sl.length-1}c.classList.toggle("first",i===0);c.classList.toggle("last",i===sl.length-1);dots.forEach((d,k)=>{d.classList.toggle("on",k===i);d.style.setProperty("--cp",0)});
@@ -2779,6 +2787,7 @@ function initCar(c){if(c.dataset.ok)return;c.dataset.ok=1;
   dots.forEach((d,k)=>d.addEventListener("click",()=>go(k)));
   sl.forEach((s,k)=>s.addEventListener("click",()=>{if(k!==cur)go(k)}));
   // only a real sideways swipe or a click on the track restarts the timer; page scrolling over it does not
+  if(mid){let se=0;trk.addEventListener("scroll",()=>{clearTimeout(se);se=setTimeout(()=>{if(cur>=0&&Math.abs(trk.scrollLeft-centerOf(sl[cur]))>2)go(cur)},140)},{passive:true})}
   trk.addEventListener("wheel",e=>{if(Math.abs(e.deltaX)>Math.abs(e.deltaY))t0=performance.now()},{passive:true});
   if(pp)pp.addEventListener("click",()=>{play=!play;c.classList.toggle("paused",!play);pp.setAttribute("aria-label",play?"Pause":"Play");t0=performance.now()-(parseFloat(dots[cur]?.style.getPropertyValue("--cp"))||0)*DUR});
   // starts the first time it comes into view, then keeps going even while you scroll past
