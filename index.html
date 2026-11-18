@@ -2321,15 +2321,15 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-uf-a.go svg.hz,.po-uf-a.go svg.dn{animation:none!important}
 .po-uf-a svg path:nth-of-type(1){stroke-dasharray:60;stroke-dashoffset:0}
 .po-uf-a.go svg path:nth-of-type(1){animation:ufLine .7s cubic-bezier(.65,0,.35,1) both!important}
-.po-uf-a.go svg path:nth-of-type(2){animation:ufHead .4s cubic-bezier(.2,.8,.2,1) .5s both!important}
+
 .po-uf-a.go svg circle{animation:ufDot2 .5s cubic-bezier(.2,.8,.2,1) both!important;transform-box:fill-box;transform-origin:center}
 @keyframes ufLine{from{stroke-dashoffset:60}to{stroke-dashoffset:0}}
 @keyframes ufHead{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:none}}
-.po-uf-a.go svg.dn path:nth-of-type(2){animation-name:ufHeadY!important}
+
 @keyframes ufHeadY{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 @keyframes ufDot2{from{transform:scale(.5)}to{transform:scale(1)}}
 
-.po-uf-a svg path:nth-of-type(2){stroke-dasharray:none!important;stroke-dashoffset:0!important}
+
 
 .po-fx{margin-top:0!important}
 
@@ -2346,13 +2346,22 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-iv2 figcaption i{border-radius:50%!important}
 
 /* arrowhead: the two strokes open out from the tip once the line arrives */
-.po-uf-a svg path.hd{stroke-dasharray:8!important;stroke-dashoffset:0!important;opacity:1!important;transform:none!important;animation:none!important}
-.po-uf-a.go svg path.hd{animation:ufHd .35s cubic-bezier(.2,.8,.2,1) .55s both!important}
+
+
 @keyframes ufHd{from{stroke-dashoffset:8}to{stroke-dashoffset:0}}
 
 .po-one-s>.po-fig>p{max-width:none!important}
 
 @media (min-width:761px){.po-one-s>.po-fig>p{white-space:nowrap}.po-one-s>.po-fig>p span{white-space:normal}}
+
+/* head waits until the line has fully reached the tip, then the two strokes open out */
+.po-uf-a.go svg path:nth-of-type(1){animation:ufLine .6s cubic-bezier(.5,0,.25,1) both!important}
+.po-uf-a.go svg path.hd{stroke-dasharray:9!important;animation:ufHd2 .32s cubic-bezier(.2,.8,.2,1) .6s both!important}
+@keyframes ufHd2{from{stroke-dashoffset:9}to{stroke-dashoffset:0}}
+
+/* arrowhead base state (no !important, so the animation can run) */
+.po-uf .po-uf-a svg path.hd{stroke-dasharray:9;stroke-dashoffset:0;opacity:1;transform:none;animation:none}
+.po-uf .po-uf-a.go svg path.hd{animation:ufHd2 .32s cubic-bezier(.2,.8,.2,1) .6s both}
 </style>
 
 <script>
