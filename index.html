@@ -2129,7 +2129,7 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 /* user flow, calmer: all five visible, the focused one clear, the others veiled */
 .po-uf.live .po-uf-c::after{opacity:.6}
 .po-uf.live .po-uf-c.on::after{opacity:0}
-.po-uf .po-uf-a svg path{stroke-dashoffset:0!important}
+
 .po-uf .po-uf-a svg circle{opacity:1!important}
 .po-uf-a.turn b{opacity:1!important}
 .po-uf-a.turn b::before{left:12px!important}
@@ -2256,7 +2256,7 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-uf-a:not(.turn)>svg.hz{position:absolute;left:50%;top:0;width:100px!important;height:14px;margin-left:-50px;right:auto}
 .po-uf>.po-uf-a.turn>svg.dn{width:14px!important;height:100px!important;top:50%!important;bottom:auto!important;margin-top:-50px}
 }
-.po-uf-a svg path{stroke-dasharray:none!important;stroke-dashoffset:0!important}
+
 .po-uf-a.go svg path{animation:none}
 .po-uf-a.go svg.hz{animation:ufGrowX .65s cubic-bezier(.3,.7,.2,1)}
 .po-uf-a.go svg.dn{animation:ufGrowY .65s cubic-bezier(.3,.7,.2,1)}
@@ -2314,6 +2314,24 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-hy-u{margin-top:clamp(24px,2.4vw,36px)!important}
 
 .po-hy-s p{font-size:clamp(22px,2.15vw,34px)!important;max-width:none!important}
+
+/* arrows, calmer: resting arrows sit back; the one leading into the focused card draws its line, then the head settles in */
+.po-uf.live .po-uf-a svg{opacity:.28;transition:opacity .5s ease}
+.po-uf.live .po-uf-a.lit svg{opacity:1}
+.po-uf-a.go svg.hz,.po-uf-a.go svg.dn{animation:none!important}
+.po-uf-a svg path:nth-of-type(1){stroke-dasharray:60;stroke-dashoffset:0}
+.po-uf-a.go svg path:nth-of-type(1){animation:ufLine .7s cubic-bezier(.65,0,.35,1) both!important}
+.po-uf-a.go svg path:nth-of-type(2){animation:ufHead .4s cubic-bezier(.2,.8,.2,1) .5s both!important}
+.po-uf-a.go svg circle{animation:ufDot2 .5s cubic-bezier(.2,.8,.2,1) both!important;transform-box:fill-box;transform-origin:center}
+@keyframes ufLine{from{stroke-dashoffset:60}to{stroke-dashoffset:0}}
+@keyframes ufHead{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:none}}
+.po-uf-a.go svg.dn path:nth-of-type(2){animation-name:ufHeadY!important}
+@keyframes ufHeadY{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@keyframes ufDot2{from{transform:scale(.5)}to{transform:scale(1)}}
+
+.po-uf-a svg path:nth-of-type(2){stroke-dasharray:none!important;stroke-dashoffset:0!important}
+
+.po-fx{margin-top:0!important}
 </style>
 
 <script>
@@ -2625,7 +2643,7 @@ function initFlow(f){if(f.dataset.ok)return;f.dataset.ok=1;
   const cs=[...f.querySelectorAll(".po-uf-c")];let cur=0,tm=0;
   const as=[...f.querySelectorAll(".po-uf-a")];
   // the arrow leading into the new card redraws itself each time focus moves along it
-  const show=n=>{const prev=cur;cur=n%cs.length;cs.forEach((c,k)=>c.classList.toggle("on",k===cur));if(cur>0&&cur===prev+1){const a=as[prev];a.classList.remove("go");void a.offsetWidth;a.classList.add("go")}};
+  const show=n=>{const prev=cur;cur=n%cs.length;cs.forEach((c,k)=>c.classList.toggle("on",k===cur));as.forEach(a=>a.classList.remove("go","lit"));if(cur>0){const a=as[cur-1];if(cur===prev+1){void a.offsetWidth;a.classList.add("go")}a.classList.add("lit")}};
   const loop=()=>{show(cur+1);tm=setTimeout(loop,2400)};
   f.classList.add("live");show(0);
   new IntersectionObserver(es=>es.forEach(e=>{clearTimeout(tm);if(e.isIntersecting)tm=setTimeout(loop,2400)}),{threshold:.3}).observe(f);
