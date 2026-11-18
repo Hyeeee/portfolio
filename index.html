@@ -2432,6 +2432,17 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 /* survey: cards 2 and 3 land in the middle of the text column; neighbours fade on both sides */
 .po-bleed .po-trk{scroll-snap-type:none!important;padding-right:calc(var(--cw,900px) * .07)!important}
 .po-bleed:not(.first) .po-trk{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 calc(var(--bl,0px) + var(--cw,900px) * .07),#000 calc(100% - var(--cw,900px) * .07),transparent 100%)!important;mask-image:linear-gradient(90deg,transparent 0,#000 calc(var(--bl,0px) + var(--cw,900px) * .07),#000 calc(100% - var(--cw,900px) * .07),transparent 100%)!important}
+
+/* testing bars: name on its own line, then "Version one" / "Version two" written beside each bar; no legend */
+.po-r-c .po-pp{gap:clamp(18px,2vw,26px)!important}
+.po-r-c .po-pp>div{grid-template-columns:1fr!important;row-gap:8px!important}
+.po-r-c .po-pp>div>b{grid-row:auto!important;font-size:16px;font-weight:600;margin-bottom:2px}
+.po-r-c .po-pp span{grid-template-columns:7.2em 1fr 3.4em!important;gap:14px!important}
+.po-r-c .po-pp span::before{font-size:14px;line-height:1}
+.po-r-c .po-pp .a::before{content:"Version one";color:var(--pnm)}
+.po-r-c .po-pp .b::before{content:"Version two";color:var(--pnf)}
+.po-r-c .po-pp .b em{color:var(--pnf)}
+.po-r-c .po-leg{display:none!important}
 </style>
 
 <script>
