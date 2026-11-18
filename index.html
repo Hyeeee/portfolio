@@ -2425,6 +2425,9 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 /* soft white fade on the left too: the track reaches 48px past the column on the left, and that strip fades to white,
    so the current slide still lines up with the text while the previous one dissolves */
 .po-car-v .po-trk,.po-bleed .po-trk,.po-car-v.first .po-trk,.po-bleed.first .po-trk,.po-car-v.last .po-trk,.po-bleed.last .po-trk{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--bl,0px),#000 90%,transparent 100%)!important;mask-image:linear-gradient(90deg,transparent 0,#000 var(--bl,0px),#000 90%,transparent 100%)!important}
+
+/* room after the last slide so it can also stop flush left, clear of the right fade */
+.po-car-v .po-trk,.po-bleed .po-trk{padding-right:calc(var(--cw,900px) * .14)!important}
 </style>
 
 <script>
