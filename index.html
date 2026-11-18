@@ -1949,6 +1949,14 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 /* video slides: title with its description right under it */
 .po-sl-v figcaption{display:block;max-width:44em}
 .po-sl-v figcaption p{margin:8px 0 0}
+
+/* version one and two: prev / next arrows instead of autoplay, since the clips are long */
+.po-car .po-arw{justify-content:flex-end;align-items:center;gap:10px;padding:0 7%;margin-top:clamp(4px,.8vw,12px)}
+.po-arw button{appearance:none;border:0;margin:0;padding:0;position:static;flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer;background:var(--pn);color:var(--fg);transition:background .2s,opacity .2s}
+.po-arw button:hover:not(:disabled){background:color-mix(in srgb,var(--fg) 12%,var(--pn))}
+.po-arw button:disabled{opacity:.35;cursor:default}
+.po-arw svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:760px){.po-car .po-arw{padding:0 6%}}
 </style>
 
 <script>
@@ -2251,13 +2259,15 @@ function lazyFrames(scope){scope.querySelectorAll("iframe[data-src]").forEach(f=
 // carousel: scroll-snap track, the card nearest the middle is "on", dots show a progress pill, autoplay with pause
 function initCar(c){if(c.dataset.ok)return;c.dataset.ok=1;
   const trk=c.querySelector(".po-trk"),sl=[...trk.children],dots=[...c.querySelectorAll(".po-dots button")],pp=c.querySelector(".po-cpp");
+  const arw=c.querySelector(".po-arw"),pv=arw&&arw.querySelector(".po-pv"),nx=arw&&arw.querySelector(".po-nx");
   const DUR=6000,reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let cur=-1,t0=performance.now(),play=!reduce,seen=false,raf=0;
-  if(!play)c.classList.add("paused");
+  let cur=-1,t0=performance.now(),play=!reduce&&!arw,seen=false,raf=0;
+  if(!play&&!arw)c.classList.add("paused");
+  if(arw){pv.addEventListener("click",()=>{if(cur>0)go(cur-1)});nx.addEventListener("click",()=>{if(cur<sl.length-1)go(cur+1)})}
   const centerOf=el=>el.offsetLeft-(trk.clientWidth-el.clientWidth)/2;
   function go(i,smooth=true){i=(i+sl.length)%sl.length;trk.scrollTo({left:centerOf(sl[i]),behavior:smooth&&!reduce?"smooth":"auto"});setOn(i)}
   function setOn(i){if(i===cur)return;cur=i;t0=performance.now();
-    sl.forEach((s,k)=>s.classList.toggle("on",k===i));dots.forEach((d,k)=>{d.classList.toggle("on",k===i);d.style.setProperty("--cp",0)});
+    sl.forEach((s,k)=>s.classList.toggle("on",k===i));if(arw){pv.disabled=i===0;nx.disabled=i===sl.length-1}dots.forEach((d,k)=>{d.classList.toggle("on",k===i);d.style.setProperty("--cp",0)});
     // survey bars draw each time their card comes in
     sl.forEach((s,k)=>s.querySelectorAll(".po-hb").forEach(h=>h.classList.toggle("in",k===i)));
     sl.forEach((s,k)=>s.querySelectorAll(".po-mon").forEach(h=>h.classList.toggle("in",k===i)));
@@ -2266,9 +2276,9 @@ function initCar(c){if(c.dataset.ok)return;c.dataset.ok=1;
   dots.forEach((d,k)=>d.addEventListener("click",()=>go(k)));
   sl.forEach((s,k)=>s.addEventListener("click",()=>{if(k!==cur)go(k)}));
   ["pointerdown","wheel","touchstart"].forEach(ev=>trk.addEventListener(ev,()=>{t0=performance.now()},{passive:true}));
-  pp.addEventListener("click",()=>{play=!play;c.classList.toggle("paused",!play);pp.setAttribute("aria-label",play?"Pause":"Play");t0=performance.now()-(parseFloat(dots[cur]?.style.getPropertyValue("--cp"))||0)*DUR});
+  if(pp)pp.addEventListener("click",()=>{play=!play;c.classList.toggle("paused",!play);pp.setAttribute("aria-label",play?"Pause":"Play");t0=performance.now()-(parseFloat(dots[cur]?.style.getPropertyValue("--cp"))||0)*DUR});
   new IntersectionObserver(es=>es.forEach(e=>{seen=e.isIntersecting;if(seen){if(cur<0)setOn(0);t0=performance.now()-(parseFloat(dots[cur]?.style.getPropertyValue("--cp"))||0)*DUR}}),{threshold:.35}).observe(c);
-  (function tick(now){raf=requestAnimationFrame(tick);if(!play||!seen||cur<0||!c.isConnected)return;const v=sl[cur].querySelector("video"),D=v&&v.duration>2&&isFinite(v.duration)?v.duration*1000:DUR,p=Math.min(1,(now-t0)/D);dots[cur].style.setProperty("--cp",p.toFixed(4));if(p>=1)go(cur+1)})(performance.now());
+  (function tick(now){raf=requestAnimationFrame(tick);if(!play||!seen||cur<0||!c.isConnected||!dots.length)return;const v=sl[cur].querySelector("video"),D=v&&v.duration>2&&isFinite(v.duration)?v.duration*1000:DUR,p=Math.min(1,(now-t0)/D);dots[cur].style.setProperty("--cp",p.toFixed(4));if(p>=1)go(cur+1)})(performance.now());
 }
 /* Poise charts: bars grow in the first time they come into view */
 const poIO=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const t=e.target;poIO.unobserve(t);
@@ -3042,7 +3052,7 @@ const LCB={
   steps:o=>`<div class="pn">${lcT(o.h,o.s)}<ol class="steps">${o.items.map(([t,d])=>`<li><b>${t}</b><span>${d}</span></li>`).join("")}</ol></div>`,
   stats:o=>`<div class="cz-3 ${o.cls||""}">${o.items.map(([v,t,d])=>`<div>${v?`<strong>${v}</strong>`:""}<b>${t}</b><p>${d}</p></div>`).join("")}</div>`,
   heat:o=>`<div class="pn cz-heat"><div class="hm">${lcImg(o.src,o.h)}</div><div class="hs">${lcT(o.h,o.s)}<dl>${o.items.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl></div></div>`,
-  vcar:o=>{const P='<button type="button" class="po-cpp" aria-label="Pause"><svg class="pa" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg><svg class="pl" viewBox="0 0 24 24"><path d="M8 5.6v12.8a1 1 0 0 0 1.5.86l10.2-6.4a1 1 0 0 0 0-1.72L9.5 4.74A1 1 0 0 0 8 5.6z"/></svg></button>';return `<div class="po-car po-car-v"><div class="po-trk">${o.items.map((it,k)=>`<figure class="po-sl po-sl-v${k?"":" on"}"><div class="po-bz">${lcVid(it.vid,"")}</div><figcaption><b>${it.h}</b><p>${it.b}</p></figcaption></figure>`).join("")}</div><div class="po-ctl"><div class="po-dots">${o.items.map((it,k)=>`<button type="button" aria-label="${it.h}"${k?"":' class="on"'}><i></i></button>`).join("")}</div>${P}</div></div>`},
+  vcar:o=>{const _P='<button type="button" class="po-cpp" aria-label="Pause"><svg class="pa" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg><svg class="pl" viewBox="0 0 24 24"><path d="M8 5.6v12.8a1 1 0 0 0 1.5.86l10.2-6.4a1 1 0 0 0 0-1.72L9.5 4.74A1 1 0 0 0 8 5.6z"/></svg></button>';return `<div class="po-car po-car-v"><div class="po-trk">${o.items.map((it,k)=>`<figure class="po-sl po-sl-v${k?"":" on"}"><div class="po-bz">${lcVid(it.vid,"")}</div><figcaption><b>${it.h}</b><p>${it.b}</p></figcaption></figure>`).join("")}</div><div class="po-ctl po-arw"><button type="button" class="po-pv" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></svg></button><button type="button" class="po-nx" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9.5 6l6 6-6 6"/></svg></button></div></div>`},
   notes:o=>{const nt=`<div class="cz-notes"><div class="nb">${o.tag?`<span class="tag">${o.tag}</span>`:""}<ol>${o.items.map(([t,d])=>`<li><b>${t}</b><p>${d}</p></li>`).join("")}</ol></div></div>`,fg=`<figure class="pn pn-shot">${lcMedia(o.media)}${o.media.cap?`<figcaption>${o.media.cap}</figcaption>`:""}</figure>`;return `<div class="cz-proto ${o.flip?"flip":""} ${o.after?"after":""}">${o.after?fg+(o.mid||"")+nt:nt+fg}</div>`},
   close:o=>`<div class="cz-g cz-close" style="--c:${o.next&&o.next.length?2:1}"><div class="pn">${o.next&&o.next.length?lcT(o.lh||"What I learned"):""}<ul>${o.learned.map(([t,d])=>`<li><b>${t}</b><p>${d}</p></li>`).join("")}</ul></div>${o.next&&o.next.length?`<div class="pn">${lcT(o.nh||"Next iteration")}<ul>${o.next.map(([t,d])=>`<li><b>${t}</b><p>${d}</p></li>`).join("")}</ul></div>`:""}</div>`,
   swatch:o=>`<div class="pn">${lcT(o.h,o.s)}<div class="sw">${o.items.map(c=>`<div><i style="background:${c}"></i><span>${c}</span></div>`).join("")}</div>${o.grad?`<div class="sw-g" style="background:linear-gradient(90deg,${o.items.join(",")})"></div>`:""}${o.src?lcImg(o.src,"","pad"):""}</div>`,
