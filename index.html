@@ -1957,6 +1957,19 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-arw button:disabled{opacity:.35;cursor:default}
 .po-arw svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 @media (max-width:760px){.po-car .po-arw{padding:0 6%}}
+
+/* comparator previews: each one loops like a live activity */
+.po-cr-w .bar s{animation:poFill 5s cubic-bezier(.4,0,.2,1) infinite}
+@keyframes poFill{0%{width:calc(var(--w) * .25)}70%,92%{width:var(--w)}100%{width:calc(var(--w) * .25)}}
+.po-cr:nth-child(4) .po-cr-w .bar s{animation-duration:6s;animation-timing-function:linear}
+.po-cr-w .dots i{animation:poRide 4.5s cubic-bezier(.45,0,.25,1) infinite}
+@keyframes poRide{0%{right:calc(100% - 11px)}75%,92%{right:16px}100%{right:calc(100% - 11px)}}
+.po-cr-w .dots s{animation:poPin 4.5s ease infinite}
+@keyframes poPin{0%,70%{transform:scale(1)}80%{transform:scale(1.4)}90%,100%{transform:scale(1)}}
+.po-cr-w .seg s{transform-origin:left;animation:poSeg 4.5s ease infinite both}
+.po-cr-w .seg s:nth-child(2){animation-delay:.6s}.po-cr-w .seg s:nth-child(3){animation-delay:1.2s}
+@keyframes poSeg{0%{transform:scaleX(0);opacity:.35}18%,85%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
+@media (prefers-reduced-motion:reduce){.po-cr-w .bar s,.po-cr-w .dots i,.po-cr-w .dots s,.po-cr-w .seg s{animation:none}}
 </style>
 
 <script>
