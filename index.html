@@ -2530,6 +2530,17 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-tst .po-seg2{margin:0!important}
 .po-tst .po-r{padding:clamp(28px,3vw,44px) 0 0!important}
 .po-mkp .po-cr-w{background:color-mix(in srgb,var(--pn) 70%,var(--bg))!important}
+
+/* problem stats: all three side by side, no tabs. Chart on top, number and caption under it */
+.po-one-d.po-seg{display:none!important}
+.po-one-s{grid-template-columns:repeat(3,minmax(0,1fr))!important;column-gap:clamp(28px,4vw,64px)!important;padding-top:clamp(8px,1vw,16px)!important}
+.po-one-s>.po-fig{grid-area:auto!important;opacity:1!important;visibility:visible!important;transform:none!important}
+.po-one-s>.po-fig>.pn{min-height:170px!important;align-items:flex-end!important}
+.po-one-s>.po-fig>h3{font-size:clamp(34px,3.2vw,48px)!important}
+.po-one-s>.po-fig>p{white-space:normal!important;font-size:15px!important}
+.po-one .po-dn{position:relative!important;width:150px!important;height:150px!important}
+.po-one .po-dn b{font-size:26px}
+@media (max-width:760px){.po-one-s{grid-template-columns:1fr!important;row-gap:48px}}
 </style>
 
 <script>
@@ -2894,7 +2905,7 @@ function initCar(c){if(c.dataset.ok)return;c.dataset.ok=1;
 }
 /* Poise charts: bars grow in the first time they come into view */
 const poIO=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const t=e.target;poIO.unobserve(t);
-  if(t.classList.contains("po-one")){initOne(t);return}
+  if(t.classList.contains("po-one")){t.querySelectorAll(".po-a").forEach(c=>poIO.unobserve(c));t.querySelectorAll(".po-one-s>.po-fig").forEach((f,i)=>setTimeout(()=>{f.querySelectorAll(".po-a").forEach(c=>c.classList.add("in"));const h=f.querySelector("h3");if(h)countUp(h)},200+i*160));return}
   if(t.classList.contains("po-big")){t.classList.add("in");
     // charts start a beat after the column rises in
     t.querySelectorAll(".po-a").forEach((c,i)=>{poIO.unobserve(c);setTimeout(()=>c.classList.add("in"),260+i*120)});
