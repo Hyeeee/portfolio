@@ -2630,6 +2630,13 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .s-head .s-tr{width:100%;align-self:stretch;max-width:none!important}
 .s-head .s-cta-w{order:2;margin:24px 0 0;align-self:flex-start}
 .s-head .s-cta-w .s-cta{margin:0}
+/* testing: the pill switch becomes three small dots inside the card, bottom centre; it still advances on its own every few seconds */
+.po-tst{position:relative}
+.po-tst .po-seg2{position:absolute!important;left:50%;bottom:clamp(12px,1.2vw,16px);transform:translateX(-50%);margin:0!important;padding:0!important;background:none!important;display:flex!important;gap:8px!important;z-index:2}
+.po-tst .po-seg2::before{display:none!important}
+.po-tst .po-seg2 button{width:7px;height:7px;padding:0!important;font-size:0!important;border-radius:50%!important;background:color-mix(in srgb,var(--pnf) 20%,var(--pn))!important;transition:background .3s,width .4s cubic-bezier(.2,.8,.2,1)!important}
+.po-tst .po-seg2 button.on{width:20px;border-radius:99px!important;background:var(--pnf)!important}
+.po-tst .po-r{padding-bottom:clamp(36px,3.6vw,48px)!important}
 </style>
 
 <script>
