@@ -2618,6 +2618,11 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .s-head .s-cta{flex:none;margin:0 0 .6em auto;order:1!important}
 @media (max-width:760px){.s-head .s-tr{flex-direction:column;align-items:flex-start}.s-head .s-cta{margin:0}}
 .po-cr-w{background:var(--bg)!important}
+/* hypothesis tiles: no boxes. A hairline on top of the pair and a hairline between the two */
+.po-hy-u{gap:0!important;border-top:1px solid color-mix(in srgb,var(--pnf) 12%,transparent)}
+.po-hy-u>div{background:none!important;border-radius:0!important;padding:clamp(22px,2.4vw,32px) clamp(24px,3vw,44px) 0 0!important}
+.po-hy-u>div+div{border-left:1px solid color-mix(in srgb,var(--pnf) 12%,transparent)!important;padding-left:clamp(24px,3vw,44px)!important;padding-right:0!important}
+@media (max-width:760px){.po-hy-u>div+div{border-left:0!important;padding-left:0!important}}
 </style>
 
 <script>
