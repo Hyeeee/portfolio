@@ -2603,6 +2603,14 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-iv3 p{align-self:end}
 .po-iv3 p em::before{background:#4fbf73!important}
 .po-iv3 figcaption i{background:var(--bg)!important;color:var(--pnm)!important}
+/* testing: the switch sits under the card like Apple's pill control. Grey track, black pill slides to the active tab, active text turns white */
+.po-tst{display:flex!important;flex-direction:column;align-items:center;background:none!important;padding:0!important;border-radius:0!important}
+.po-tst .po-res{order:1;align-self:stretch;background:var(--pn);border-radius:var(--cr,10px);padding:clamp(14px,1.4vw,20px)}
+.po-tst .po-seg2{order:2;display:inline-grid!important;grid-template-columns:repeat(3,1fr);width:auto!important;margin:clamp(18px,2vw,28px) 0 0!important;padding:4px!important;border-radius:999px!important;background:color-mix(in srgb,var(--fg) 5%,var(--bg))!important}
+.po-tst .po-seg2::before{display:block!important;border-radius:999px!important;background:var(--fg)!important;box-shadow:none!important}
+.po-tst .po-seg2 button{border-radius:999px!important;padding:9px 20px!important;font-size:15px!important;color:var(--fg)!important;white-space:nowrap;background:none!important}
+.po-tst .po-seg2 button::after{display:none!important}
+.po-tst .po-seg2 button.on{color:var(--bg)!important}
 </style>
 
 <script>
