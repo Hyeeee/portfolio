@@ -2659,6 +2659,16 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-fx3 ul{margin-top:0!important;gap:10px!important}
 .po-fx3 li{text-wrap:balance!important}
 .po-tst .po-r-c .po-pp .b::before{color:var(--pnf)!important}
+/* feedback as a quote grid: one grey block, three column headers, then nine white quote tiles that line up row by row */
+.po-fx3{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:auto repeat(3,auto);column-gap:clamp(10px,1vw,14px)!important;row-gap:clamp(10px,1vw,14px)!important}
+.po-fx3-g{display:grid!important;grid-row:span 4;grid-template-rows:subgrid;grid-template-columns:minmax(0,1fr)!important;gap:0!important;row-gap:clamp(10px,1vw,14px)!important}
+.po-fx3-h{padding:0 4px clamp(10px,1.2vw,18px)}
+.po-fx3-h span{display:flex!important;align-items:center;gap:7px}
+.po-fx3-h span::before{content:"";width:7px;height:7px;border-radius:50%;background:#4fbf73}
+.po-fx3-g:nth-child(2) .po-fx3-h span::before{background:#e5645a}
+.po-fx3-g:nth-child(3) .po-fx3-h span::before{background:#e9a23b}
+.po-fx3 ul{display:contents!important}
+.po-fx3 li{background:var(--bg)!important;border-radius:8px!important;padding:14px 18px!important;color:var(--pnf)!important;font-size:15px!important;display:flex;align-items:center}
 </style>
 
 <script>
