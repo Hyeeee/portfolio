@@ -2677,6 +2677,8 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-fx3 li{display:block!important;border-radius:18px 18px 18px 5px!important;padding:10px 16px!important;text-wrap:wrap!important}
 @media (max-width:760px){.po-fx3-g{grid-template-columns:1fr!important;row-gap:14px!important}}
 .po-fx3 ul{gap:12px!important}
+/* version carousels: on the last slide the right edge stays solid so the final video is not faded */
+html .po-car-v.last .po-trk{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--bl,0px),#000 100%)!important;mask-image:linear-gradient(90deg,transparent 0,#000 var(--bl,0px),#000 100%)!important}
 </style>
 
 <script>
