@@ -2679,16 +2679,11 @@ html body .feed .veil .vch i{font-style:normal;font-size:12.5px;font-weight:450;
 .po-fx3 ul{gap:12px!important}
 /* version carousels: on the last slide the right edge stays solid so the final video is not faded */
 html .po-car-v.last .po-trk{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--bl,0px),#000 100%)!important;mask-image:linear-gradient(90deg,transparent 0,#000 var(--bl,0px),#000 100%)!important}
-/* user flow cards are clickable: pointer, a soft lift on hover, a small "see it" hint in the corner */
-.po-uf .po-uf-c{cursor:pointer;transition:opacity .45s ease,background .3s ease,transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease}
-.po-uf .po-uf-c:hover{transform:translateY(-3px);box-shadow:0 10px 28px -14px rgba(0,0,0,.18)}
-.po-uf .po-uf-c:active{transform:translateY(-1px) scale(.99)}
+/* user flow cards: hover lifts a little, press dips; no shadow */
+.po-uf .po-uf-c{cursor:pointer;transition:opacity .45s ease,background .3s ease,transform .35s cubic-bezier(.2,.8,.2,1)}
+.po-uf .po-uf-c:hover{transform:translateY(-2px)}
+.po-uf .po-uf-c:active{transform:scale(.985)}
 .po-uf .po-uf-c:focus-visible{outline:2px solid var(--fg);outline-offset:3px}
-.po-uf .po-uf-c header span{transition:opacity .25s}
-.po-uf .po-uf-c header{position:relative}
-.po-uf .po-uf-c header::after{content:"See it \2197";position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:13px;color:var(--muted);opacity:0;transition:opacity .25s}
-.po-uf .po-uf-c:hover header span{opacity:0}
-.po-uf .po-uf-c:hover header::after{opacity:1}
 </style>
 
 <script>
@@ -3014,13 +3009,14 @@ function initFlow(f){if(f.dataset.ok)return;f.dataset.ok=1;
   f.classList.add("live");show(0);
   let vis=false,hov=false;
   new IntersectionObserver(es=>es.forEach(e=>{vis=e.isIntersecting;clearTimeout(tm);if(vis&&!hov)tm=setTimeout(loop,2400)}),{threshold:.3}).observe(f);
-  // hover a card to focus it (auto play pauses), click it to jump to that screen in the version one carousel
-  const SLIDE=[0,1,1,1,2,2];
-  cs.forEach((c,k)=>{c.tabIndex=0;c.setAttribute("role","link");
+  // hover a card to look at it; click to keep it in focus (auto play stops), click it again to let the flow play on
+  let pin=-1;
+  const resume=()=>{clearTimeout(tm);if(vis&&!hov&&pin<0)tm=setTimeout(loop,2400)};
+  cs.forEach((c,k)=>{c.tabIndex=0;c.setAttribute("role","button");
     c.addEventListener("mouseenter",()=>{hov=true;clearTimeout(tm);if(k!==cur)show(k)});
-    c.addEventListener("mouseleave",()=>{hov=false;clearTimeout(tm);if(vis)tm=setTimeout(loop,2400)});
-    const jump=()=>{const car=document.querySelector(".po-car-v");if(!car)return;const sec=car.closest("section")||car;sec.scrollIntoView({behavior:"smooth",block:"start"});setTimeout(()=>{if(!car.dataset.ok&&typeof initCar=="function")initCar(car);car._go&&car._go(SLIDE[k]||0)},500)};
-    c.addEventListener("click",jump);c.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();jump()}});
+    c.addEventListener("mouseleave",()=>{hov=false;if(pin>=0&&pin!==cur)show(pin);resume()});
+    const tap=()=>{pin=pin===k?-1:k;cs.forEach((x,n)=>x.classList.toggle("pin",n===pin));if(pin>=0&&cur!==pin)show(pin);resume()};
+    c.addEventListener("click",tap);c.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tap()}});
   });
 }
 // carousel: scroll-snap track, the card nearest the middle is "on", dots show a progress pill, autoplay with pause
