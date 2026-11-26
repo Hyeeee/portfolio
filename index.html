@@ -2738,6 +2738,10 @@ html .po-car-v.last .po-trk{-webkit-mask-image:linear-gradient(90deg,transparent
 .s-vl:hover{color:var(--fg)!important}
 .s-vl:hover svg{transform:translateX(3px)}
 @media (max-width:760px){.s-head .s-tr{flex-direction:column;align-items:flex-start;gap:14px}.s-vl{margin:0}}
+/* live link, option D: outline pill on the right of the title row, fills grey on hover */
+.s-op{flex:none;display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border:1px solid var(--line);border-radius:99px;font-size:15px;font-weight:500;color:var(--fg);text-decoration:none;transition:background .25s,border-color .25s}
+.s-op svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.s-op:hover{background:var(--pn);border-color:transparent}
 </style>
 
 <script>
@@ -3905,7 +3909,7 @@ function sbr(C,x){return C&&C.sbr&&typeof x=="string"?x.replace(/([.?!])\s+(?=[A
 function longCase(p,C){
   const i=SEQ.indexOf(p),next=SEQ[(Math.max(i,0)+1)%SEQ.length];
   return `<div class="cs hp lc">
-    <div class="s-head">${csK(C.client||p.client,C.time||p.time)}${C.live?`<div class="s-tr rise"><h1 id="s-title">${p.title}</h1><a class="s-vl" href="${C.live}" target="_blank" rel="noopener">View live<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>`:`<h1 id="s-title" class="rise">${p.title}</h1>`}
+    <div class="s-head">${csK(C.client||p.client,C.time||p.time)}${C.live?`<div class="s-tr rise"><h1 id="s-title">${p.title}</h1><a class="s-op" href="${C.live}" target="_blank" rel="noopener">Try Poise<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8.5 7H17v8.5"/></svg></a></div>`:`<h1 id="s-title" class="rise">${p.title}</h1>`}
       <dl class="meta rise"><div><dt>Timeline</dt><dd>${C.time||p.time}</dd></div><div><dt>Role</dt><dd>${C.role||p.role}</dd></div><div><dt>Methods</dt><dd>${C.methods||p.methods}</dd></div></dl>
       <p class="lead rise">${sbr(C,C.intro||p.intro)}</p>${C.cta?`<p class="s-cta-w rise"><a class="pill on s-cta" href="${C.cta[1]}" target="_blank" rel="noopener">${C.cta[0]} <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ic"><path d="M2 8 8 2M3.2 2H8v4.8"/></svg></a></p>`:""}</div>
     ${C.lot?`<figure class="pn pn-cover cv-lot rise"><div class="lot lot-c" data-src="${C.lot}"><img src="${C.lotPoster}" alt="${esc(p.title)}"></div></figure>`:C.cover?`<figure class="pn pn-cover rise" style="${C.coverBg?`background:${C.coverBg}`:""}">${lcMedia(C.cover)}</figure>`:`<figure class="pn pn-cover cv-u rise${C.credit?" cv-has-cr":""}"><img src="case/covers/${p.slug}${isDark()?"-d":""}.jpg?v=8" data-l="case/covers/${p.slug}.jpg?v=8" data-d="case/covers/${p.slug}-d.jpg?v=8" alt="${esc(p.title)}">${MOTION[p.slug]&&!reduce?`<iframe class="cv-am" data-src="${MOTION[p.slug]}?ground=pn" title="${esc(p.title)} motion" tabindex="-1" aria-hidden="true"></iframe>`:""}${C.credit||""}</figure>`}
