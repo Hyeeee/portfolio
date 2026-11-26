@@ -2748,6 +2748,15 @@ html .po-car-v.last .po-trk{-webkit-mask-image:linear-gradient(90deg,transparent
 
 /* mockup to caption gap */
 .cz-body > .vc-mob + .tx{margin-top:8px!important}
+
+/* logo lives in its own fixed layer so it can invert over the black object */
+.nav-logo{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));left:var(--gutter);z-index:56;pointer-events:none;
+  mix-blend-mode:difference;transition:transform 1.1s var(--out)}
+.nav-logo .logo{color:#fff}
+.intro .nav-logo{transform:translateY(-260%)}
+.go .nav-logo{transform:none}
+.sheet-open .nav-logo,.contact-open .nav-logo{mix-blend-mode:normal}
+.sheet-open .nav-logo .logo,.contact-open .nav-logo .logo{color:var(--fg)}
 </style>
 
 <script>
@@ -2757,8 +2766,9 @@ setTimeout(function(){if(!r.classList.contains("run")){r.classList.remove("intro
 </script>
 </head>
 <body>
+<div class="nav-logo" id="navlogo"><a class="logo" href="#top" data-go="index" aria-label="Marin, home">Marin</a></div>
 <header class="nav" id="nav">
-  <div class="nav-side l"><a class="logo" href="#top" data-go="index" aria-label="Marin, home">Marin</a></div>
+  <div class="nav-side l"></div>
   <nav class="nav-mid" aria-label="Main">
     <a class="chip item open" href="#top" data-go="index"><span class="sp"></span><span class="lab">Projects</span><sup>1</sup></a>
     <button class="chip item" type="button" data-go="lof"><span class="sp"></span><span class="lab">Archive</span><sup>2</sup></button>
