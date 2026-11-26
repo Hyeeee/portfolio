@@ -2746,6 +2746,9 @@ html .po-car-v.last .po-trk{-webkit-mask-image:linear-gradient(90deg,transparent
 .s-ri svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .4s cubic-bezier(.2,.8,.2,1)}
 .s-ri:hover{background:var(--fg);color:var(--bg)}
 .s-ri:hover svg{transform:rotate(-45deg)}
+
+/* mockup to caption gap */
+.cz-body > .vc-mob + .tx{margin-top:8px!important}
 </style>
 
 <script>
@@ -2784,7 +2787,6 @@ setTimeout(function(){if(!r.classList.contains("run")){r.classList.remove("intro
   <section class="feed-wrap"><div class="shift" id="shift"><ul class="feed" id="feed"></ul></div></section>
   <footer class="foot wrap">
     <span>© 2026 Marin Chung</span>
-    <span class="r"><a class="lk" href="#top" id="totop">Back to top</a></span>
   </footer>
 </main>
 
@@ -3167,7 +3169,7 @@ feed.querySelectorAll("img[data-fb]").forEach(im=>{im.onerror=()=>{im.onerror=nu
 /* ---------- smooth scroll ---------- */
 let lenis=null;
 if(window.Lenis&&!reduce){lenis=new Lenis({lerp:.085});const raf=t=>{lenis.raf(t);requestAnimationFrame(raf)};requestAnimationFrame(raf)}
-$("#totop").addEventListener("click",e=>{e.preventDefault();lenis?lenis.scrollTo(0,{duration:1.6}):scrollTo({top:0,behavior:"smooth"})});
+
 
 /* ---------- intro: flip through a single stack, then spread into the grid ---------- */
 let introRunning=false;
@@ -3851,8 +3853,7 @@ mortgage:{sec:[
     ["Project recap on YouTube","We closed the hackathon with a live YouTube presentation. Each of the five teammates covered one part, and I walked through the design decisions."],
     ["How it felt to win","I didn’t expect to win anything, so when they announced our team I was surprised and proud. What made it special was how well we worked together under time pressure."]],
     next:[["About the awards","Our project was Track Winner in the Microsoft-sponsored category for collaboration and remote productivity, and then Final Winner of the whole event."],
-    ["What it meant","It was the first time I saw a project go from a small idea to something others recognized. It gave me confidence in my design work and showed me how strong collaboration can be."]]},
-   {t:"link",u:"https://www.youtube.com/watch?v=eFkhRFcwnnU&t=470s",l:"Watch the presentation"}]}]},
+    ["What it meant","It was the first time I saw a project go from a small idea to something others recognized. It gave me confidence in my design work and showed me how strong collaboration can be."]]}]}]},
 
 "stock-trading":{sec:[
  {k:"UX issues",h:"Too hard to even start",b:"Most apps were packed with unfamiliar terms, complicated charts and overwhelming menus. Beginners faced too many decisions upfront and no clear path.",
@@ -4290,10 +4291,10 @@ const h=location.hash.slice(1);
 if(h){navPop=true;try{navTo(h)}finally{navPop=false}}
 /* back to top inside the sheet */
 (()=>{const b=document.getElementById("s-top"),sh=document.getElementById("sheet");if(!b||!sh)return;
-  const upd=()=>{const h=location.hash.slice(1);const ok=sheetOpen&&h!=="lof-archive"&&h!=="photography"&&sh.scrollTop>window.innerHeight*.8;b.classList.toggle("on",ok)};
-  sh.addEventListener("scroll",upd,{passive:true});window.addEventListener("hashchange",upd);
+  const upd=()=>{const h=location.hash.slice(1);const ok=sheetOpen?(h!=="lof-archive"&&h!=="photography"&&sh.scrollTop>window.innerHeight*.8):window.scrollY>window.innerHeight*.8;b.classList.toggle("on",ok)};
+  sh.addEventListener("scroll",upd,{passive:true});window.addEventListener("scroll",upd,{passive:true});window.addEventListener("hashchange",upd);
   new MutationObserver(upd).observe(sh,{attributes:true,attributeFilter:["class"]});
-  b.addEventListener("click",()=>{sh.scrollTo({top:0,behavior:"smooth"})});})();
+  b.addEventListener("click",()=>{if(sheetOpen){sh.scrollTo({top:0,behavior:"smooth"});return}lenis?lenis.scrollTo(0,{duration:1.6}):scrollTo({top:0,behavior:"smooth"})});})();
 /* resume: inside the Claude viewer a plain download link does nothing, so hand the PDF over through the downloads capability */
 document.addEventListener("click",async e=>{const a=e.target.closest("a[download]");if(!a||!(window.claude&&typeof window.claude.use==="function"))return;
   e.preventDefault();const label=a.querySelector(".v,.cv"),orig=label&&label.textContent;
