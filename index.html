@@ -11,7 +11,7 @@
 <link rel="shortcut icon" href="/favicon-m.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&family=Newsreader:ital,opsz,wght@0,6..72,300..500;1,6..72,300..500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400&family=Newsreader:ital,opsz,wght@0,6..72,300..500;1,6..72,300..500&display=swap">
 <style>
 /* Layout: one screen — name, a short bio, and an image feed that is dealt into a pile and scattered on load */
 :root{
@@ -70,9 +70,8 @@ img{display:block;max-width:100%}
 }
 .logo{pointer-events:auto;display:inline-flex;align-items:center;height:32px;
   font-family:var(--sans);font-weight:600;font-size:19px;line-height:1;letter-spacing:-.045em;white-space:nowrap;color:var(--fg)}
-.logo .l{display:inline-block;overflow:hidden;height:1.1em;line-height:1.1}
-.logo .l>i{display:block;font-style:normal;transition:transform .6s var(--out)}
-.logo:hover .l>i,.logo:focus-visible .l>i{transform:translateY(-100%)}
+.logo{transition:font-weight .6s var(--out)}
+.logo:hover,.logo:focus-visible{font-weight:300}
 .chip.theme-chip{width:32px;height:32px;padding:0;align-items:center;justify-content:center}
 .chip.theme-chip i{width:11px;height:11px;border-radius:50%;border:1px solid var(--fg);background:linear-gradient(90deg,var(--fg) 50%,transparent 50%);transition:transform .7s var(--ease)}
 .chip.theme-chip.is-dark i{transform:rotate(180deg)}
@@ -2759,7 +2758,7 @@ setTimeout(function(){if(!r.classList.contains("run")){r.classList.remove("intro
 </head>
 <body>
 <header class="nav" id="nav">
-  <div class="nav-side l"><a class="logo" href="#top" data-go="index" aria-label="Marin, home"><span class="l" aria-hidden="true"><i style="transition-delay:0ms">M</i><i style="transition-delay:0ms">M</i></span><span class="l" aria-hidden="true"><i style="transition-delay:35ms">a</i><i style="transition-delay:35ms">a</i></span><span class="l" aria-hidden="true"><i style="transition-delay:70ms">r</i><i style="transition-delay:70ms">r</i></span><span class="l" aria-hidden="true"><i style="transition-delay:105ms">i</i><i style="transition-delay:105ms">i</i></span><span class="l" aria-hidden="true"><i style="transition-delay:140ms">n</i><i style="transition-delay:140ms">n</i></span></a></div>
+  <div class="nav-side l"><a class="logo" href="#top" data-go="index" aria-label="Marin, home">Marin</a></div>
   <nav class="nav-mid" aria-label="Main">
     <a class="chip item open" href="#top" data-go="index"><span class="sp"></span><span class="lab">Projects</span><sup>1</sup></a>
     <button class="chip item" type="button" data-go="lof"><span class="sp"></span><span class="lab">Archive</span><sup>2</sup></button>
