@@ -2730,10 +2730,12 @@ html .po-car-v.last .po-trk{-webkit-mask-image:linear-gradient(90deg,transparent
 .po-ivw3>.po-iv3:nth-child(2).in>*{margin:0}
 @media (prefers-reduced-motion:reduce){.po-iv3.po-a,.po-iv3>*{opacity:1!important;transform:none!important;transition:none!important}}
 /* live link, option B: plain "View live" text on the right end of the title row, the arrow slides on hover */
-.s-head .s-tr{grid-column:1/13;display:flex!important;align-items:flex-end;justify-content:space-between;gap:24px;width:100%;align-self:stretch}
+.s-head .s-tr{grid-column:1/13;display:flex!important;align-items:center;justify-content:space-between;gap:24px;width:100%;align-self:stretch}
 .s-head .s-tr h1{margin:0;order:0!important}
-.s-vl{flex:none;display:inline-flex;align-items:center;gap:7px;font-size:16px;font-weight:500;color:var(--fg);text-decoration:none;margin-bottom:.4em;transition:color .25s}
+.s-vl{flex:none;display:inline-flex;align-items:center;gap:7px;font-size:16px;font-weight:500;color:var(--fg);text-decoration:none;margin:0;transition:color .25s}
 .s-vl svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.s-vl{color:var(--muted)!important}
+.s-vl:hover{color:var(--fg)!important}
 .s-vl:hover svg{transform:translateX(3px)}
 @media (max-width:760px){.s-head .s-tr{flex-direction:column;align-items:flex-start;gap:14px}.s-vl{margin:0}}
 </style>
