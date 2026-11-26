@@ -70,8 +70,7 @@ img{display:block;max-width:100%}
 }
 .logo{pointer-events:auto;display:inline-flex;align-items:center;height:32px;
   font-family:var(--sans);font-weight:600;font-size:19px;line-height:1;letter-spacing:-.045em;white-space:nowrap;color:var(--fg)}
-.logo{transition:font-weight .6s var(--out)}
-.logo:hover,.logo:focus-visible{font-weight:300}
+.logo{transition:transform .45s var(--out);will-change:transform}
 .chip.theme-chip{width:32px;height:32px;padding:0;align-items:center;justify-content:center}
 .chip.theme-chip i{width:11px;height:11px;border-radius:50%;border:1px solid var(--fg);background:linear-gradient(90deg,var(--fg) 50%,transparent 50%);transition:transform .7s var(--ease)}
 .chip.theme-chip.is-dark i{transform:rotate(180deg)}
@@ -4298,6 +4297,12 @@ const navTo=h=>{if(h==="lof-archive")openLof();else if(h==="photography")openPho
 addEventListener("popstate",()=>{navPop=true;try{const h=location.hash.slice(1);if(!h||!navTo(h))closeSheet()}finally{navPop=false}});
 const h=location.hash.slice(1);
 if(h){navPop=true;try{navTo(h)}finally{navPop=false}}
+/* logo tilts in 3D toward the cursor */
+(()=>{const l=document.querySelector("#navlogo .logo");if(!l||matchMedia("(hover:none)").matches)return;
+  const MAX=34;
+  l.addEventListener("mousemove",e=>{const r=l.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    l.style.transform=`perspective(160px) rotateY(${x*MAX}deg) rotateX(${-y*MAX}deg)`});
+  l.addEventListener("mouseleave",()=>{l.style.transform=""});})();
 /* back to top inside the sheet */
 (()=>{const b=document.getElementById("s-top"),sh=document.getElementById("sheet");if(!b||!sh)return;
   const upd=()=>{const h=location.hash.slice(1);const ok=sheetOpen?(h!=="lof-archive"&&h!=="photography"&&sh.scrollTop>window.innerHeight*.8):window.scrollY>window.innerHeight*.8;b.classList.toggle("on",ok)};
