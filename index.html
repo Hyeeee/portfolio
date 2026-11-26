@@ -3010,12 +3010,11 @@ function initFlow(f){if(f.dataset.ok)return;f.dataset.ok=1;
   const as=[...f.querySelectorAll(".po-uf-a")];
   // the arrow leading into the new card redraws itself each time focus moves along it
   const show=n=>{const prev=cur;cur=n%cs.length;cs.forEach((c,k)=>c.classList.toggle("on",k===cur));as.forEach(a=>a.classList.remove("go","lit"));if(cur>0){const a=as[cur-1];if(cur===prev+1){void a.offsetWidth;a.classList.add("go")}a.classList.add("lit")}};
-  const loop=()=>{show(cur+1);tm=setTimeout(loop,2400)};
+  const loop=()=>{if(hov||pin>=0)return;show(cur+1);tm=setTimeout(loop,2400)};
   f.classList.add("live");show(0);
-  let vis=false,hov=false;
-  new IntersectionObserver(es=>es.forEach(e=>{vis=e.isIntersecting;clearTimeout(tm);if(vis&&!hov)tm=setTimeout(loop,2400)}),{threshold:.3}).observe(f);
+  let vis=false,hov=false,pin=-1;
+  new IntersectionObserver(es=>es.forEach(e=>{vis=e.isIntersecting;clearTimeout(tm);if(vis&&!hov&&pin<0)tm=setTimeout(loop,2400)}),{threshold:.3}).observe(f);
   // hover a card to look at it; click to keep it in focus (auto play stops), click it again to let the flow play on
-  let pin=-1;
   const resume=()=>{clearTimeout(tm);if(vis&&!hov&&pin<0)tm=setTimeout(loop,2400)};
   cs.forEach((c,k)=>{c.tabIndex=0;c.setAttribute("role","button");
     c.addEventListener("mouseenter",()=>{hov=true;clearTimeout(tm);if(k!==cur)show(k)});
