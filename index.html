@@ -2700,6 +2700,16 @@ html .po-car-v.last .po-trk{-webkit-mask-image:linear-gradient(90deg,transparent
 .po-hy.po-a.in .po-hy-s p b:nth-of-type(3) .hyi{transition-delay:1.6s}
 /* poise: the same gap between every section intro and its first block */
 .lc:has(> section.sec-hypothesis) > section.cz > .cz-body > :first-child{margin-top:8px!important}
+/* one Poise green everywhere: #1fae6e for fills and text, a soft tint of it behind chips and checks */
+.po-hy.po-a.in .po-hy-s p b{color:#1fae6e!important}
+.po-tst .po-r-c .po-pp .b u::after{background:#1fae6e!important}
+.po-iv3 p em::before{background:#1fae6e!important}
+.po-r-d,.po-cr .chip{background:color-mix(in srgb,#1fae6e 14%,transparent)!important;color:#1a9a61!important}
+.po-mt2 i.y{background:color-mix(in srgb,#1fae6e 14%,transparent)!important}
+.po-mt2 i.y svg{stroke:#1a9a61!important}
+.sb .steps s:nth-child(1){background:#1fae6e}
+@keyframes psS2{0%{background:color-mix(in srgb,var(--pnf) 10%,transparent)}33%{background:#1fae6e}}
+@keyframes psS3{0%,33%{background:color-mix(in srgb,var(--pnf) 10%,transparent)}66%{background:#1fae6e}}
 </style>
 
 <script>
